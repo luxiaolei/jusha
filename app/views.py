@@ -9,7 +9,7 @@ import mapper
 import numpy as np
 import os.path as op
 import pandas as pd
-import cPickle as pkl
+import json
 
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 ALLOWED_EXTENSIONS = set(['txt', 'csv'])
@@ -92,8 +92,8 @@ def upload_file():
                 minvalue = data.min()
                 maxvalue = data.max()
 
-                with open('mapperoutput.pkl', 'rb') as f:
-                    mapperoutput = pkl.load(f)
+                with open('mapperoutput.json', 'rb') as f:
+                    mapperoutput = json.load(f)
 
                 recolor_mapperoutput(mapperoutput)
 
@@ -111,11 +111,12 @@ def upload_file():
                     df = selfvars.df
                     sf = selfvars.selected_feature
                     rangeindex = df.ix[(df[sf] >= inputrange[0]) & (df[sf] <= inputrange[-1])].index.values
-
-                    with open('mapperoutput.pkl', 'rb') as f:
-                        mapperoutput = pkl.load(f)
+                    """
+                    with open('mapperoutput.json', 'rb') as f:
+                        mapperoutput = json.load(f)
 
                     recolor_mapperoutput(mapperoutput)
+                    """
 
 
                     return render_template('index.html', columns= selfvars.features,\
@@ -219,8 +220,8 @@ def mapper_cluster():
     if selfvars.mappernew == 1:
         #first time initiate the graph
         G = to_d3js_graph(mapper_output)
-        with open('mapperoutput.pkl', 'wb') as f:
-            pkl.dump(G, f)
+        with open('mapperoutput.json', 'wb') as f:
+            json.dump(G, f)
     else:
         G = selfvars.mappernew
     return json.dumps(G)
