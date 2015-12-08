@@ -1,12 +1,12 @@
 var mappersvg = d3.select("#graph")
     .append("svg")
-    .attr("width","840")
-    .attr("height","680");
+    .attr("width","640")
+    .attr("height","480");
 
 var force = d3.layout.force()
-	.charge(-1)
-	.linkDistance(1)
-	.size([840,680]);
+	.charge(-100)
+	.linkDistance(10)
+	.size([640,480]);
 
 d3.json("/mapperjson", function(d) {
     var nodes = d['vertices'];
