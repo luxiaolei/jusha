@@ -185,7 +185,7 @@ def mapper_cluster():
         G['edges'] = [{'source': e[0], 'target': e[1], 'wt':
                        mapper_output.simplices[1][e]} for e in
                       mapper_output.simplices[1].keys()]
-
+        """
         G['subnodes'] = [i['members'] for i in G['vertices']]
 
         #add subnodes connection,point subnodes to the main one
@@ -207,7 +207,7 @@ def mapper_cluster():
                 org_length +=1
 
         G['vertices'] += new_vertices
-
+        """
 
         return G
 

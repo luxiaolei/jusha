@@ -17,7 +17,7 @@
   <h2>Please give me your file! Only csv txt are supported!</h2>
   <form action="/" method=post enctype=multipart/form-data>
     <input type=file name=file>
-    <input type=submit value=Upload><a> msgcheck()</a>
+    <input type=submit value=Upload>
   </form>
 
   {% if submitflag %}
@@ -47,18 +47,6 @@
   </p>
   {% endif %}
 
-
-
-
-
-
-  <a>{{error}}</a>
-
-  <script>
-    function msgcheck() {
-      alert("{{message}}")
-    }
-  </script>
 
   <div id="graph"></div>
 
