@@ -64,11 +64,11 @@ def upload_file():
 
 
                 #pop index col
-                FirstRowisIndex= True
+                FirstRowisIndex= False
                 if FirstRowisIndex:
                     df = pd.read_csv('uploads/'+filename, index_col=0)
                 else:
-                    pass
+                    df = pd.read_csv('uploads/'+filename)
 
 
                 col = df.columns.values
@@ -91,6 +91,11 @@ def upload_file():
                 data = selfvars.df[selected_f]
                 minvalue = data.min()
                 maxvalue = data.max()
+
+                with open('mapperoutput.pkl', 'rb') as f:
+                    mapperoutput = pkl.load(f)
+
+                recolor_mapperoutput(mapperoutput)
 
                 return render_template('index.html', columns= selfvars.features,\
                         submitflag=True, featureflag= True, selected_f= selfvars.selected_feature,\
