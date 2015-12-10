@@ -1,4 +1,5 @@
-from flask import redirect, request, render_template, url_for, session, g
+#!encoding=utf-8
+from flask import redirect, request, render_template, url_for, session, g, jsonify
 from flask_wtf import Form
 from wtforms import RadioField
 from app import app
@@ -16,6 +17,9 @@ ALLOWED_EXTENSIONS = set(['txt', 'csv'])
 
 
 class selfgloablvars:
+    """
+    This class is used for passing variables between functions
+    """
     def __init__(self):
         self.features = 1
         self.df = 1
@@ -44,8 +48,40 @@ def recolor_mapperoutput(mapperjson):
 
         #reset the arrtribute
         target['vertices'][key]['attribute'] = average_value
-
     selfvars.mappernew =  target
+
+
+@app.route('/features')
+def send_features():
+    """
+    send feature info to clients
+    """
+    return jsonify(features=list(selfvars.features))
+
+@app.route('/feature_ajax', methods=['POST','GET'])
+def feature_ajax():
+    """
+    recieve selected feature from client, and call
+    recolor function, send back the new mapperjson
+    """
+    selected_f = request.json['selected']
+    selfvars.selected_feature = selected_f
+
+    #update the mapperjson based on the selected f
+    with open('mapperoutput.json', 'rb') as f:
+        mapperoutput = json.load(f)
+    recolor_mapperoutput(mapperoutput)
+    newmapperJson = selfvars.mappernew
+
+    return json.dumps(newmapperJson['vertices'])
+    #return render_template(url_for('newjson'), json.dumps(newmapperJson['vertices'])
+
+@app.route('/newjson')
+def newjson():
+    with open('mapperoutput.json', 'rb') as f:
+        mapperoutput = json.load(f)
+
+    return json.dumps(selfvars.mappernew)
 
 
 @app.route('/', methods=['GET', 'POST'])
