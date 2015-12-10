@@ -33,12 +33,13 @@ var node = mappersvg.selectAll(".node")
 	.data(nodes)
 	.enter().append("circle")
 	.attr("class", "node")
+  .attr("id", function(e){return 'circleid_'+e.index})
 	.attr("r", function(e) { return Math.min(10,(3+Math.sqrt(e.members.length))); })
 	.style("fill", function(e) { return fscale(e.attribute);})
 	.text(function(e){return e.members.length; })
 	.on('mouseover', function(e) {
 
-    var members_string = "";
+    var members_string = 'The '+e.index+'th node contains:';
     for (i in e.members){
       members_string+= "," + e.members[i]
     }
