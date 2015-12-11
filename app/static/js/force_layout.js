@@ -1,7 +1,11 @@
 var mappersvg = d3.select("#graph")
     .append("svg")
-    .attr("width","640")
-    .attr("height","480");
+
+var width = $("svg").parent().width();
+var height = $("svg").parent().height();
+
+mappersvg.attr("width", width)
+          .attr("height", height)
 
 var force = d3.layout.force()
 	.charge(-100)
@@ -87,7 +91,7 @@ d3.json("/mapperjson", function(d) {
 });
 
 
-d3.select(".changecolor")
+d3.select("#generate")
   .on('click',function(){
     var refreshGraph = function(){
       d3.json("/newjson",function(d){

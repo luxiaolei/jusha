@@ -5,256 +5,111 @@
 <head>
   <title>Example for the d3.js export from mapper</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <script type="text/javascript" src="{{
-  url_for('static', filename='js/jquery-2.1.4.min.js') }}"></script>
   <script type="text/javascript">
     var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   </script>
-  <script type="text/javascript" charset="utf-8">
-  //handle feater selection porcess
-  $(function(){
-    $("#showfeature").bind('click', function(){
-      $.getJSON($SCRIPT_ROOT + '/features',function(data){
-        //retrive features from json, and then generate
-        //a list of radio button for each features
-       for (i in data.features){
-         var radioBtn = $('<input type="radio" name="features" value= '+data.features[i]+'>'+data.features[i]+'<br/>');
-         radioBtn.appendTo('#radiocheck');
-         }
-      //ajax post the selected feature to server
-       $('#radiocheck input').change(function(){
-         var data = {'selected': $('input[name=features]:checked', '#radiocheck').val()};
-
-         $.ajax({
-           type : "POST",
-           url : "{{ url_for('feature_ajax') }}",
-           data: JSON.stringify(data),// null, '\t'),
-           contentType: 'application/json;charset=UTF-8',
-           success: function(){
-           }
-         });
-        });
-      });
-    });
-  });
-  </script>
-
-  <script type="text/javascript">
-  //search data utility
-  $(function(){
-    $('#searchsubmit').bind('click',function(){
-      /*
-      !!should add a function(searchbox){return index}!
-      */
-      var dataname = parseInt($('#searchbox').val());
-
-      //retrive the indexes of nodes which contain the searched data
-      $.getJSON($SCRIPT_ROOT + '/mapperjson', function(data){
-        var nodes = data['vertices'];
-        var exsitIndexes = [];
-        for (i in nodes){
-          var members = nodes[i]['members'];
-          var flag = $.inArray(dataname, members);
-          if (flag != -1){
-            var theNode = nodes[i]['index']
-            exsitIndexes.push(theNode);
-          };
-        };
-
-        var modExsitIndexes = []
-        for (i in exsitIndexes){
-          var eid = 'circleid_'+exsitIndexes[i];
-          modExsitIndexes.push(eid);}
-
-        var svg = d3.select('svg');
-        var noneExsitIndexes = [];
-        svg.selectAll('.node')
-           .each(function(d,i){
-             //find the id of node which does NOT contain the search data
-             var flag = $.inArray(this.id, modExsitIndexes);
-             if (flag == -1){
-               noneExsitIndexes.push(this.id)
-             }
-           })
-
-        //do the coloring!
-        for (i in modExsitIndexes){
-          svg.select('#'+modExsitIndexes[i])
-             .transition()
-             .style('opacity', 1)
-        };
-        for (i in noneExsitIndexes){
-          svg.select('#'+noneExsitIndexes[i])
-             .transition()
-             .style('opacity', 0.3)
-        }
-      })
-
-    })
-
-  })
-  </script>
-
-
-  <style>
-  .bar {
-    fill: steelblue;
-  }
-
-  .bar:hover {
-    fill: brown;
-  }
-
-  .axis {
-    font: 10px sans-serif;
-  }
-
-  .axis path,
-  .axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
-  }
-
-  .x.axis path {
-    display: none;
-  }
-
-
-  </style>
+  <script src="{{ url_for('static', filename='js/jquery-2.1.4.min.js') }}" type="text/javascript" charset="utf-8"></script>
+  <script src="{{url_for('static',filename ='js/featureHandler.js')}}" type="text/javascript" charset="utf-8"></script>
+  <script src="{{url_for('static',filename ='js/search.js')}}" type="text/javascript" charset="utf-8"></script>
+  <script src="{{url_for('static',filename = 'js/barchart.js')}}" type="text/javascript" charset="utf-8"></script>
+  <link href="{{url_for('static',filename = 'css/bar.css')}}" rel="stylesheet" type="text/css">
+  <!-- Bootstrap -->
+  <link href="{{url_for('static',filename = 'css/bootstrap.min.css')}}" rel="stylesheet" media="screen">
 </head>
 
 <body>
+  <!--Navi bar-->
+  <li>
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container-fluid">
+        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="brand" href="#">聚沙团队的超级聚类算法操作面板</a>
+        <div class="nav-collapse collapse">
+          <p class="navbar-text pull-right">
+            登录 <a href="#" class="navbar-link">以后再弄</a>
+          </p>
+          <ul class="nav">
+            <li class="active"><a href="#"></a></li>
+            <li><a href="#about"></a></li>
+            <li><a href="#contact"></a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+  </div>
+</li>
 
-  <h2>Please give me your file! Only csv txt are supported!</h2>
-  <form action="/" method=post enctype=multipart/form-data>
-    <input type=file id=test name=file>
-    <input type=submit id=filesubmit2 value=Upload>
-  </form>
+<div class="row" style="height:20px">
+  <div class="span7">
 
-  <span type='button' id=showfeature value='show features'>show features</span>
-
-  <div class=options id="radiocheck"></div>
-
-  <div id=members></div>
-
-  {% if featureflag %}
-  <p>Your selected feature is: {{selected_f}}</p>
-  <p>
-    The min value of the feature is: {{minvalue}}<br>
-    The max value of the feature is: {{maxvalue}}
-  </p>
-
-  <form action="/" method=post enctype=multipart/form-data>
-  <input type='text' name='range'/>
-  <input type='submit' value='start!'/>
-  </form>
-
-  <p>
-    The index of points ly in the feature's range are:
-    {{rangeindex}}
-  </p>
-  {% endif %}
-
-  <button class=changecolor id="generate" value=refresh>refresh</button>
-
-  <br/>
-  Search Data:
-  <input type='text' name='search' id='searchbox' />
-  <button id='searchsubmit'>search!</button>
+  </div>
 
 
-  <div id="graph"></div>
+</div>
 
-  <div id='barchart'></div>
+<li>
+
+  <div class="container" style="height: 700px">
+    <div class="span7" style="height: 500px">
+
+        <div id="graph" style="height: 400px"></div>
+        <div id=members style="text-align: center"></div>
+        <div id='barchart' style="width: 380px"></div>
+
+
+    </div>
+    <div class="row-fluid">
+      <div class="span5">
+        <!--Sidebar content-->
+        <div class="well sidebar-nav">
+          <ul class="nav nav-list">
+            <li class="nav-header">文件上传</li>
+            <form action="/" method=post enctype=multipart/form-data>
+              <div class="span8">
+                <input calss="btn" type=file id=test name=file value=Choose>
+              </div>
+              <div class="span4">
+                <input class="btn" type=submit id=filesubmit2 value=Upload>
+              </div>
+            </form>
+
+            <li class="nav-header">数据搜索</li>
+            <br/>
+            Search Data:
+            <input type='text' name='search' id='searchbox' />
+            <button class="btn" id='searchsubmit'>Search!</button>
+
+            <li class="nav-header">选择特征</li>
+            <button class="btn" id=showfeature >Show Features</button>
+
+            <div class=options id="radiocheck"></div>
+            <button class="btn" id="generate" value=refresh>Selete Nodes</button>
+
+
+          </ul>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</li>
+
+
+
+
+
+
+
+
 
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <script src="{{ url_for('static', filename = 'js/force_layout.js') }}" charset="utf-8"></script>
-  <script type="text/javascript">
-  //implements bar chart
-  //once the feature selected, get the bins and ticks
-  //data from the server. and then draw the bar chart.
-  $(function(){
-    $("#generate").bind('click', function(){
-        var margin = {top: 20, right: 20, bottom: 30, left: 40},
-            width = 760 - margin.left - margin.right,
-            height = 200 - margin.top - margin.bottom;
-
-        var x = d3.scale.ordinal()
-            .rangeRoundBands([0, width], .1);
-
-        var y = d3.scale.linear()
-            .range([height, 0]);
-
-        var xAxis = d3.svg.axis()
-            .scale(x)
-            .orient("bottom");
-
-        var yAxis = d3.svg.axis()
-            .scale(y)
-            .orient("left")
-
-
-        var svg = d3.select("#barchart").append("svg")
-                      .attr("width", width + margin.left + margin.right)
-                      .attr("height", height + margin.top + margin.bottom)
-                    .append("g")
-                      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        d3.json('/bins',function(error, data) {
-
-          if (error) throw error;
-          //console.log(data)
-
-          data.forEach(function(d){
-            d.bins = parseFloat(d.bins);
-          });
-
-          x.domain(data.map(function(d){return d.ticks}))
-          y.domain([0, d3.max(data,function(d){return d.bins})]);
-
-
-          //console.log(x.rangeRoundBands())
-          //console.log(y.range())
-
-          svg.append("g")
-              .attr("class", "x axis")
-              .attr("transform", "translate(0," + height + ")")
-              .call(xAxis);
-
-          svg.append("g")
-              .attr("class", "y axis")
-              .call(yAxis)
-            .append("text")
-              .attr("transform", "rotate(-90)")
-              .attr("y", 6)
-              .attr("dy", ".71em")
-              .style("text-anchor", "end")
-              .text("Number of Data");
-
-          svg.selectAll(".bar")
-    .data(data)
-  .enter().append("rect")
-    .style("fill", "steelblue")
-    .attr("x", function(d) { return x(d.ticks); })
-    .attr("width", x.rangeBand())
-    .attr("y", function(d) { return y(d.bins); })
-    .attr("height", function(d) { return height - y(d.bins); });
-/*
-          svg.selectAll("bar")
-              .data(data)
-            .enter().append("rect")
-              .attr("class", "bar")
-              .style('fill', 'steelblue')
-              .attr("x",width/2)//function(d){return x(d.ticks)})
-              .attr("width", width/2)//x.rangeBand())
-              .attr("y", height/2)// function(d){return y(d.bins)})
-              .attr("height", height/2)//function(d) { return height - y(d.bins); });
-      */  });
-      });/**/
-        //console.log(data['ticks'])
-    });
-  </script>
+  <script src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script>
 </body>
 
 </html>
