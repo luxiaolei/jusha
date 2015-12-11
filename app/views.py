@@ -78,9 +78,9 @@ def feature_ajax():
 
 @app.route('/newjson')
 def newjson():
-    with open('mapperoutput.json', 'rb') as f:
-        mapperoutput = json.load(f)
-
+    """
+    mappernew was been set in feature ajax process
+    """
     return json.dumps(selfvars.mappernew)
 
 
@@ -97,8 +97,6 @@ def upload_file():
                 message = 'Successfully Uploaded!'
                 session['filename'] = filename
                 #retrive the column names and pass to /
-
-
                 #pop index col
                 FirstRowisIndex= False
                 if FirstRowisIndex:
@@ -106,11 +104,8 @@ def upload_file():
                 else:
                     df = pd.read_csv('uploads/'+filename)
 
-
-                col = df.columns.values
-
                 #store the col into selfvars obj
-                selfvars.features = col
+                selfvars.features = df.columns.values
                 selfvars.df = df
 
                 return render_template('index.html', \
@@ -120,49 +115,25 @@ def upload_file():
                 return render_template('index.html', message = message)
         except Exception:
             try:
-                #feature selection
-                selected_f = request.form['option']
-                selfvars.selected_feature = selected_f
-
-                data = selfvars.df[selected_f]
-                minvalue = data.min()
-                maxvalue = data.max()
-
+                inputrange = request.form['range']
+                inputrange = [float(i) for i in inputrange.split(',')]
+                df = selfvars.df
+                sf = selfvars.selected_feature
+                rangeindex = df.ix[(df[sf] >= inputrange[0]) & (df[sf] <= inputrange[-1])].index.values
+                """
                 with open('mapperoutput.json', 'rb') as f:
                     mapperoutput = json.load(f)
 
                 recolor_mapperoutput(mapperoutput)
-
+                """
                 return render_template('index.html', columns= selfvars.features,\
                         submitflag=True, featureflag= True, selected_f= selfvars.selected_feature,\
-                        minvalue= minvalue,\
-                        maxvalue = maxvalue)
-            except Exception:
-                try:
-
-                    inputrange = request.form['range']
-                    inputrange = [float(i) for i in inputrange.split(',')]
-
-
-                    df = selfvars.df
-                    sf = selfvars.selected_feature
-                    rangeindex = df.ix[(df[sf] >= inputrange[0]) & (df[sf] <= inputrange[-1])].index.values
-                    """
-                    with open('mapperoutput.json', 'rb') as f:
-                        mapperoutput = json.load(f)
-
-                    recolor_mapperoutput(mapperoutput)
-                    """
-
-
-                    return render_template('index.html', columns= selfvars.features,\
-                            submitflag=True, featureflag= True, selected_f= selfvars.selected_feature,\
-                            inputrange = inputrange, rangeindex = rangeindex)
-                    #feture range selection
-                    pass
-                except Exception, e:
-                    return render_template('index.html', error = str(e))
-                    pass
+                        inputrange = inputrange, rangeindex = rangeindex)
+                #feture range selection
+                pass
+            except Exception, e:
+                return render_template('index.html', error = str(e))
+                pass
     else: return render_template('index.html')
 
 
@@ -171,7 +142,7 @@ def mapper_cluster():
     #in_file_dir = '/Users/xl-macbook/documents/project/flask/mapper_web/upload'
     in_file = [f for f in os.listdir('uploads/')]
     assert len(in_file) > 0
-
+    print ' im here'
     in_file = 'uploads/' + session['filename']
 
     #data = np.loadtxt(str(in_file), delimiter=',', dtype=np.float)
@@ -253,6 +224,12 @@ def mapper_cluster():
 
         return G
 
+
+    G = to_d3js_graph(mapper_output)
+    with open('mapperoutput.json', 'wb') as f:
+        json.dump(G, f)
+    return json.dumps(G)
+    """
     if selfvars.mappernew == 1:
         #first time initiate the graph
         G = to_d3js_graph(mapper_output)
@@ -261,3 +238,4 @@ def mapper_cluster():
     else:
         G = selfvars.mappernew
     return json.dumps(G)
+    """
