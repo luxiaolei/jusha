@@ -7,12 +7,10 @@
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <script type="text/javascript" src="{{
   url_for('static', filename='js/jquery-2.1.4.min.js') }}"></script>
-<script type="text/javascript" src="http://brandonaaron.net/javascripts/plugins/livequery.js"></script>
   <script type="text/javascript">
     var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
   </script>
-
-  <script type="text/javascript">
+  <script type="text/javascript" charset="utf-8">
   //handle feater selection porcess
   $(function(){
     $("#showfeature").bind('click', function(){
@@ -32,32 +30,7 @@
            url : "{{ url_for('feature_ajax') }}",
            data: JSON.stringify(data),// null, '\t'),
            contentType: 'application/json;charset=UTF-8',
-           success: function(result){
-             /*
-             //update d3 nodes arrtributes
-             var nodes = JSON.parse(result);
-             max_arrt = [];
-             for(n in nodes) {
-               //console.log(nodes[n].attribute)
-               var elm = nodes[n].attribute;
-
-               max_arrt.push(nodes[n].attribute);
-             }
-             var max_value = Math.max(max_arrt)
-
-             var fscale = d3.scale.linear()
-             .range(['blue','red'])
-             .domain([0,16]);
-
-
-                d3.select("#graph")
-                .selectAll(".node")
-                .data(nodes)
-                .transition()
-                .duration(1500)
-			          .delay(1500)
-                .style("fill", function(e) { return fscale(e.attribute);})
-              */
+           success: function(){
            }
          });
         });
@@ -120,14 +93,34 @@
     })
 
   })
-
   </script>
 
+
   <style>
-    .link {
-      stroke: #999;
-      stroke-opacity: .6;
-    }
+  .bar {
+    fill: steelblue;
+  }
+
+  .bar:hover {
+    fill: brown;
+  }
+
+  .axis {
+    font: 10px sans-serif;
+  }
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .x.axis path {
+    display: none;
+  }
+
+
   </style>
 </head>
 
@@ -163,17 +156,105 @@
   </p>
   {% endif %}
 
-  <button class=changecolor value=refresh>refresh</button>
+  <button class=changecolor id="generate" value=refresh>refresh</button>
 
   <br/>
   Search Data:
   <input type='text' name='search' id='searchbox' />
   <button id='searchsubmit'>search!</button>
+
+
   <div id="graph"></div>
 
-  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-  <script src="{{ url_for('static', filename = 'js/force_layout.js') }}"></script>
+  <div id='barchart'></div>
 
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="{{ url_for('static', filename = 'js/force_layout.js') }}" charset="utf-8"></script>
+  <script type="text/javascript">
+  //implements bar chart
+  //once the feature selected, get the bins and ticks
+  //data from the server. and then draw the bar chart.
+  $(function(){
+    $("#generate").bind('click', function(){
+        var margin = {top: 20, right: 20, bottom: 30, left: 40},
+            width = 760 - margin.left - margin.right,
+            height = 200 - margin.top - margin.bottom;
+
+        var x = d3.scale.ordinal()
+            .rangeRoundBands([0, width], .1);
+
+        var y = d3.scale.linear()
+            .range([height, 0]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom");
+
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+
+
+        var svg = d3.select("#barchart").append("svg")
+                      .attr("width", width + margin.left + margin.right)
+                      .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        d3.json('/bins',function(error, data) {
+
+          if (error) throw error;
+          //console.log(data)
+
+          data.forEach(function(d){
+            d.bins = parseFloat(d.bins);
+          });
+
+          x.domain(data.map(function(d){return d.ticks}))
+          y.domain([0, d3.max(data,function(d){return d.bins})]);
+
+
+          //console.log(x.rangeRoundBands())
+          //console.log(y.range())
+
+          svg.append("g")
+              .attr("class", "x axis")
+              .attr("transform", "translate(0," + height + ")")
+              .call(xAxis);
+
+          svg.append("g")
+              .attr("class", "y axis")
+              .call(yAxis)
+            .append("text")
+              .attr("transform", "rotate(-90)")
+              .attr("y", 6)
+              .attr("dy", ".71em")
+              .style("text-anchor", "end")
+              .text("Number of Data");
+
+          svg.selectAll(".bar")
+    .data(data)
+  .enter().append("rect")
+    .style("fill", "steelblue")
+    .attr("x", function(d) { return x(d.ticks); })
+    .attr("width", x.rangeBand())
+    .attr("y", function(d) { return y(d.bins); })
+    .attr("height", function(d) { return height - y(d.bins); });
+/*
+          svg.selectAll("bar")
+              .data(data)
+            .enter().append("rect")
+              .attr("class", "bar")
+              .style('fill', 'steelblue')
+              .attr("x",width/2)//function(d){return x(d.ticks)})
+              .attr("width", width/2)//x.rangeBand())
+              .attr("y", height/2)// function(d){return y(d.bins)})
+              .attr("height", height/2)//function(d) { return height - y(d.bins); });
+      */  });
+      });/**/
+        //console.log(data['ticks'])
+    });
+  </script>
 </body>
 
 </html>

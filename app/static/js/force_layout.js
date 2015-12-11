@@ -43,11 +43,12 @@ d3.json("/mapperjson", function(d) {
           });
     */
 
-
     var link = mappersvg.selectAll(".link")
     	.data(edges)
     	.enter().append("line")
-    	.attr("class","link");
+    	.attr("class","link")
+      .style('stroke', "#999")
+      .style('stroke-opacity', 0.6);
 
     var node = mappersvg.selectAll(".node")
     	.data(nodes)
@@ -105,7 +106,7 @@ d3.select(".changecolor")
         node
         .data(nodes)
         .style('fill', function(e) { return fscale(e.attribute);})
-        
+
 
       force.on("tick", function () {
       	link.attr("x1", function(e) { return e.source.x; })

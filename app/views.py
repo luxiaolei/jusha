@@ -10,7 +10,7 @@ import mapper
 import numpy as np
 import os.path as op
 import pandas as pd
-import json
+
 
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 ALLOWED_EXTENSIONS = set(['txt', 'csv'])
@@ -25,6 +25,7 @@ class selfgloablvars:
         self.df = 1
         self.selected_feature = 1
         self.mappernew = 1
+        self.feature_his = 1
 
 selfvars = selfgloablvars()
 
@@ -58,22 +59,46 @@ def send_features():
     """
     return jsonify(features=list(selfvars.features))
 
+@app.route('/bins')
+def send_bins():
+    """
+    send the bins and ticks data to client
+    """
+    return json.dumps(selfvars.feature_his)
+
 @app.route('/feature_ajax', methods=['POST','GET'])
 def feature_ajax():
     """
-    recieve selected feature from client, and call
-    recolor function, send back the new mapperjson
+    recieve selected feature from client, then
+    *call recolor function
+    *set selfvars.ma
     """
     selected_f = request.json['selected']
     selfvars.selected_feature = selected_f
-
     #update the mapperjson based on the selected f
     with open('mapperoutput.json', 'rb') as f:
         mapperoutput = json.load(f)
     recolor_mapperoutput(mapperoutput)
-    newmapperJson = selfvars.mappernew
 
-    return json.dumps(newmapperJson['vertices'])
+    #update the selfvars.feature_his
+    array = selfvars.df[selected_f]
+    array_his = np.histogram(array)
+    array_his = [list(i) for i in array_his]
+
+    bins = array_his[0]
+    ticks = array_his[1]
+    ticks = ['%.2f'%i for i in ticks]
+    ticks = zip(ticks[:-1], ticks[1:])
+
+    selfvars.feature_his = []
+    for v in zip(bins, ticks):
+        dic = {'bins':v[0], 'ticks':v[1]}
+        selfvars.feature_his.append(dic)
+
+    print selfvars.feature_his
+
+    return json.dumps({'ans':'1'})
+
     #return render_template(url_for('newjson'), json.dumps(newmapperJson['vertices'])
 
 @app.route('/newjson')
@@ -142,7 +167,7 @@ def mapper_cluster():
     #in_file_dir = '/Users/xl-macbook/documents/project/flask/mapper_web/upload'
     in_file = [f for f in os.listdir('uploads/')]
     assert len(in_file) > 0
-    print ' im here'
+
     in_file = 'uploads/' + session['filename']
 
     #data = np.loadtxt(str(in_file), delimiter=',', dtype=np.float)
