@@ -1,5 +1,7 @@
-.bar {
-  fill: steelblue;
+.bar rect {
+
+  fill: red;
+
 }
 
 .bar:hover {

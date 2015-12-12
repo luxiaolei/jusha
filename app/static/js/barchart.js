@@ -7,7 +7,7 @@ $(function(){
           height = 200 - margin.top - margin.bottom;
 
       var x = d3.scale.ordinal()
-          .rangeRoundBands([0, width], .1);
+          .rangeRoundBands([0, width], .1, .3);
 
       var y = d3.scale.linear()
           .range([height, 0]);
@@ -57,14 +57,24 @@ $(function(){
             .style("text-anchor", "end")
             .text("Number of Data");
 
-        svg.selectAll(".bar")
+        var recEnter = svg.selectAll(".bar")
               .data(data)
-            .enter().append("rect")
-              .style("fill", "steelblue")
-              .attr("x", function(d) { return x(d.ticks); })
-              .attr("width", x.rangeBand())
-              .attr("y", function(d) { return y(d.bins); })
-              .attr("height", function(d) { return height - y(d.bins); });
+              .enter()
+
+        recEnter.append("rect")
+                .style("fill", "steelblue")
+                .attr("x", function(d) { return x(d.ticks); })
+                .attr("width", x.rangeBand())
+                .attr("y",  function(d) { return y(d.bins); })
+                .attr("height", function(d) { return height - y(d.bins); })
+                .on('mouseover', function(){d3.select(this).style("fill", "green")})
+                .on('mouseout', function(){d3.select(this).style("fill", "steelblue")})
+
+        recEnter.append("text")
+                .text(function(d) { return d.bins; })
+                .attr("x", function(d) { return x(d.ticks)+ 25; })
+                .attr("y", function(d) { return y(d.bins) - 5; })//function(d) { return y(d.bins); })
+                .style("stroke", "#1a3ccb");
       });
     });
   });
