@@ -4,10 +4,18 @@ $(function(){
     $.getJSON('/features',function(data){
       //retrive features from json, and then generate
       //a list of radio button for each features
+      $("#generate").show()
+      
+      var flag = $("[name='features']").length
+      if (flag >= 1){
+        $("[name='features']").remove()
+        $("[name='fname']").remove()
+      }
      for (i in data.features){
-       var radioBtn = $('<input type="radio" name="features" value= '+data.features[i]+'><button>'+data.features[i]+'</button>'+',');
+       var radioBtn = $('<input type="radio" name="features" value= '+data.features[i]+'><button name=fname>'+data.features[i]+'</button>'+',');
        radioBtn.appendTo('#radiocheck');
      };
+
     //ajax post the selected feature to server
      $('#radiocheck input').change(function(){
        var data = {'selected': $('input[name=features]:checked', '#radiocheck').val()};

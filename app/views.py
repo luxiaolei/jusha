@@ -26,6 +26,8 @@ class selfgloablvars:
         self.selected_feature = 1
         self.mappernew = 1
         self.feature_his = 1
+        self.inputInterval = 'Not Signed'
+        self.inputOverlap = 'Not Signed'
 
 selfvars = selfgloablvars()
 
@@ -101,6 +103,23 @@ def feature_ajax():
 
     #return render_template(url_for('newjson'), json.dumps(newmapperJson['vertices'])
 
+
+@app.route('/paramsAjax', methods=['POST'])
+def paramsAjax():
+    """
+    *recieve params from clients
+    *call mapper function to generate new Json
+    """
+    #if request.method == 'POST'
+    try:
+        #set input params to selfvars
+        selfvars.inputInterval = int(request.json['interval'])
+        selfvars.inputOverlap = float(request.json['overlap'])
+        return json.dumps({'ans': str(type(selfvars.inputInterval))})
+    except Exception,e:
+        return json.dumps({'ans':str(e)})
+
+
 @app.route('/newjson')
 def newjson():
     """
@@ -109,67 +128,58 @@ def newjson():
     return json.dumps(selfvars.mappernew)
 
 
-@app.route('/', methods=['GET', 'POST'])
-def upload_file():
-
-    if request.method == 'POST':
-        try:
-        #file uploading
-            file = request.files['file']
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                message = 'Successfully Uploaded!'
-                session['filename'] = filename
-                #retrive the column names and pass to /
-                #pop index col
-                FirstRowisIndex= False
-                if FirstRowisIndex:
-                    df = pd.read_csv('uploads/'+filename, index_col=0)
-                else:
-                    df = pd.read_csv('uploads/'+filename)
-
-                #store the col into selfvars obj
-                selfvars.features = df.columns.values
-                selfvars.df = df
-
-                return render_template('index.html', \
-                message = message,  columns= col, submitflag= True)
+@app.route('/uploadFile', methods= ['POST'])
+def uploadFile():
+    try:
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            message = 'Successfully Uploaded!'
+            session['filename'] = filename
+            #retrive the column names and pass to /
+            #pop index col
+            FirstRowisIndex= False
+            if FirstRowisIndex:
+                df = pd.read_csv('uploads/'+filename, index_col=0)
             else:
-                message = 'Failed upload! File type is not supported!'
-                return render_template('index.html', message = message)
-        except Exception:
-            try:
-                inputrange = request.form['range']
-                inputrange = [float(i) for i in inputrange.split(',')]
-                df = selfvars.df
-                sf = selfvars.selected_feature
-                rangeindex = df.ix[(df[sf] >= inputrange[0]) & (df[sf] <= inputrange[-1])].index.values
-                """
-                with open('mapperoutput.json', 'rb') as f:
-                    mapperoutput = json.load(f)
+                df = pd.read_csv('uploads/'+filename)
 
-                recolor_mapperoutput(mapperoutput)
-                """
-                return render_template('index.html', columns= selfvars.features,\
-                        submitflag=True, featureflag= True, selected_f= selfvars.selected_feature,\
-                        inputrange = inputrange, rangeindex = rangeindex)
-                #feture range selection
-                pass
-            except Exception, e:
-                return render_template('index.html', error = str(e))
-                pass
-    else: return render_template('index.html')
+            #store the col into selfvars obj
+            selfvars.features = df.columns.values
+            selfvars.df = df
+
+        return json.dumps({'result': 'Successfully Uploaded!'})
+    except Exception,e:
+        return json.dumps(str(e))
+    return json.dumps({'ans': 'failed!'})
+
+
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    return render_template('index.html')
 
 
 @app.route('/mapperjson')
-def mapper_cluster():
-    #in_file_dir = '/Users/xl-macbook/documents/project/flask/mapper_web/upload'
+def mapper_cluster(intervals=8, overlap=50.0):
+    #type check inputParams, string for default,
+    #float for user inputed
+
+    if type(selfvars.inputInterval) == int:
+        intervals = selfvars.inputInterval
+        overlap = selfvars.inputOverlap
+        print intervals
+        print overlap
+
+    print type(intervals),type(overlap)
+    print ">>"*30
+    print selfvars.inputInterval
+    print selfvars.inputOverlap
     in_file = [f for f in os.listdir('uploads/')]
     assert len(in_file) > 0
-
     in_file = 'uploads/' + session['filename']
-
+    print "*"*10
+    print 'File %s is loaded!'%session['filename']
     #data = np.loadtxt(str(in_file), delimiter=',', dtype=np.float)
     data = selfvars.df.values
 
@@ -194,7 +204,7 @@ def mapper_cluster():
     '''
         Step 4: Mapper parameters
     '''
-    cover = mapper.cover.cube_cover_primitive(intervals=8, overlap=50.0)
+    cover = mapper.cover.cube_cover_primitive(intervals, overlap)
     cluster = mapper.single_linkage()
     if not is_vector_data:
         metricpar = {}

@@ -69,26 +69,38 @@
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">文件上传</li>
-            <form action="/" method=post enctype=multipart/form-data>
-              <div class="span8">
-                <input calss="btn" type=file id=test name=file value=Choose>
-              </div>
-              <div class="span4">
-                <input class="btn" type=submit id=filesubmit2 value=Upload>
-              </div>
+
+            <form id="upload-file" method="post" enctype="multipart/form-data">
+                <fieldset>
+                    <a>Select a file</a>
+
+                    <input name="file" type="file" value="Choose..">
+                </fieldset>
+
             </form>
 
-            <li class="nav-header">数据搜索</li>
+
+            <li class="nav-header">输入参数</li>
+            <a>Interval: </a>
+            <input type='text' name='params' id='interval' value='7' maxlength="2" style='width: 60px; height:25px' />
+            <a>overlap:</a>
+            <input type='text' name='params' id='overlap' value = '30' maxlength="2" style='width: 60px;height:25px'/>
+            <button class="btn" id="paramsGenerate">Start Clustering!</button>
             <br/>
-            Search Data:
-            <input type='text' name='search' id='searchbox' />
-            <button class="btn" id='searchsubmit'>Search!</button>
+
+            <li class="nav-header">数据搜索</li>
+
+            <li>
+              <a>Search Data:</a>
+              <input type='text' name='search' id='searchbox' style='width: 60px; height:25px'/>
+              <button class="btn" id='searchsubmit'>Search!</button>
+            </li>
 
             <li class="nav-header">选择特征</li>
             <button class="btn" id=showfeature >Show Features</button>
 
             <div class=options id="radiocheck"></div>
-            <button class="btn" id="generate" value=refresh>Selete Nodes</button>
+            <button class="btn" id="generate" style="display:none">Selete Nodes</button>
 
 
           </ul>
@@ -110,6 +122,8 @@
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <script src="{{ url_for('static', filename = 'js/force_layout.js') }}" charset="utf-8"></script>
   <script src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename = 'js/params.js') }}"></script>
+
 </body>
 
 </html>
