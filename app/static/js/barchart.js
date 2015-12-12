@@ -1,5 +1,6 @@
-$(function(){
-  $("#generate").bind('click', function(){
+var barChart = function(){
+  //fire
+  $("[name='features']").bind('click', function(){
       //var width = $("#barchart").width();
       //console.log(width)
       var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -103,4 +104,4 @@ $(function(){
                 })
       });
     });
-  });
+  };
