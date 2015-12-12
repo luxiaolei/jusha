@@ -7,10 +7,11 @@ var runClustering = function(){
   }
 
   var mappersvg = d3.select("#graph")
-      .append("svg")
-  
-  var width = $("svg").parent().width();
-  var height = $("svg").parent().height();
+      .append("svg")//.append('div')
+                    //.attr('id', 'members')
+
+  var width = 540//$("svg").parent().width();
+  var height = 380//$("svg").parent().height();
 
   mappersvg.attr("width", width)
             .attr("height", height)
@@ -121,12 +122,15 @@ var runClustering = function(){
 
 
         force.on("tick", function () {
+
         	link.attr("x1", function(e) { return e.source.x; })
               .attr("y1", function(e) { return e.source.y; })
               .attr("x2", function(e) { return e.target.x; })
               .attr("y2", function(e) { return e.target.y; });
         	node.attr("cx", function(e) { return e.x; })
               .attr("cy", function(e) { return e.y; });
+          node[0].x = width/2
+          node[0].y = height/2
         });
 
       });

@@ -157,16 +157,13 @@ def uploadFile():
                 df = pd.read_csv('uploads/'+filename, index_col=0)
             else:
                 df = pd.read_csv('uploads/'+filename)
-
             #store the col into selfvars obj
             selfvars.features = df.columns.values
             selfvars.df = df
-
         return json.dumps({'result': 'Successfully Uploaded!'})
     except Exception,e:
         return json.dumps(str(e))
     return json.dumps({'ans': 'failed!'})
-
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -177,7 +174,6 @@ def index():
 def mapper_cluster(intervals=8, overlap=50.0):
     #type check inputParams, string for default,
     #float for user inputed
-
     if type(selfvars.inputInterval) == int:
         intervals = selfvars.inputInterval
         overlap = selfvars.inputOverlap
@@ -277,13 +273,3 @@ def mapper_cluster(intervals=8, overlap=50.0):
     with open('mapperoutput.json', 'wb') as f:
         json.dump(G, f)
     return json.dumps(G)
-    """
-    if selfvars.mappernew == 1:
-        #first time initiate the graph
-        G = to_d3js_graph(mapper_output)
-        with open('mapperoutput.json', 'wb') as f:
-            json.dump(G, f)
-    else:
-        G = selfvars.mappernew
-    return json.dumps(G)
-    """
