@@ -43,19 +43,6 @@ var runClustering = function(){
       	.links(edges)
       	.start();
 
-      /*
-      d3.select(".changecolor")
-        .on('click',function(){
-            d3.json("/newjson",function(d){
-                var nodes = d['vertices']
-                var node = mappersvg.selectAll(".node")
-                node
-                .data(nodes)
-                .style('fill', function(e) { return fscale(e.attribute);})
-              });
-            });
-      */
-
       var link = mappersvg.selectAll(".link")
       	.data(edges)
       	.enter().append("line")
@@ -79,6 +66,7 @@ var runClustering = function(){
       	    $("#members").html(members_string);
       	})
 
+
       	//.call(force.drag)  ;
 
       var label = node.append("text")
@@ -97,11 +85,13 @@ var runClustering = function(){
       	node.attr("cx", function(e) { return e.x; })
                   .attr("cy", function(e) { return e.y; });
       });
+      //setTimeout(force.stop(), 6000)
   });
 
 
   d3.select("#generate")
     .on('click',function(){
+      force.stop()
       var refreshGraph = function(){
         d3.json("/newjson",function(d){
           var nodes = d['vertices'];
@@ -129,8 +119,7 @@ var runClustering = function(){
               .attr("y2", function(e) { return e.target.y; });
         	node.attr("cx", function(e) { return e.x; })
               .attr("cy", function(e) { return e.y; });
-          node[0].x = width/2
-          node[0].y = height/2
+
         });
 
       });

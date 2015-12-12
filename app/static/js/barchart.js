@@ -3,7 +3,7 @@ $(function(){
       //var width = $("#barchart").width();
       //console.log(width)
       var margin = {top: 20, right: 20, bottom: 30, left: 40},
-          width = 760 - margin.left - margin.right,
+          width = 560 - margin.left - margin.right,
           height = 200 - margin.top - margin.bottom;
 
       var x = d3.scale.ordinal()
@@ -14,7 +14,9 @@ $(function(){
 
       var xAxis = d3.svg.axis()
           .scale(x)
-          .orient("bottom");
+          .orient("bottom")
+
+          //.attr('transform', 'rotate(45)');
 
       var yAxis = d3.svg.axis()
           .scale(y)
@@ -45,7 +47,11 @@ $(function(){
         svg.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
+            .call(xAxis).attr('height', 150).selectAll("text")
+                        .style("text-anchor", "middle")
+                        //.attr("dx", "-.2em")
+                        //.attr("dy", ".15em")
+                        .attr('transform', 'rotate(-15)');
 
         svg.append("g")
             .attr("class", "y axis")
@@ -81,7 +87,7 @@ $(function(){
 
         recEnter.append("text")
                 .text(function(d) { return d.bins; })
-                .attr("x", function(d) { return x(d.ticks)+ 25; })
+                .attr("x", function(d) { return x(d.ticks)+ 7; })
                 .attr("y", function(d) { return y(d.bins) - 5; })//function(d) { return y(d.bins); })
                 .style("stroke", "#1a3ccb")
                 .on('mouseover', function(d){
