@@ -67,14 +67,34 @@ $(function(){
                 .attr("width", x.rangeBand())
                 .attr("y",  function(d) { return y(d.bins); })
                 .attr("height", function(d) { return height - y(d.bins); })
-                .on('mouseover', function(){d3.select(this).style("fill", "green")})
-                .on('mouseout', function(){d3.select(this).style("fill", "steelblue")})
+                .on('mouseover', function(d){
+                  //change color of the rect
+                  //search data in the rect
+                  searchFunc(d.binData)
+                  d3.select(this).style("fill", "green")
+                })
+                .on('mouseout', function(){
+                  //change back color, both for the bar and nodes
+                  d3.select('svg').selectAll(".node").transition().style('opacity', 1)
+                  d3.select(this).style("fill", "steelblue")
+                })
 
         recEnter.append("text")
                 .text(function(d) { return d.bins; })
                 .attr("x", function(d) { return x(d.ticks)+ 25; })
                 .attr("y", function(d) { return y(d.bins) - 5; })//function(d) { return y(d.bins); })
-                .style("stroke", "#1a3ccb");
+                .style("stroke", "#1a3ccb")
+                .on('mouseover', function(d){
+                  //change color of the rect
+                  //search data in the rect
+                  searchFunc(d.binData)
+                  d3.select(this).style("fill", "green")
+                })
+                .on('mouseout', function(){
+                  //change back color, both for the bar and nodes
+                  d3.select('svg').selectAll(".node").transition().style('opacity', 1)
+                  d3.select(this).style("fill", "steelblue")
+                })
       });
     });
   });

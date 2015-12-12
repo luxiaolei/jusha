@@ -87,17 +87,30 @@ def feature_ajax():
     array_his = np.histogram(array)
     array_his = [list(i) for i in array_his]
 
+    def getDatainBins(ticks):
+        """
+        ticks: [(lowerbound, upperbound),..]
+        return a list of lists which contains data index for
+        each bins
+        """
+        binData = []
+        df, col = selfvars.df, selfvars.selected_feature
+        for bounds in ticks:
+            lower, upper= bounds
+            dataIndex = df.ix[(df[col] >= float(lower)) & (df[col] < float(upper))].index.values
+            binData.append(list(dataIndex))
+        return binData
+
     bins = array_his[0]
     ticks = array_his[1]
     ticks = ['%.2f'%i for i in ticks]
     ticks = zip(ticks[:-1], ticks[1:])
+    binData = getDatainBins(ticks)
 
     selfvars.feature_his = []
-    for v in zip(bins, ticks):
-        dic = {'bins':v[0], 'ticks':v[1]}
+    for k, v in enumerate(zip(bins, ticks)):
+        dic = {'bins':v[0], 'ticks':v[1], 'binData':binData[k]}
         selfvars.feature_his.append(dic)
-
-    print selfvars.feature_his
 
     return json.dumps({'ans':'1'})
 
