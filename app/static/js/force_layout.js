@@ -34,7 +34,6 @@ var runClustering = function(){
     	nodeattr.add(nodes[n].attribute);
         }
 
-
       var fscale = d3.scale.linear()
       	.range(['blue','red'])
       	.domain([0,d3.max(nodeattr.values())]);
@@ -59,12 +58,17 @@ var runClustering = function(){
       	.style("fill", function(e) { return fscale(e.attribute);})
       	.text(function(e){return e.members.length; })
       	.on('mouseover', function(e) {
+          var svgFlag = $('svg').length
+          if (svgFlag > 1){mouseoverHighlightBars(e.members)}
+
           var members_string = 'The '+e.index+'th node contains:';
           for (i in e.members){
             members_string+= "," + e.members[i]
           }
       	    $("#members").html(members_string);
       	})
+        .on('mouseout',function(){d3.selectAll('rect').style('fill', 'steelblue')})
+
 
 
       	//.call(force.drag)  ;
@@ -127,4 +131,26 @@ var runClustering = function(){
       refreshGraph()
   });
 
+}
+
+var mouseoverHighlightBars = function(datalist){
+  //datalist: dataIndex
+  //when mouseover nodes, hightlights bars contain data
+  d3.json('/bins',function(error,data){
+    if (error) throw error;
+    var selectedBinIndexs = [];
+    for (iN in datalist){
+      for (iB in data){
+        var flag = $.inArray(datalist[iN], data[iB].binData)
+        var pushedAlready = $.inArray(iB, selectedBinIndexs)
+        if (flag != -1 ){selectedBinIndexs.push(parseInt(iB))}
+      }
+    }
+    console.log(selectedBinIndexs)
+    d3.selectAll('rect')
+      .filter(function(d,i){
+        if ($.inArray(i, selectedBinIndexs) == -1){return false}else{return true}
+      })
+      .style('fill', 'green')
+  })
 }
