@@ -5,7 +5,7 @@ $(function(){
       //retrive features from json, and then generate
       //a list of radio button for each features
       $("#generate").show()
-      
+
       var flag = $("[name='features']").length
       if (flag >= 1){
         $("[name='features']").remove()

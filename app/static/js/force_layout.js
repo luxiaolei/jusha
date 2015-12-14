@@ -29,14 +29,29 @@ var runClustering = function(){
   d3.json("/mapperjson", function(d) {
       var nodes = d['vertices'];
       var edges = d['edges'];
-      var nodeattr = d3.set();
+
+      var nodeattr = [];
       for(n in nodes) {
-    	nodeattr.add(nodes[n].attribute);
+    	nodeattr.push(nodes[n].attribute);
         }
+
+      var linkColor = []//d3.set();
+      for(l in edges){
+        linkColor.push(edges[l].wt)
+
+      }
 
       var fscale = d3.scale.linear()
       	.range(['blue','red'])
-      	.domain([0,d3.max(nodeattr.values())]);
+      	.domain([0,d3.max(nodeattr)]);
+
+      var lscale = d3.scale.linear()
+        .range(['blue', 'red'])
+        .domain([0, d3.max(linkColor)]);
+
+      var lwscale = d3.scale.linear()
+        .range([0.5, 3.5])
+        .domain([0, d3.max(linkColor)]);
 
       force.nodes(nodes)
       	.links(edges)
@@ -46,7 +61,8 @@ var runClustering = function(){
       	.data(edges)
       	.enter().append("line")
       	.attr("class","link")
-        .style('stroke', "#999")
+        .style('stroke', function(e){return lscale(e.wt);})//"#999")
+        .style('stroke-width', function(e){return lwscale(e.wt);})
         .style('stroke-opacity', 0.6);
 
       var node = mappersvg.selectAll(".node")
@@ -99,13 +115,16 @@ var runClustering = function(){
       var refreshGraph = function(){
         d3.json("/newjson",function(d){
           var nodes = d['vertices'];
-          var nodeattr = d3.set();
+
+
+          var nodeattr = [];
           for(n in nodes) {
-            nodeattr.add(nodes[n].attribute);
+            nodeattr.push(nodes[n].attribute);
           }
           var fscale = d3.scale.linear()
             .range(['blue','red'])
-            .domain([0,d3.max(nodeattr.values())]);
+            .domain([0,d3.max(nodeattr)]);
+
           var link = mappersvg.selectAll(".link")
           var node = mappersvg.selectAll(".node")
 
