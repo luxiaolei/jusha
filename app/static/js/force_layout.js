@@ -11,7 +11,7 @@ var runClustering = function(){
                     //.attr('id', 'members')
 
   var width = 540//$("svg").parent().width();
-  var height = 380//$("svg").parent().height();
+  var height = 400//$("svg").parent().height();
 
   mappersvg.attr("width", width)
             .attr("height", height)

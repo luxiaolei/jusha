@@ -10,7 +10,7 @@ import mapper
 import numpy as np
 import os.path as op
 import pandas as pd
-
+from scipy import stats
 
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 ALLOWED_EXTENSIONS = set(['txt', 'csv'])
@@ -273,3 +273,27 @@ def mapper_cluster(intervals=8, overlap=50.0):
     with open('mapperoutput.json', 'wb') as f:
         json.dump(G, f)
     return json.dumps(G)
+
+def statistical_tests(verticies):
+    """
+    Input is the vertices list, in which element contain members
+    Return a list of ranked features, and p-value for t-unpaied test
+    and ks-2samples test
+    """
+
+    dataIndexesList = [i.members for i in vertices]
+    testsRes = []
+    for col in selfvars.features:
+        for pts in dataIndexesList:
+            if len(pts) < 10:
+                continue
+            else:
+                #assert len(pts) > 10
+                targetSerie = selfvars.df['col']
+                inNodeArray = targetSerie.ix[targetSerie.isin(pts)].values
+                notinNodeArray = targetSerie.ix[~targetSerie.isin(pts)].values
+
+                P4ttest = stats.ttest_ind(inNodeArray, notinNodeArray)[-1]
+                P4kstest = stats.ks_2samp(inNodeArray, notinNodeArray)[-1]
+
+                ans = {}
