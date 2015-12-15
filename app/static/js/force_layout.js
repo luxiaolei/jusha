@@ -1,5 +1,6 @@
 var runClustering = function(){
 
+    $("#generate").hide()
   var svgFlag = $("#graph").children("svg").length
   if (svgFlag == 1){
     //remove the previous clusters
@@ -109,8 +110,14 @@ var runClustering = function(){
   });
 
 
-  d3.select("#generate")
-    .on('click',function(){
+
+
+  //var RadioBtns = d3.selectAll("input[name='features']")
+  //console.log(RadioBtns)
+
+  //RadioBtns.each(function(d){
+  //  console.log(this)
+    d3.select('#generate').on('click',function(){
       force.stop()
       var refreshGraph = function(){
         d3.json("/newjson",function(d){
@@ -132,23 +139,21 @@ var runClustering = function(){
           node
           .data(nodes)
           .style('fill', function(e) { return fscale(e.attribute);})
-
-
         force.on("tick", function () {
 
-        	link.attr("x1", function(e) { return e.source.x; })
+          link.attr("x1", function(e) { return e.source.x; })
               .attr("y1", function(e) { return e.source.y; })
               .attr("x2", function(e) { return e.target.x; })
               .attr("y2", function(e) { return e.target.y; });
-        	node.attr("cx", function(e) { return e.x; })
+          node.attr("cx", function(e) { return e.x; })
               .attr("cy", function(e) { return e.y; });
-
         });
 
       });
     };
       refreshGraph()
-  });
+    })
+  //});
 
 }
 
