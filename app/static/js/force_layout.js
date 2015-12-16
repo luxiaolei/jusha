@@ -30,6 +30,7 @@ var runClustering = function(){
   d3.json("/mapperjson", function(d) {
       var nodes = d['vertices'];
       var edges = d['edges'];
+      var statests = d['statisticT']
 
       var nodeattr = [];
       for(n in nodes) {
@@ -75,6 +76,9 @@ var runClustering = function(){
       	.style("fill", function(e) { return fscale(e.attribute);})
       	.text(function(e){return e.members.length; })
       	.on('mouseover', function(e) {
+          mouseoverShowExaplain(e,statests)
+
+          console.log(e.index)
           var svgFlag = $('svg').length
           if (svgFlag > 1){mouseoverHighlightBars(e.members)}
 
@@ -84,7 +88,10 @@ var runClustering = function(){
           }
       	    $("#members").html(members_string);
       	})
-        .on('mouseout',function(){d3.selectAll('rect').style('fill', 'steelblue')})
+        .on('mouseout',function(){
+          //$('#explain').children().remove()
+          d3.selectAll('rect').style('fill', 'steelblue')
+        })
 
 
 
@@ -98,13 +105,12 @@ var runClustering = function(){
 
 
       force.on("tick", function () {
-      	link.attr("x1", function(e) { return e.source.x; })
-                  .attr("y1", function(e) { return e.source.y; })
-                  .attr("x2", function(e) { return e.target.x; })
-                  .attr("y2", function(e) { return e.target.y; });
-
-      	node.attr("cx", function(e) { return e.x; })
-                  .attr("cy", function(e) { return e.y; });
+      	link.attr("x1", function(e) { return e.source.x -100; })
+            .attr("y1", function(e) { return e.source.y - 50; })
+            .attr("x2", function(e) { return e.target.x -100; })
+            .attr("y2", function(e) { return e.target.y - 50; });
+      	node.attr("cx", function(e) { return e.x -100; })
+                  .attr("cy", function(e) { return e.y - 50; });
       });
       //setTimeout(force.stop(), 6000)
   });
@@ -170,11 +176,37 @@ var mouseoverHighlightBars = function(datalist){
         if (flag != -1 ){selectedBinIndexs.push(parseInt(iB))}
       }
     }
-    console.log(selectedBinIndexs)
+    //console.log(selectedBinIndexs)
     d3.selectAll('rect')
       .filter(function(d,i){
         if ($.inArray(i, selectedBinIndexs) == -1){return false}else{return true}
       })
       .style('fill', 'green')
   })
+}
+
+var mouseoverShowExaplain = function(e,statests){
+  //when mouseover nodes, Get explainjason from the server
+  //show the statistic test results by nodes index
+  var tests = statests[e.index]
+  //console.log((tests).constructor === Number)
+  if ((tests).constructor === Number){
+    var warning = $('<li>This node contain too few data:'+tests+'</li>')
+    warning.appendTo('#explain')
+
+  }else{
+    for (f in tests){
+      var fhead = $('<li><a class="btn">'+f+'</a></li>')
+      var ttest = $('<li>'+tests[f][0]+'</li>')
+      var kstest = $('<li>'+tests[f][1]+'</li>')
+      var num = $('<li>'+tests[f][2]+'</li>')
+      ttest.appendTo(fhead)
+      kstest.appendTo(fhead)
+      num.appendTo(fhead)
+
+      fhead.appendTo('#explain')
+    }
+    //var result = $('<li>P value for </li>')
+  }
+
 }

@@ -242,6 +242,9 @@ def mapper_cluster(intervals=8, overlap=50.0):
         G['edges'] = [{'source': e[0], 'target': e[1], 'wt':
                        mapper_output.simplices[1][e]} for e in
                       mapper_output.simplices[1].keys()]
+
+        G['statisticT'] = statistical_tests(G['vertices'])
+        
         """
         G['subnodes'] = [i['members'] for i in G['vertices']]
 
@@ -269,31 +272,41 @@ def mapper_cluster(intervals=8, overlap=50.0):
         return G
 
 
+
+
     G = to_d3js_graph(mapper_output)
+    #for i in G.keys(): print i
+
     with open('mapperoutput.json', 'wb') as f:
         json.dump(G, f)
     return json.dumps(G)
 
-def statistical_tests(verticies):
+def statistical_tests(vertices):
     """
     Input is the vertices list, in which element contain members
     Return a list of ranked features, and p-value for t-unpaied test
     and ks-2samples test
     """
 
-    dataIndexesList = [i.members for i in vertices]
+    dataIndexesList = [i['members'] for i in vertices]
     testsRes = []
-    for col in selfvars.features:
-        for pts in dataIndexesList:
-            if len(pts) < 10:
-                continue
-            else:
-                #assert len(pts) > 10
-                targetSerie = selfvars.df['col']
-                inNodeArray = targetSerie.ix[targetSerie.isin(pts)].values
-                notinNodeArray = targetSerie.ix[~targetSerie.isin(pts)].values
-
+    for pts in dataIndexesList:
+        ansDic = {}
+        if len(pts) < 10:
+            print 'too small!!!!: %s' %len(pts)
+            testsRes.append(len(pts))
+            continue
+        else:
+            for col in selfvars.features:
+                targetSerie = selfvars.df[col]
+                inNodeArray = targetSerie.ix[targetSerie.index.isin(pts)].values
+                notinNodeArray = targetSerie.ix[~targetSerie.index.isin(pts)].values
                 P4ttest = stats.ttest_ind(inNodeArray, notinNodeArray)[-1]
                 P4kstest = stats.ks_2samp(inNodeArray, notinNodeArray)[-1]
+                ansDic[col] = [P4ttest, P4kstest, len(pts)]
 
-                ans = {}
+            testsRes.append(ansDic)
+    #print testsRes
+    #print 'there r %s doable nodes'%len(testsRes)
+    #print 'there r %s nodes '%len(dataIndexesList)
+    return testsRes

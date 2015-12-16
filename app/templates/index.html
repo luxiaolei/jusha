@@ -65,17 +65,24 @@
 <li>
 
   <div class="container" style="height: 700px">
-    <div class="span7" style="height: 500px">
+    <div class="span2" style="height: 500px">
+
+        <div >
+          <ul id='explain' class="nav nav-list">
+
+          </ul>
+      </div>
+    </div>
+
+    <div class="span6" style="height: 500px">
 
         <div id="graph" style="height: 400px">
         </div>
         <div id='barchart' style="width: 380px"></div>
-
-
     </div>
 
     <div class="row-fluid">
-      <div class="span5">
+      <div class="span4">
         <!--Sidebar content-->
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
@@ -93,9 +100,9 @@
 
             <li class="nav-header">输入参数</li>
             <a>Interval: </a>
-            <input type='text' name='params' id='interval' value='7' maxlength="2" style='width: 60px; height:25px' />
+            <input type='text' name='params' id='interval' value='7' maxlength="4" style='width: 60px; height:25px' />
             <a>overlap:</a>
-            <input type='text' name='params' id='overlap' value = '30' maxlength="2" style='width: 60px;height:25px'/>
+            <input type='text' name='params' id='overlap' value = '30' maxlength="4" style='width: 60px;height:25px'/>
             <button class="btn" id="paramsGenerate">Start Clustering!</button>
             <br/>
 
@@ -131,7 +138,7 @@
 
 
 
-  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="{{ url_for('static', filename = 'js/d3.v3.js') }}" charset="utf-8"></script>
   <script src="{{ url_for('static', filename = 'js/force_layout.js') }}" charset="utf-8"></script>
   <script src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script>
   <script src="{{ url_for('static', filename = 'js/params.js') }}"></script>

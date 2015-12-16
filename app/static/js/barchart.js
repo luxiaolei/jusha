@@ -1,6 +1,6 @@
 var barChart = function(){
   //fire
-  $("[name='features']").bind('click', function(){
+  $("#generate").bind('click', function(){
       //var width = $("#barchart").width();
       //console.log(width)
       var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -82,7 +82,7 @@ var barChart = function(){
                 })
                 .on('mouseout', function(){
                   //change back color, both for the bar and nodes
-                  d3.select('svg').selectAll(".node").transition().style('opacity', 1)
+                  d3.select('svg').selectAll(".node").style('opacity', 1)
                   d3.select(this).style("fill", "steelblue")
                 })
 
@@ -99,7 +99,7 @@ var barChart = function(){
                 })
                 .on('mouseout', function(){
                   //change back color, both for the bar and nodes
-                  d3.select('svg').selectAll(".node").transition().style('opacity', 1)
+                  d3.select('svg').selectAll(".node").style('opacity', 1)
                   d3.select(this).style("fill", "steelblue")
                 })
       });
