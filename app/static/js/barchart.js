@@ -70,7 +70,7 @@ var barChart = function(){
 
         recEnter.append("rect")
                 .style("fill", "steelblue")
-                .attr("x", function(d) { return x(d.ticks); })
+                .attr("x", function(d) { return x(d.ticks) ; })
                 .attr("width", x.rangeBand())
                 .attr("y",  function(d) { return y(d.bins); })
                 .attr("height", function(d) { return height - y(d.bins); })
@@ -95,6 +95,7 @@ var barChart = function(){
                   //change color of the rect
                   //search data in the rect
                   searchFunc(d.binData)
+
                   d3.select(this).style("fill", "green")
                 })
                 .on('mouseout', function(){

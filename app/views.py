@@ -88,6 +88,7 @@ def feature_ajax():
     array_his = [list(i) for i in array_his]
 
     def getDatainBins(ticks):
+        print ticks
         """
         ticks: [(lowerbound, upperbound),..]
         return a list of lists which contains data index for
@@ -95,17 +96,24 @@ def feature_ajax():
         """
         binData = []
         df, col = selfvars.df, selfvars.selected_feature
-        for bounds in ticks:
+        for k, bounds in enumerate(ticks):
             lower, upper= bounds
-            dataIndex = df.ix[(df[col] >= float(lower)) & (df[col] < float(upper))].index.values
+            if k == len(ticks)-1:
+                #last bar, should inclue the last number
+                dataIndex = df.ix[(df[col] >= float(lower))& (df[col] <= float(upper))].index.values
+            else:
+                dataIndex = df.ix[(df[col] >= float(lower)) & (df[col] < float(upper))].index.values
             binData.append(list(dataIndex))
         return binData
 
     bins = array_his[0]
-    ticks = array_his[1]
-    ticks = ['%.2f'%i for i in ticks]
+    ticksOrigin = array_his[1]
+    ticksOrigin = zip(ticksOrigin[:-1], ticksOrigin[1:])
+    binData = getDatainBins(ticksOrigin)
+
+    ticks = ['%.2f'%i for i in array_his[1]]
     ticks = zip(ticks[:-1], ticks[1:])
-    binData = getDatainBins(ticks)
+
 
     selfvars.feature_his = []
     for k, v in enumerate(zip(bins, ticks)):
@@ -244,7 +252,7 @@ def mapper_cluster(intervals=8, overlap=50.0):
                       mapper_output.simplices[1].keys()]
 
         G['statisticT'] = statistical_tests(G['vertices'])
-        
+
         """
         G['subnodes'] = [i['members'] for i in G['vertices']]
 
