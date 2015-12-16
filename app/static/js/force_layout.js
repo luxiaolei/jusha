@@ -43,6 +43,11 @@ var runClustering = function(){
 
       }
 
+      var nodeSize = []
+      for(s in nodes){
+        nodeSize.push(nodes[s].members.length)
+      }
+
       var fscale = d3.scale.linear()
       	.range(['blue','red'])
       	.domain([0,d3.max(nodeattr)]);
@@ -54,6 +59,10 @@ var runClustering = function(){
       var lwscale = d3.scale.linear()
         .range([0.5, 3.5])
         .domain([0, d3.max(linkColor)]);
+
+      var Sscale = d3.scale.linear()
+        .range([3, 12])
+        .domain([1, d3.max(nodeSize)])
 
       force.nodes(nodes)
       	.links(edges)
@@ -72,7 +81,7 @@ var runClustering = function(){
       	.enter().append("circle")
       	.attr("class", "node")
         .attr("id", function(e){return 'circleid_'+e.index})
-      	.attr("r", function(e) { return Math.min(10,(3+Math.sqrt(e.members.length))); })
+      	.attr("r", function(e) { return Sscale(e.members.length) })//Math.min(10,(3+Math.sqrt(e.members.length))); })
       	.style("fill", function(e) { return fscale(e.attribute);})
       	.text(function(e){return e.members.length; })
       	.on('mouseover', function(e) {
@@ -89,7 +98,7 @@ var runClustering = function(){
       	    $("#members").html(members_string);
       	})
         .on('mouseout',function(){
-          //$('#explain').children().remove()
+          $('#explain').children().remove()
           d3.selectAll('rect').style('fill', 'steelblue')
         })
 
