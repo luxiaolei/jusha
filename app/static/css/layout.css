@@ -16,3 +16,5 @@
   height: 50px;
   align-content: center;
 }
+
+.style("background-color", 'red')

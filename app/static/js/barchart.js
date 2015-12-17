@@ -1,5 +1,5 @@
 $(function(){
-  $("#generate").bind('click',function(){
+  $("#genbar").bind('click',function(){
     console.log($('svg').length)
     if($('svg').length == 3){
     $('svg').last().remove();

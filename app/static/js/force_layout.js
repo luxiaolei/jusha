@@ -8,7 +8,8 @@ var runClustering = function(){
   }
 
   var mappersvg = d3.select("#graph")
-      .append("svg")//.append('div')
+      .append("svg")
+      //.style("background-color", 'black')//.append('div')
                     //.attr('id', 'members')
 
   var width = 540//$("svg").parent().width();
