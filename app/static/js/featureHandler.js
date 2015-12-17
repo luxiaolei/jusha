@@ -29,9 +29,8 @@ $(function(){
          }
        });
       });
-
     //draw bar chart!
-     barChart();
+     //barChart();
     });
   });
 });

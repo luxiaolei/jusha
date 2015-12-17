@@ -18,7 +18,7 @@ $(function(){
 
 $(function(){
   $("#paramsGenerate").bind('click',function(){
-
+    //$('#barchart').remove()
     //upload file first!
     var form_data = new FormData($('#upload-file')[0]);
     $.ajax({

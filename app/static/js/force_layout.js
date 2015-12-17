@@ -98,11 +98,9 @@ var runClustering = function(){
       	    $("#members").html(members_string);
       	})
         .on('mouseout',function(){
-          $('#explain').children().remove()
+          //$('#explain').children().remove()
           d3.selectAll('rect').style('fill', 'steelblue')
         })
-
-
 
       	//.call(force.drag)  ;
 
@@ -134,6 +132,7 @@ var runClustering = function(){
   //  console.log(this)
     d3.select('#generate').on('click',function(){
       force.stop()
+
       var refreshGraph = function(){
         d3.json("/newjson",function(d){
           var nodes = d['vertices'];
@@ -154,16 +153,6 @@ var runClustering = function(){
           node
           .data(nodes)
           .style('fill', function(e) { return fscale(e.attribute);})
-        force.on("tick", function () {
-
-          link.attr("x1", function(e) { return e.source.x; })
-              .attr("y1", function(e) { return e.source.y; })
-              .attr("x2", function(e) { return e.target.x; })
-              .attr("y2", function(e) { return e.target.y; });
-          node.attr("cx", function(e) { return e.x; })
-              .attr("cy", function(e) { return e.y; });
-        });
-
       });
     };
       refreshGraph()

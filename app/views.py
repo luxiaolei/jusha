@@ -28,6 +28,9 @@ class selfgloablvars:
         self.feature_his = 1
         self.inputInterval = 'Not Signed'
         self.inputOverlap = 'Not Signed'
+        self.binTicks = 'Not Signed'
+        self.binClicked = 'Not Signed'
+
 
 selfvars = selfgloablvars()
 
@@ -68,6 +71,35 @@ def send_bins():
     """
     return json.dumps(selfvars.feature_his)
 
+@app.route("/binClickedAjax",  methods=['POST','GET'])
+def binClicked():
+    """
+    recieve clicked bin index from client
+    assign the index to selvar.binclicked
+    to perform the sub barchart generation
+    """
+    binClicked = request.json['binClicked']
+    selfvars.binClicked = int(binClicked)
+    return json.dumps({'ans':1})
+
+@app.route('/binsSecondary')
+def binsSecondary():
+    """
+    send the secondary bar chart data to clients
+    """
+
+    clickeRange = selfvars.binTicks[selfvars.binClicked]
+    array = selfvars.df[selfvars.selected_feature]
+    if selfvars.binClicked == 9:
+        #the last bar
+        array = array.ix[(array >= clickeRange[0])]
+    else:
+        array = array.ix[(array >= clickeRange[0]) & (array < clickeRange[1])]
+    return json.dumps(binGen(array)[0])
+
+
+
+
 @app.route('/feature_ajax', methods=['POST','GET'])
 def feature_ajax():
     """
@@ -82,43 +114,10 @@ def feature_ajax():
         mapperoutput = json.load(f)
     recolor_mapperoutput(mapperoutput)
 
-    #update the selfvars.feature_his
+    #update the selfvars.feature_his and generate the
+    #primary barChart
     array = selfvars.df[selected_f]
-    array_his = np.histogram(array)
-    array_his = [list(i) for i in array_his]
-
-    def getDatainBins(ticks):
-        print ticks
-        """
-        ticks: [(lowerbound, upperbound),..]
-        return a list of lists which contains data index for
-        each bins
-        """
-        binData = []
-        df, col = selfvars.df, selfvars.selected_feature
-        for k, bounds in enumerate(ticks):
-            lower, upper= bounds
-            if k == len(ticks)-1:
-                #last bar, should inclue the last number
-                dataIndex = df.ix[(df[col] >= float(lower))& (df[col] <= float(upper))].index.values
-            else:
-                dataIndex = df.ix[(df[col] >= float(lower)) & (df[col] < float(upper))].index.values
-            binData.append(list(dataIndex))
-        return binData
-
-    bins = array_his[0]
-    ticksOrigin = array_his[1]
-    ticksOrigin = zip(ticksOrigin[:-1], ticksOrigin[1:])
-    binData = getDatainBins(ticksOrigin)
-
-    ticks = ['%.2f'%i for i in array_his[1]]
-    ticks = zip(ticks[:-1], ticks[1:])
-
-
-    selfvars.feature_his = []
-    for k, v in enumerate(zip(bins, ticks)):
-        dic = {'bins':v[0], 'ticks':v[1], 'binData':binData[k]}
-        selfvars.feature_his.append(dic)
+    selfvars.feature_his, selfvars.binTicks = binGen(array)
 
     return json.dumps({'ans':'1'})
 
@@ -289,6 +288,52 @@ def mapper_cluster(intervals=8, overlap=50.0):
         json.dump(G, f)
     return json.dumps(G)
 
+
+def binGen(array):
+    """
+    input an array
+    return a list of dicts for drawing barchart
+    """
+    array_his = np.histogram(array)
+    array_his = [list(i) for i in array_his]
+
+    def getDatainBins(ticks):
+        print ticks
+        """
+        ticks: [(lowerbound, upperbound),..]
+        return a list of lists which contains data index for
+        each bins
+        """
+        binData = []
+        for k, bounds in enumerate(ticks):
+            lower, upper= bounds
+            if k == len(ticks)-1:
+                #last bar, should inclue the last number
+                dataIndex = array.ix[(array >= float(lower))& (array <= float(upper))].index.values
+            else:
+                dataIndex = array.ix[(array >= float(lower)) & (array < float(upper))].index.values
+            binData.append(list(dataIndex))
+        return binData
+
+    bins = array_his[0]
+    ticksOrigin = array_his[1]
+    ticksOrigin = zip(ticksOrigin[:-1], ticksOrigin[1:])
+
+    binData = getDatainBins(ticksOrigin)
+    ticks = ['%.2f'%i for i in array_his[1]]
+    ticks = zip(ticks[:-1], ticks[1:])
+
+    feature_his = []
+    for k, v in enumerate(zip(bins, ticks)):
+        dic = {'bins':v[0], 'ticks':v[1], 'binData':binData[k]}
+        feature_his.append(dic)
+    return (feature_his, ticksOrigin)
+
+
+
+
+
+
 def statistical_tests(vertices):
     """
     Input is the vertices list, in which element contain members
@@ -298,11 +343,14 @@ def statistical_tests(vertices):
 
     dataIndexesList = [i['members'] for i in vertices]
     testsRes = []
+    ranks = []
     for pts in dataIndexesList:
+        rankCols = []
         ansDic = {}
         if len(pts) < 10:
             print 'too small!!!!: %s' %len(pts)
             testsRes.append(len(pts))
+            rankCols.append([])
             continue
         else:
             for col in selfvars.features:
@@ -312,6 +360,20 @@ def statistical_tests(vertices):
                 P4ttest = stats.ttest_ind(inNodeArray, notinNodeArray)[-1]
                 P4kstest = stats.ks_2samp(inNodeArray, notinNodeArray)[-1]
                 ansDic[col] = [P4ttest, P4kstest, len(pts)]
+                rankCols.append( min(P4kstest, P4ttest))
+
+            sortByminPindex = np.argsort(rankCols)
+            sortByCol = [selfvars.features[i] for i in sortByminPindex]
+
+
+
+
+            """
+            print 'inNodes :%s'%len(inNodeArray)
+            print 'notInNode:%s'%len(notinNodeArray)
+            print 'Series:%s'%len(targetSerie)
+            print 'DF:%s'%len(selfvars.df)
+            """
 
             testsRes.append(ansDic)
     #print testsRes
