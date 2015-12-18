@@ -131,14 +131,11 @@ var runClustering = function(){
 
   //RadioBtns.each(function(d){
   //  console.log(this)
-    d3.select('#generate').on('click',function(){
+    d3.select('#recolor').on('click',function(){
       force.stop()
-
-      var refreshGraph = function(){
-        d3.json("/newjson",function(d){
+      var refreshGraph = function(url){
+        d3.json(url,function(d){
           var nodes = d['vertices'];
-
-
           var nodeattr = [];
           for(n in nodes) {
             nodeattr.push(nodes[n].attribute);
@@ -146,17 +143,21 @@ var runClustering = function(){
           var fscale = d3.scale.linear()
             .range(['blue','red'])
             .domain([0,d3.max(nodeattr)]);
-
-          var link = mappersvg.selectAll(".link")
           var node = mappersvg.selectAll(".node")
-
           //update the color
           node
           .data(nodes)
           .style('fill', function(e) { return fscale(e.attribute);})
-      });
-    };
-      refreshGraph()
+        });
+      };
+      var buttonType = $('#recolor')
+      if(buttonType.html() == 'Re Color!'){
+        refreshGraph('/newjson')
+        buttonType.html('Reverse!')
+      }else{
+        buttonType.html('Re Color!')
+        refreshGraph('/mapperjson')
+      }
     })
   //});
 

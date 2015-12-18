@@ -4,7 +4,7 @@ $(function(){
     $.getJSON('/features',function(data){
       //retrive features from json, and then generate
       //a list of radio button for each features
-      $("#generate").show()
+      $("#recolor").show()
 
       var flag = $("[name='features']").length
       if (flag >= 1){
@@ -26,9 +26,22 @@ $(function(){
          data: JSON.stringify(data),// null, '\t'),
          contentType: 'application/json;charset=UTF-8',
          success: function(){
+           //draw bar chart
+           if($('svg').length == 3){
+           $('svg').last().remove();
+           $('svg').last().remove()
+           }
+           barChart('/bins',1)
+           $('[id^=bar]').each(function(){
+             $(this).bind('click',function(){
+               console.log('barrr')
+               barChart('/binsSecondary',2)
+             })
+           })
          }
        });
       });
+
     //draw bar chart!
      //barChart();
     });
