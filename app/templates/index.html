@@ -87,16 +87,18 @@
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">文件上传</li>
-
             <form id="upload-file" method="post" enctype="multipart/form-data">
                 <fieldset>
-                    <a>Select a file</a>
-
-                    <input name="file" type="file" value="Choose..">
+                    <input  name="file" type="file" value="Choose..">
                 </fieldset>
 
             </form>
+            <button class="btn" id='fileupload'>Upload!</button>
 
+            <li class="nav-header">选择需要聚类的特征</li>
+            <form id="featuresCheck" method="post" enctype="multipart/form-data">
+
+            </form>
 
             <li class="nav-header">输入参数</li>
             <a>Interval: </a>
@@ -116,8 +118,6 @@
             </li>
 
             <li class="nav-header">选择特征</li>
-            <button class="btn" id=showfeature >Show Features!</button>
-
             <div class=options id="radiocheck"></div>
             <button class="btn" id="recolor" style="display:none">Re Color!</button>
 

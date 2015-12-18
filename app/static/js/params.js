@@ -5,20 +5,14 @@
 $(function(){
   //when click upload button, delete previously
   //shown features and hide select nodes button
-  $("[name='file']").bind('click',function(){
+  $("#fileupload").bind('click',function(){
+
     var flag = $("[name='features']").length
     if (flag >= 1){
       $("[name='features']").remove()
       $("[name='fname']").remove()
     $("#generate").hide()
     }
-  })
-})
-
-
-$(function(){
-  $("#paramsGenerate").bind('click',function(){
-    //$('#barchart').remove()
     //upload file first!
     var form_data = new FormData($('#upload-file')[0]);
     $.ajax({
@@ -30,14 +24,37 @@ $(function(){
         processData: false,
         async: false,
         success: function(data) {
-            console.log('Success!');
+            //generate checkbox for each features
+            var checkboxesForm = $('#featuresCheck')
+            checkboxesForm.children().remove()
+            for(i in data.features){
+              var checkbox = $("<input type='checkbox' id=fcheck"+i+" checked=true value="
+                                +data.features[i]+">"
+                                +'<label for=fcheck'+i+' class=btn>'+ data.features[i] + '</label>')
+              checkbox.appendTo(checkboxesForm)
+            }
+        },
+        error: function(e){
+          console.log(e)
         }
       });
+
+  })
+})
+
+
+$(function(){
+  $("#paramsGenerate").bind('click',function(){
+    //get checked features and
+    var checkedFeatures = []
+    $('[id^=fcheck]:checked').each(function(){
+      checkedFeatures.push(this.value)
+    })
 
     //post params
     var interval = $("#interval").val();
     var overlap = $("#overlap").val();
-    var data = {'interval': interval, 'overlap': overlap}
+    var data = {'interval': interval, 'overlap': overlap, 'checkedFeatures': checkedFeatures}
     //send to server
     $.ajax({
       type : "POST",
@@ -46,10 +63,12 @@ $(function(){
       data: JSON.stringify(data),// null, '\t'),
       contentType: 'application/json;charset=UTF-8',
       success: function(result){
-        console.log(result)
+        //console.log(result)
         //when post successed,redraw the graph
         }
       });
+
+
 
     //run Clustering
     runClustering();

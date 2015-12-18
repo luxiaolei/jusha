@@ -1,6 +1,6 @@
 //handle feater selection porcess
 $(function(){
-  $("#showfeature").bind('click', function(){
+  $("#paramsGenerate").bind('click', function(){
     $.getJSON('/features',function(data){
       //retrive features from json, and then generate
       //a list of radio button for each features
@@ -12,7 +12,7 @@ $(function(){
         $("[name='fname']").remove()
       }
      for (i in data.features){
-       var radioBtn = $('<input type="radio" name="features" value= '+data.features[i]+'><button name=fname>'+data.features[i]+'</button>'+',');
+       var radioBtn = $('<input type="radio" id=rd'+i+' name="features" value= '+data.features[i]+'><label class=btn for=rd'+i+' name=fname>'+data.features[i]+'</label>');
        radioBtn.appendTo('#radiocheck');
      };
 

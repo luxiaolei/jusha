@@ -24,6 +24,7 @@ class selfgloablvars:
         self.features = 1
         self.df = 1
         self.selected_feature = 1
+        self.checkedFeatures = 1
         self.mappernew = 1
         self.feature_his = 1
         self.inputInterval = 'Not Signed'
@@ -128,13 +129,14 @@ def feature_ajax():
 def paramsAjax():
     """
     *recieve params from clients
-    *call mapper function to generate new Json
+    *call mapper function to statisticT new Json
     """
     #if request.method == 'POST'
     try:
         #set input params to selfvars
         selfvars.inputInterval = int(request.json['interval'])
         selfvars.inputOverlap = float(request.json['overlap'])
+        selfvars.checkedFeatures = request.json['checkedFeatures']
         return json.dumps({'ans': str(type(selfvars.inputInterval))})
     except Exception,e:
         return json.dumps({'ans':str(e)})
@@ -167,7 +169,7 @@ def uploadFile():
             #store the col into selfvars obj
             selfvars.features = df.columns.values
             selfvars.df = df
-        return json.dumps({'result': 'Successfully Uploaded!'})
+        return jsonify(features=list(selfvars.features))#json.dumps({'result': 'Successfully Uploaded!'})
     except Exception,e:
         return json.dumps(str(e))
     return json.dumps({'ans': 'failed!'})
@@ -191,13 +193,17 @@ def mapper_cluster(intervals=8, overlap=50.0):
     print ">>"*30
     print selfvars.inputInterval
     print selfvars.inputOverlap
+
+
     in_file = [f for f in os.listdir('uploads/')]
     assert len(in_file) > 0
     in_file = 'uploads/' + session['filename']
     print "*"*10
     print 'File %s is loaded!'%session['filename']
     #data = np.loadtxt(str(in_file), delimiter=',', dtype=np.float)
-    data = selfvars.df.values
+    CF = selfvars.checkedFeatures
+    print CF
+    data = selfvars.df.ix[:, CF].values
 
     '''
         Step 2: Metric
