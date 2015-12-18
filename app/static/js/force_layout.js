@@ -18,6 +18,15 @@ var runClustering = function(){
   mappersvg.attr("width", width)
             .attr("height", height)
 
+  //add a indicator box on top right
+  mappersvg.append('rect')
+          .style('fill', 'green')
+          .attr('x', width-50)
+          .attr('y', height-50)
+          .attr('width',50)
+          .attr('height', 50)
+
+
   var force = d3.layout.force()
   	.charge(-100)
   	.linkDistance(10)
@@ -87,8 +96,6 @@ var runClustering = function(){
       	.text(function(e){return e.members.length; })
       	.on('mouseover', function(e) {
           mouseoverShowExaplain(e,statests)
-
-          console.log(e.index)
           var svgFlag = $('svg').length
           if (svgFlag > 1){mouseoverHighlightBars(e.members)}
 
@@ -99,7 +106,7 @@ var runClustering = function(){
       	    $("#members").html(members_string);
       	})
         .on('mouseout',function(){
-          //$('#explain').children().remove()
+          $('#explain').children().remove()
           d3.selectAll('rect').style('fill', 'steelblue')
         })
 
@@ -195,14 +202,16 @@ var mouseoverShowExaplain = function(e,statests){
     warning.appendTo('#explain')
 
   }else{
+    var num = $('<li> There are :['+e.members.length+'] number of data.</li>')
+    num.appendTo('#explain')
     for (f in tests){
       var fhead = $('<li><a class="btn">'+f+'</a></li>')
       var ttest = $('<li>'+tests[f][0]+'</li>')
       var kstest = $('<li>'+tests[f][1]+'</li>')
-      var num = $('<li>'+tests[f][2]+'</li>')
+
       ttest.appendTo(fhead)
       kstest.appendTo(fhead)
-      num.appendTo(fhead)
+
 
       fhead.appendTo('#explain')
     }

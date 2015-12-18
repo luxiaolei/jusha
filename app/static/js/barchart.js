@@ -1,26 +1,3 @@
-$(function(){
-  $("#genbar").bind('click',function(){
-    console.log($('svg').length)
-    if($('svg').length == 3){
-    $('svg').last().remove();
-    $('svg').last().remove()
-    }
-
-    barChart('/bins',1)
-
-
-    $('[id^=bar]').each(function(){
-      $(this).bind('click',function(){
-        console.log('barrr')
-        barChart('/binsSecondary',2)
-      })
-    })
-
-
-  })//barChart('/bins'))
-})
-
-
 
 var barChart = function(url, numSvg){
   var margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -29,7 +6,7 @@ var barChart = function(url, numSvg){
 
   console.log(url)
   var x = d3.scale.ordinal()
-      .rangeRoundBands([0, width], .1, .3);
+      .rangeRoundBands([0, width-80], .1, .4);
 
   var y = d3.scale.linear()
       .range([height, 0]);
