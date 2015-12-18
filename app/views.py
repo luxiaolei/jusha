@@ -21,6 +21,7 @@ class selfgloablvars:
     This class is used for passing variables between functions
     """
     def __init__(self):
+        self.mapperoutput = 1
         self.features = 1
         self.df = 1
         self.selected_feature = 1
@@ -111,8 +112,8 @@ def feature_ajax():
     selected_f = request.json['selected']
     selfvars.selected_feature = selected_f
     #update the mapperjson based on the selected f
-    with open('mapperoutput.json', 'rb') as f:
-        mapperoutput = json.load(f)
+    #with open('mapperoutput.json', 'rb') as f:
+    mapperoutput = selfvars.mapperoutput
     recolor_mapperoutput(mapperoutput)
 
     #update the selfvars.feature_his and generate the
@@ -170,6 +171,9 @@ def uploadFile():
             selfvars.features = df.columns.values
             df.replace([np.inf, -np.inf], np.nan)
             selfvars.df = df.dropna()
+
+            #initialize mapperoutput
+            selfvars.mapperoutput = 1
         return jsonify(features=list(selfvars.features))#json.dumps({'result': 'Successfully Uploaded!'})
     except Exception,e:
         return json.dumps(str(e))
@@ -181,20 +185,23 @@ def index():
 
 
 @app.route('/mapperjson')
-def mapper_cluster(intervals=8, overlap=50.0):
+def mapper_cluster():
+    """
+    Generates mapperoutput
+    """
+    if selfvars.mapperoutput == 1:
+        #first tiem generation
+        selfvars.mapperoutput = runMapper()
+        return json.dumps(selfvars.mapperoutput)
+    else:
+        return json.dumps(selfvars.mapperoutput)
+
+def runMapper(intervals=8, overlap=50.0):
     #type check inputParams, string for default,
     #float for user inputed
     if type(selfvars.inputInterval) == int:
         intervals = selfvars.inputInterval
         overlap = selfvars.inputOverlap
-        print intervals
-        print overlap
-
-    print type(intervals),type(overlap)
-    print ">>"*30
-    print selfvars.inputInterval
-    print selfvars.inputOverlap
-
 
     in_file = [f for f in os.listdir('uploads/')]
     assert len(in_file) > 0
@@ -282,18 +289,9 @@ def mapper_cluster(intervals=8, overlap=50.0):
 
         G['vertices'] += new_vertices
         """
-
         return G
+    return to_d3js_graph(mapper_output)
 
-
-
-
-    G = to_d3js_graph(mapper_output)
-    #for i in G.keys(): print i
-
-    with open('mapperoutput.json', 'wb') as f:
-        json.dump(G, f)
-    return json.dumps(G)
 
 
 def binGen(array):
