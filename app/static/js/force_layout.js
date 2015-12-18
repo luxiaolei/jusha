@@ -31,7 +31,7 @@ var runClustering = function(){
   }
 
   var zoom = d3.behavior.zoom()
-    .scaleExtent([.8, 10])
+    .scaleExtent([.2, 10])
     .on("zoom", zoomed);
 
   var drag = d3.behavior.drag()
@@ -52,7 +52,7 @@ var runClustering = function(){
 
   var force = d3.layout.force()
   	.charge(-100)
-  	.linkDistance(10)
+  	.linkDistance(7)
   	.size([640,480]);
     var k = 0;
     while ((force.alpha() > 1e-2) && (k < 150)) {

@@ -168,7 +168,7 @@ def uploadFile():
                 df = pd.read_csv('uploads/'+filename)
             #store the col into selfvars obj
             selfvars.features = df.columns.values
-            selfvars.df = df
+            selfvars.df = df.dropna()
         return jsonify(features=list(selfvars.features))#json.dumps({'result': 'Successfully Uploaded!'})
     except Exception,e:
         return json.dumps(str(e))

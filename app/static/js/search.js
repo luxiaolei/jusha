@@ -45,13 +45,13 @@ var searchFunc = function(dataname){
         //do the coloring!
         for (i in modExsitIndexes){
           svg.select('#'+modExsitIndexes[i])
-             .transition()
+             //.transition()
              .style('opacity', 1)
         };
         for (i in noneExsitIndexes){
           svg.select('#'+noneExsitIndexes[i])
-             .transition()
-             .style('opacity', 0.3)
+             //.transition()
+             .style('opacity', 0.1)
         }
       })
     }
