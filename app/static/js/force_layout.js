@@ -7,25 +7,48 @@ var runClustering = function(){
     $("#graph").children("svg").remove()
   }
 
-  var mappersvg = d3.select("#graph")
-      .append("svg")
-      //.style("background-color", 'black')//.append('div')
-                    //.attr('id', 'members')
-
+  //.attr('id', 'members')
+  var margin = {top: -5, right: -5, bottom: -5, left: -5}
   var width = 540//$("svg").parent().width();
   var height = 400//$("svg").parent().height();
 
-  mappersvg.attr("width", width)
-            .attr("height", height)
+      //.style("background-color", 'black')//.append('div')
+  //var container = mappersvg.append("g")
+  function zoomed() {
+  mappersvg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+  }
+  function dragstarted(d) {
+    d3.event.sourceEvent.stopPropagation();
+    d3.select(this).classed("dragging", true);
+  }
 
-  //add a indicator box on top right
-  mappersvg.append('rect')
-          .style('fill', 'green')
-          .attr('x', width-50)
-          .attr('y', height-50)
-          .attr('width',50)
-          .attr('height', 50)
+  function dragged(d) {
+    d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+  }
 
+  function dragended(d) {
+    d3.select(this).classed("dragging", false);
+  }
+
+  var zoom = d3.behavior.zoom()
+    .scaleExtent([.8, 10])
+    .on("zoom", zoomed);
+
+  var drag = d3.behavior.drag()
+      .origin(function(d) { return d; })
+      .on("dragstart", dragstarted)
+      .on("drag", dragged)
+      .on("dragend", dragended);
+
+  var svg = d3.select("#graph")
+              .append("svg")
+                .attr("width", width)
+                .attr("height", height)
+              .append('g')
+                .attr("transform", "translate(" + margin.left + "," + margin.right + ")")
+                .call(zoom)
+
+  var mappersvg = svg.append('g')
 
   var force = d3.layout.force()
   	.charge(-100)
@@ -50,7 +73,6 @@ var runClustering = function(){
       var linkColor = []//d3.set();
       for(l in edges){
         linkColor.push(edges[l].wt)
-
       }
 
       var nodeSize = []
@@ -78,7 +100,7 @@ var runClustering = function(){
       	.links(edges)
       	.start();
 
-      var link = mappersvg.selectAll(".link")
+      var link = mappersvg.append('g').selectAll(".link")
       	.data(edges)
       	.enter().append("line")
       	.attr("class","link")
@@ -86,7 +108,7 @@ var runClustering = function(){
         .style('stroke-width', function(e){return lwscale(e.wt);})
         .style('stroke-opacity', 0.6);
 
-      var node = mappersvg.selectAll(".node")
+      var node = mappersvg.append('g').selectAll(".node")
       	.data(nodes)
       	.enter().append("circle")
       	.attr("class", "node")
@@ -127,17 +149,7 @@ var runClustering = function(){
       	node.attr("cx", function(e) { return e.x -100; })
                   .attr("cy", function(e) { return e.y - 50; });
       });
-      //setTimeout(force.stop(), 6000)
   });
-
-
-
-
-  //var RadioBtns = d3.selectAll("input[name='features']")
-  //console.log(RadioBtns)
-
-  //RadioBtns.each(function(d){
-  //  console.log(this)
     d3.select('#recolor').on('click',function(){
       force.stop()
       var refreshGraph = function(url){
@@ -166,8 +178,6 @@ var runClustering = function(){
         refreshGraph('/mapperjson')
       }
     })
-  //});
-
 }
 
 var mouseoverHighlightBars = function(datalist){
@@ -208,14 +218,9 @@ var mouseoverShowExaplain = function(e,statests){
       var fhead = $('<li><a class="btn">'+f+'</a></li>')
       var ttest = $('<li>'+tests[f][0]+'</li>')
       var kstest = $('<li>'+tests[f][1]+'</li>')
-
       ttest.appendTo(fhead)
       kstest.appendTo(fhead)
-
-
       fhead.appendTo('#explain')
     }
-    //var result = $('<li>P value for </li>')
   }
-
 }
