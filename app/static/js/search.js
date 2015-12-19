@@ -7,7 +7,7 @@ var searchFunc = function(dataname){
         dataname[i] = parseInt(dataname[i])
       }
       //retrive the indexes of nodes which contain the searched data
-      $.getJSON('/mapperjson', function(data){
+      $.getJSON('/mapperJsonSaved', function(data){
         var nodes = data['vertices'];
         var exsitIndexes = [];
 

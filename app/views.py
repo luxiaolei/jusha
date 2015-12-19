@@ -5,6 +5,7 @@ from wtforms import RadioField
 from app import app
 from werkzeug import secure_filename
 import os
+import copy
 import json
 import mapper
 import numpy as np
@@ -26,7 +27,6 @@ class selfgloablvars:
         self.df = 1
         self.selected_feature = 1
         self.checkedFeatures = 1
-        self.mappernew = 1
         self.feature_his = 1
         self.inputInterval = 'Not Signed'
         self.inputOverlap = 'Not Signed'
@@ -40,24 +40,6 @@ selfvars = selfgloablvars()
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
-
-def recolor_mapperoutput(mapperjson):
-    """
-    set selfvars.mappernew to an altered mapper_ouput in json format
-    the attartribut of vertices become the avg values of elements in the vertices
-    """
-    target = mapperjson
-
-    for key, each_dic in enumerate(target['vertices']):
-        elements_index = each_dic['members'] #list
-        coresspoding_rows = selfvars.df.ix[elements_index, selfvars.selected_feature]
-        average_value = np.average(coresspoding_rows)
-
-        #reset the arrtribute
-        target['vertices'][key]['attribute'] = average_value
-    selfvars.mappernew =  target
-
 
 @app.route('/features')
 def send_features():
@@ -99,9 +81,6 @@ def binsSecondary():
         array = array.ix[(array >= clickeRange[0]) & (array < clickeRange[1])]
     return json.dumps(binGen(array)[0])
 
-
-
-
 @app.route('/feature_ajax', methods=['POST','GET'])
 def feature_ajax():
     """
@@ -111,10 +90,6 @@ def feature_ajax():
     """
     selected_f = request.json['selected']
     selfvars.selected_feature = selected_f
-    #update the mapperjson based on the selected f
-    #with open('mapperoutput.json', 'rb') as f:
-    mapperoutput = selfvars.mapperoutput
-    recolor_mapperoutput(mapperoutput)
 
     #update the selfvars.feature_his and generate the
     #primary barChart
@@ -122,9 +97,6 @@ def feature_ajax():
     selfvars.feature_his, selfvars.binTicks = binGen(array)
 
     return json.dumps({'ans':'1'})
-
-    #return render_template(url_for('newjson'), json.dumps(newmapperJson['vertices'])
-
 
 @app.route('/paramsAjax', methods=['POST'])
 def paramsAjax():
@@ -138,17 +110,10 @@ def paramsAjax():
         selfvars.inputInterval = int(request.json['interval'])
         selfvars.inputOverlap = float(request.json['overlap'])
         selfvars.checkedFeatures = request.json['checkedFeatures']
+        selfvars.mapperoutput = 1
         return json.dumps({'ans': str(type(selfvars.inputInterval))})
     except Exception,e:
         return json.dumps({'ans':str(e)})
-
-
-@app.route('/newjson')
-def newjson():
-    """
-    mappernew was been set in feature ajax process
-    """
-    return json.dumps(selfvars.mappernew)
 
 
 @app.route('/uploadFile', methods= ['POST'])
@@ -189,12 +154,44 @@ def mapper_cluster():
     """
     Generates mapperoutput
     """
-    if selfvars.mapperoutput == 1:
-        #first tiem generation
-        selfvars.mapperoutput = runMapper()
-        return json.dumps(selfvars.mapperoutput)
-    else:
-        return json.dumps(selfvars.mapperoutput)
+    selfvars.mapperoutput = runMapper()
+    return json.dumps(selfvars.mapperoutput)
+
+@app.route('/mapperJsonSaved')
+def mapperRecolored():
+    """
+    This is for search utility to look up data in nodes
+    """
+    print 'i m called!'
+
+    return json.dumps(selfvars.mapperoutput)
+
+@app.route('/newjson')
+def newjson():
+    """
+    This is for recoloring based on selected feature
+    """
+    a = copy.deepcopy(selfvars.mapperoutput)
+    mappernew = recolor_mapperoutput(a)
+    print mappernew==selfvars.mapperoutput
+    print type(mappernew)
+    return json.dumps(mappernew)
+
+
+
+def recolor_mapperoutput(mapperjson):
+    """
+    set selfvars.mappernew to an altered mapper_ouput in json format
+    the attartribut of vertices become the avg values of elements in the vertices
+    """
+    target = mapperjson
+    for key, each_dic in enumerate(target['vertices']):
+        elements_index = each_dic['members'] #list
+        coresspoding_rows = selfvars.df.ix[elements_index, selfvars.selected_feature]
+        average_value = np.average(coresspoding_rows)
+        target['vertices'][key]['attribute'] = average_value
+    return target
+
 
 def runMapper(intervals=8, overlap=50.0):
     #type check inputParams, string for default,
@@ -206,11 +203,8 @@ def runMapper(intervals=8, overlap=50.0):
     in_file = [f for f in os.listdir('uploads/')]
     assert len(in_file) > 0
     in_file = 'uploads/' + session['filename']
-    print "*"*10
-    print 'File %s is loaded!'%session['filename']
     #data = np.loadtxt(str(in_file), delimiter=',', dtype=np.float)
     CF = selfvars.checkedFeatures
-    print CF
     data = selfvars.df.ix[:, CF].values
 
     '''
@@ -303,7 +297,6 @@ def binGen(array):
     array_his = [list(i) for i in array_his]
 
     def getDatainBins(ticks):
-        print ticks
         """
         ticks: [(lowerbound, upperbound),..]
         return a list of lists which contains data index for
@@ -353,7 +346,7 @@ def statistical_tests(vertices):
         rankCols = []
         ansDic = {}
         if len(pts) < 10:
-            print 'too small!!!!: %s' %len(pts)
+
             testsRes.append(len(pts))
             rankCols.append([])
             continue

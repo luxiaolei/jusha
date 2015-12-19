@@ -175,7 +175,7 @@ var runClustering = function(){
         buttonType.html('Reverse!')
       }else{
         buttonType.html('Re Color!')
-        refreshGraph('/mapperjson')
+        refreshGraph('/mapperJsonSaved')
       }
     })
 }
