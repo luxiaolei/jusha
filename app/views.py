@@ -12,6 +12,8 @@ import numpy as np
 import os.path as op
 import pandas as pd
 from scipy import stats
+from matplotlib.cm import jet
+from matplotlib.colors import rgb2hex
 
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 ALLOWED_EXTENSIONS = set(['txt', 'csv'])
@@ -173,8 +175,6 @@ def newjson():
     """
     a = copy.deepcopy(selfvars.mapperoutput)
     mappernew = recolor_mapperoutput(a)
-    print mappernew==selfvars.mapperoutput
-    print type(mappernew)
     return json.dumps(mappernew)
 
 
@@ -190,6 +190,13 @@ def recolor_mapperoutput(mapperjson):
         coresspoding_rows = selfvars.df.ix[elements_index, selfvars.selected_feature]
         average_value = np.average(coresspoding_rows)
         target['vertices'][key]['attribute'] = average_value
+
+    #generate colormap both for domain and range
+    distinctAttr = [i['attribute'] for i in target['vertices']]
+    distinctAttr = list(set(distinctAttr))
+    distinctAttr.sort()
+    target['distinctAttr'] = distinctAttr
+    target['colormap'] = genJetColormap(len(distinctAttr))
     return target
 
 
@@ -259,6 +266,13 @@ def runMapper(intervals=8, overlap=50.0):
                       mapper_output.simplices[1].keys()]
 
         G['statisticT'] = statistical_tests(G['vertices'])
+
+
+        distinctAttr = [i['attribute'] for i in G['vertices']]
+        distinctAttr = list(set(distinctAttr))
+        distinctAttr.sort()
+        G['distinctAttr'] = distinctAttr
+        G['colormap'] = genJetColormap(len(distinctAttr))
 
         """
         G['subnodes'] = [i['members'] for i in G['vertices']]
@@ -378,3 +392,17 @@ def statistical_tests(vertices):
     #print 'there r %s doable nodes'%len(testsRes)
     #print 'there r %s nodes '%len(dataIndexesList)
     return testsRes
+
+
+def genJetColormap(n):
+    """
+    give the length of the list contains only distict attribute value
+    return an HX color map range which has the same length
+    """
+    interval = 256 / n
+    indexes = [interval*(i) for i in range(n)]
+    indexes[-1] = 255
+    return [str(rgb2hex(jet(j))) for j in indexes]
+
+
+    #return [str(rgb2hex(jet(float(i)/n)[:-1])) for i in range(n)]
