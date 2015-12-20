@@ -51,7 +51,7 @@ var runClustering = function(){
   var mappersvg = svg.append('g')
 
   var force = d3.layout.force()
-  	.charge(-100)
+  	.charge(-60)
   	.linkDistance(7)
   	.size([640,480]);
     var k = 0;

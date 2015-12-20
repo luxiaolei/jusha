@@ -7,7 +7,7 @@ from werkzeug import secure_filename
 import os
 import copy
 import json
-import mapper
+import jushacore
 import numpy as np
 import os.path as op
 import pandas as pd
@@ -104,7 +104,7 @@ def feature_ajax():
 def paramsAjax():
     """
     *recieve params from clients
-    *call mapper function to statisticT new Json
+    *call jushacore function to statisticT new Json
     """
     #if request.method == 'POST'
     try:
@@ -224,28 +224,28 @@ def runMapper(intervals=8, overlap=50.0):
     '''
     if is_vector_data:
         metricpar = {'metric': 'euclidean'}
-        f = mapper.filters.Gauss_density(data,
+        f = jushacore.filters.Gauss_density(data,
             metricpar=metricpar,
             sigma=1.0)
     else:
-        f = mapper.filters.Gauss_density(data,
+        f = jushacore.filters.Gauss_density(data,
             sigma=1.0)
     # Filter transformation
 
     '''
-        Step 4: Mapper parameters
+        Step 4: jushacore parameters
     '''
-    cover = mapper.cover.cube_cover_primitive(intervals, overlap)
-    cluster = mapper.single_linkage()
+    cover = jushacore.cover.cube_cover_primitive(intervals, overlap)
+    cluster = jushacore.single_linkage()
     if not is_vector_data:
         metricpar = {}
-    mapper_output = mapper.mapper(data, f,
+    mapper_output = jushacore.jushacore(data, f,
         cover=cover,
         cluster=cluster,
         point_labels= None,
         cutoff=None,
         metricpar=metricpar)
-    cutoff = mapper.cutoff.first_gap(gap=0.1)
+    cutoff = jushacore.cutoff.first_gap(gap=0.1)
     mapper_output.cutoff(cutoff, f, cover=cover, simple=False)
 
 
