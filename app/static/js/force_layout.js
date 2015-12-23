@@ -9,8 +9,8 @@ var runClustering = function(){
 
   //.attr('id', 'members')
   var margin = {top: -5, right: -5, bottom: -5, left: -5}
-  var width = 540//$("svg").parent().width();
-  var height = 400//$("svg").parent().height();
+  var width = $('#graph').width()//540//$("svg").parent().width();
+  var height = $('#graph').height()//400//$("svg").parent().height();
 
       //.style("background-color", 'black')//.append('div')
   //var container = mappersvg.append("g")
@@ -51,9 +51,9 @@ var runClustering = function(){
   var mappersvg = svg.append('g')
 
   var force = d3.layout.force()
-  	.charge(-60)
-  	.linkDistance(7)
-  	.size([640,480]);
+  	.charge(-110)
+  	.linkDistance(17)
+  	.size([width,height]);
     var k = 0;
     while ((force.alpha() > 1e-2) && (k < 150)) {
         force.tick(),

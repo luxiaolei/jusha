@@ -171,6 +171,10 @@ def uploadFile():
 def index():
     return render_template('index.html')
 
+@app.route('/header')
+def header():
+    return render_template('header.html')
+
 
 @app.route('/mapperjson')
 def mapper_cluster():
@@ -271,10 +275,7 @@ def runMapper(intervals=8, overlap=50.0):
        ['eccentricity', 'Gauss_density', 'kNN_distance',
            'distance_to_measure', 'graph_Laplacian', 'dm_eigenvector',
            'zero_filter']
-    '''
-
-
-   
+    '''   
 
     if is_vector_data:
         #metricpar = selfvars.metric  #{'metric': 'euclidean'}

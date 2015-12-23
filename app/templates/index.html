@@ -17,6 +17,11 @@
   <link href="{{url_for('static',filename = 'css/bootstrap.min.css')}}" rel="stylesheet" media="screen">
   <link href="{{url_for('static',filename = 'css/layout.css')}}" rel="stylesheet" media="screen">
 
+  
+
+  <link rel="stylesheet" href="{{url_for('static',filename = 'css/font-awesome.min.css')}}">
+   <link rel="stylesheet" href="{{url_for('static',filename = 'css/main.css')}}">
+
   <script>
   $(document).ready(function() {
        //$(function() { $('#divContainer').draggable(); });
@@ -25,32 +30,240 @@
   </script>
 </head>
 
-<body>
+<body data-ng-app="app" id="app" class="app" data-custom-page data-off-canvas-nav data-ng-controller="AppCtrl" data-ng-class=" {'layout-boxed': admin.layout === 'boxed' } ">
   <!--Navi bar-->
-  <li>
-  <div class="navbar navbar-inverse navbar-fixed-top">
-    <div class="navbar-inner">
-      <div class="container-fluid">
-        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="brand" href="#">聚沙团队的超级聚类算法操作面板</a>
-        <div class="nav-collapse collapse">
-          <p class="navbar-text pull-right">
-            登录 <a href="#" class="navbar-link">以后再弄</a>
-          </p>
-          <ul class="nav">
-            <li class="active"><a href="#"></a></li>
-            <li><a href="#about"></a></li>
-            <li><a href="#contact"></a></li>
-          </ul>
-        </div><!--/.nav-collapse -->
-      </div>
-    </div>
+ 
+  <section id="header" class="header-container" data-ng-class=" {'header-fixed': admin.fixedHeader} " data-ng-controller="HeaderCtrl">
+    
+      <!--  {% block header %}{% endblock %} -->
+      <header class="top-header clearfix">
+
+        <!-- Logo -->
+        <div class="logo">
+            <a href="#/">
+                <span>聚沙－TDA</span>
+            </a>
+        </div>
+
+        <!-- needs to be put after logo to make it working-->
+        <div class="menu-button" toggle-off-canvas>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </div>
+
+        <div class="top-nav">
+            <ul class="nav-left list-unstyled">
+                <li>
+                    <a href="#/" data-toggle-nav-collapsed-min
+                                 class="toggle-min"
+                                 ><i class="fa fa-bars"></i></a>
+                </li>
+                <li class="search-box visible-md visible-lg">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-search text-muted"></i></span>
+                        <input type="text" class="form-control" placeholder="按序号查找...">
+                    </div>
+                </li>
+            </ul> 
+        </div>
+      </header>
+   </section>
+
+
+  <div class="main-container">
+      <aside id="nav-container" class="nav-container" data-ng-class=" {'nav-fixed': admin.fixedSidebar, 'nav-horizontal': admin.menu === 'horizontal', 'nav-vertical': admin.menu === 'vertical'}">
+
+        <div class="nav-wrapper">
+            <ul id="nav"
+                class="nav"
+                data-ng-controller="NavCtrl"
+                data-slim-scroll
+                data-collapse-nav
+                data-highlight-active>
+
+
+                <li>
+                    <a href="#"><i class="glyphicon glyphicon-upload"></i><span data-i18n="数据上传"></span>
+                    </a>
+                    <ul>
+            <a class="file-input-wrapper btn btn-default "><span>Choose File</span><input style="left: -155px; top: 13.5667px;" title="Choose File" data-ui-file-upload="" type="file"></a>
+                    </ul>
+
+                </li>
+                <li>
+                    <a href="#/ui"><i class="glyphicon glyphicon-list-alt"></i><span data-i18n="特征选择"></span>
+                    </a>
+                    <ul>
+                        <span class="ui-select">
+                            <select>
+                                <option value="Mustard">Mustard</option>
+                                <option value="Ketchup">Ketchup</option>
+                                <option value="Barbecue">Barbecue</option>
+                            </select>
+                        </span>
+                            
+                        <div style="overflow: hidden; width: auto; height: 240px;" class="panel-body ui-map " data-slim-scroll="" data-scroll-height="240px">
+                            <label class="ui-checkbox">
+                                <input name="checkbox1" value="option1" type="checkbox">
+                                <span>特征 1</span>
+                            </label>
+                            <li class="divider"></li>
+                            <label class="ui-checkbox">
+                                <input name="checkbox1" value="option1" type="checkbox">
+                                <span>特征 2</span>
+                            </label>
+                            <li class="divider"></li>
+
+                            <label class="ui-checkbox">
+                                <input name="checkbox1" value="option1" type="checkbox">
+                                <span>特征 3</span>
+                            </label>
+
+
+                            <li class="divider"></li>
+                            <label class="ui-checkbox">
+                                <input name="checkbox1" value="option1" type="checkbox">
+                                <span>特征 4</span>
+                            </label>
+
+                            <li class="divider"></li>
+                            <label class="ui-checkbox">
+                                <input name="checkbox1" value="option1" type="checkbox">
+                                <span>特征 2</span>
+                            </label>
+
+
+                            <li class="divider"></li>
+
+                            <label class="ui-checkbox">
+                                <input name="checkbox1" value="option1" type="checkbox">
+                                <span>特征 3</span>
+                            </label>
+
+
+                            <li class="divider"></li>
+                            <label class="ui-checkbox">
+                                <input name="checkbox1" value="option1" type="checkbox">
+                                <span>特征 4</span>
+                            </label>
+                            <li class="divider"></li>
+                            <label class="ui-checkbox">
+                                <input name="checkbox1" value="option1" type="checkbox">
+                                <span>特征 2</span>
+                            </label>
+
+
+                            <li class="divider"></li>
+
+                            <label class="ui-checkbox">
+                                <input name="checkbox1" value="option1" type="checkbox">
+                                <span>特征 3</span>
+                            </label>
+
+
+                            <li class="divider"></li>
+                            <label class="ui-checkbox">
+                                <input name="checkbox1" value="option1" type="checkbox">
+                                <span>特征 4</span>
+                            </label>
+
+                        </div>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#/pages"><i class="glyphicon glyphicon-dashboard"></i><span data-i18n="图谱映射"></span></a>
+                    <ul>
+                       <li>
+                        <a>解析度</a>
+                        <input value="5" data="value: '5'" style="display: none;" ui-range-slider="" data-slider-min="2" data-slider-max="200" data-slider-step="10" data-slider-orientation="horizontal" data-slider-value="100" data-slider-selection="before" data-slider-tooltip="show" data-slider-handle="round" type="text">
+                        </li>
+                        <li>
+                        <a>层次值</a>
+                        <input value="5" data="value: '5'" style="display: none;" ui-range-slider="" data-slider-min="2" data-slider-max="100" data-slider-step="1" data-slider-orientation="horizontal" data-slider-value="50" data-slider-selection="before" data-slider-tooltip="show" data-slider-handle="round" type="text">
+                        </li>
+
+                        <li class="divider"></li>
+                        <button type="button" class="btn btn-w-md btn-gap-v btn-round btn-default">聚沙映射</button>
+
+
+                        <li><div value="80" class="progressbar-sm progress-rounded progress-striped active progress ng-isolate-scope">
+                              <div style="width: 55%;" class="progress-bar" ng-class="type &amp;&amp; 'progress-bar-' + type" role="progressbar" aria-valuenow="55" aria-valuemin="0" aria-valuemax="100" ng-style="{width: percent + '%'}" aria-valuetext="55%" ng-transclude=""></div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#/table"><i class="glyphicon glyphicon-eye-open"></i><span data-i18n="价值探索"></span></a>
+                    <ul>
+                        <div style="overflow: hidden; width: auto; height: 240px;" class="panel-body ui-map " data-slim-scroll="" data-scroll-height="240px">
+                            <li><label class="ui-radio"><input name="radio1" value="option1" type="radio"><span>特征 1</span></label></li>
+                            <li class="divider"></li>
+                            <li><label class="ui-radio"><input name="radio1" value="option1" type="radio"><span>特征 1</span></label></li>
+                            <li class="divider"></li>
+                            <li><label class="ui-radio"><input name="radio1" value="option1" type="radio"><span>特征 1</span></label></li>
+                            <li class="divider"></li>
+                            <li><label class="ui-radio"><input name="radio1" value="option1" type="radio"><span>特征 1</span></label></li>
+                            <li class="divider"></li>
+                            <li><label class="ui-radio"><input name="radio1" value="option1" type="radio"><span>特征 1</span></label></li>
+                            <li class="divider"></li>
+                            <li><label class="ui-radio"><input name="radio1" value="option1" type="radio"><span>特征 1</span></label></li>
+                            <li class="divider"></li>
+                            <li><label class="ui-radio"><input name="radio1" value="option1" type="radio"><span>特征 1</span></label></li>
+                            <li class="divider"></li>
+                            <li><label class="ui-radio"><input name="radio1" value="option1" type="radio"><span>特征 1</span></label></li>
+                            <li class="divider"></li>
+                            <li><label class="ui-radio"><input name="radio1" value="option1" type="radio"><span>特征 1</span></label></li>
+                            <li class="divider"></li>
+                            <li><label class="ui-radio"><input name="radio1" value="option1" type="radio"><span>特征 1</span></label></li>
+                            <li class="divider"></li>
+                            <li><label class="ui-radio"><input name="radio1" value="option1" type="radio"><span>特征 1</span></label></li>
+                            <li class="divider"></li>
+                            <li><label class="ui-radio"><input name="radio1" value="option1" type="radio"><span>特征 1</span></label></li>
+                            <li class="divider"></li>
+                            <li><label class="ui-radio"><input name="radio1" value="option1" type="radio"><span>特征 1</span></label></li>
+                            <li class="divider"></li>                                        
+                        </div>
+                        <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Vertical Bar Chart</h3>
+                        </div>
+                        <div class="panel-body">
+                           </div>
+                        </div>
+                    </div>
+
+                    </ul>
+                </li>
+                
+            </ul>
+        </div>
+
+      </aside>
+
+        <!--
+              <div class="panel panel-default ng-scope">
+              </div>
+            -->
+
+
+      <section id="content" class="content-container {[{admin.pageTransition.class}]}">
+
+        <div class="page page-dashboard {[{admin.pageTransition.class}]}" data-ng-controller="DashboardCtrl">
+
+           <section class="panel panel-default">      
+                <div id="graph" class="panel-body" style="height=700px">
+
+                </div>
+            </section>
+
+        </div>
+      </section>
+  
   </div>
-</li>
+
+
+
 
 <div class="row" style="height:20px">
   <div class="span7">
@@ -76,16 +289,17 @@
 
 
 
+
     <div class="span6" style="height: 500px">
 
-        <div id="graph" style="height: 400px">
+        <div id="graphO" style="height: 400px">
         </div>
         <div id='barchart' style="width: 380px"></div>
     </div>
 
     <div class="row-fluid">
       <div class="span4">
-        <!--Sidebar content-->
+        
         <div class="well sidebar-nav">
           <ul class="nav nav-list">
             <li class="nav-header">文件上传</li>
@@ -144,22 +358,7 @@
                 <option value="variable_exp_gap2">variable_exp_gap2</option>
               </select> 
 
-            <!--
-            <a>cutoff-params:</a>
-            <ul id='cutoffparams'>
-              <ul id='first_gap'>
-                Gap<input type='text' id='gap' value='0.1' maxlength="4" style='display:none;width: 50px; height:25px' />
-              </ul>
-              <ul id='biggest_gap'>
-                Hight<input type='text' id='hight' value='0.1' maxlength="4" style='width: 50px; height:25px' />
-                Diameter<input type='text' id='diam' value='0.1' maxlength="4" style='width: 50px; height:25px' />
-              </ul>  
-              <li id='variable_exp_gap'>
-                Exponent<input type='text' id='exp' value='0.1' maxlength="4" style='width: 30px; height:25px' />
-                Max #clusters<input type='text' id='cluster' value='20' maxlength="4" style='width: 0px; height:25px' />
-              </li>    
-            </ul>
-          -->
+
  
 
 
@@ -202,6 +401,12 @@
 
 
 
+
+        <script src="{{ url_for('static', filename = 'js/vendor.js') }}"></script>
+
+        <script src="{{ url_for('static', filename = 'js/ui.js') }}"></script>
+
+        <script src="{{ url_for('static', filename = 'js/app.js') }}"></script>
 
 
   <script src="{{ url_for('static', filename = 'js/d3.v3.js') }}" charset="utf-8"></script>
