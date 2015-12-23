@@ -67,10 +67,7 @@ var runClustering = function(){
       var colormap = d['colormap']
       var distinctAttr = d['distinctAttr']
 
-      //console.log(colormap)
-      //console.log(distinctAttr)
-      //var test = ["rgb(90, 42, 252)", "rgb(41, 195, 195)","rgb(100, 121, 87)","rgb(142, 43, 21)"]
-      //console.log(test)
+      //console.log(d.indexNameMap)
       var nodeattr = [];
       for(n in nodes) {
     	nodeattr.push(nodes[n].attribute);
@@ -120,19 +117,7 @@ var runClustering = function(){
       	.attr("class", "node")
         .attr("id", function(e){return 'circleid_'+e.index})
       	.attr("r", function(e) { return Sscale(e.members.length) })//Math.min(10,(3+Math.sqrt(e.members.length))); })
-      	.style("fill", function(e) {
-          //if (e.attribute == distinctAttr[-1]){
-          //var flag1 = $.inArray(e.attribute, distinctAttr)
-          //var scaled = fscale(e.attribute)
-          //var flag2 = $.inArray(scaled, colormap)
-          //console.log(e.attribute)
-          //console.log(scaled)
-          //console.log(flag1)
-          //console.log(flag2)
-        //}
-        //console.log(typeof distinctAttr)
-
-          return fscale(e.attribute);})
+      	.style("fill", function(e) { return fscale(e.attribute);})
       	.text(function(e){return e.members.length; })
       	.on('mouseover', function(e) {
           mouseoverShowExaplain(e,statests)
@@ -141,7 +126,7 @@ var runClustering = function(){
 
           var members_string = 'The '+e.index+'th node contains:';
           for (i in e.members){
-            members_string+= "," + e.members[i]
+            members_string+= "," + d.indexNameMap[e.members[i]]
           }
       	    $("#members").html(members_string);
       	})

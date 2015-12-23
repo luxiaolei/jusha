@@ -105,7 +105,7 @@ def eccentricity(data, exponent=1.,  metricpar={}, callback=None):
                 progress((i+1)*100//N)
         return ecc
 
-def Gauss_density(data, sigma, metricpar={}, callback=None):
+def Gauss_density(data, sigma=1., metricpar={}, callback=None):
     denom = -2.*sigma*sigma
     if data.ndim==1:
         assert metricpar=={}, ('No optional parameter is allowed for a '
@@ -129,7 +129,7 @@ def Gauss_density(data, sigma, metricpar={}, callback=None):
         dens /= N*np.power(np.sqrt(2*np.pi)*sigma,data.shape[1])
     return dens
 
-def kNN_distance(data, k, metricpar={}, callback=None):
+def kNN_distance(data, k=2, metricpar={}, callback=None):
     r'''The distance to the :math:`k`-th nearest neighbor as an (inverse) measure of density.
 
 Note how the number of nearest neighbors is understood: :math:`k=1`, the first neighbor, makes no sense for a filter function since the first nearest neighbor of a data point is always the point itself, and hence this filter function is constantly zero. The parameter :math:`k=2` measures the distance from :math:`x_i` to the nearest data point other than  :math:`x_i` itself.
@@ -157,7 +157,7 @@ Note how the number of nearest neighbors is understood: :math:`k=1`, the first n
             print(metricpar)
             raise ValueError('Not implemented')
 
-def distance_to_measure(data, k, metricpar={}, callback=None):
+def distance_to_measure(data, k=2, metricpar={}, callback=None):
     r'''.. math::
 
   \mathit{distance\_to\_measure}(x)  = \sqrt{\frac 1k\sum^k_{j=1}d(x,\nu_j(x))^2},
@@ -191,7 +191,7 @@ Reference: [R4]_.
             print(kwargs)
             raise ValueError('Not implemented')
 
-def graph_Laplacian(data, eps, n=1, k=1, weighted_edges=False, sigma_eps=1.,
+def graph_Laplacian(data, eps=1, n=1, k=2, weighted_edges=False, sigma_eps=1.,
                     normalized=True,
                     metricpar={}, verbose=True,
                     callback=None):

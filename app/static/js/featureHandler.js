@@ -18,7 +18,10 @@ $(function(){
 
     //ajax post the selected feature to server
      $('#radiocheck input').change(function(){
-       var data = {'selected': $('input[name=features]:checked', '#radiocheck').val()};
+       var data = {'selected': $('input[name=features]:checked', '#radiocheck').val(),
+                    'binsNumber': $('#bins').val()};
+            console.log(data)
+
        $.ajax({
          type : "POST",
          //mimic the url_for function when this js file is external

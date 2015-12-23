@@ -59,7 +59,7 @@ var barChart = function(url, numSvg){
           .data(data)
           .enter()
     recEnter.append("rect")
-            .style("fill", "steelblue")
+            .style("fill", function(d){return d.color})
             .attr('id', function(d,i){return 'bar'+i})
             .attr("x", function(d) { return x(d.ticks) ; })
             .attr("width", x.rangeBand())
@@ -74,7 +74,7 @@ var barChart = function(url, numSvg){
             .on('mouseout', function(){
               //change back color, both for the bar and nodes
               d3.select('svg').selectAll(".node").style('opacity', 1)
-              d3.select(this).style("fill", "steelblue")
+              d3.select(this).style("fill", function(d){return d.color})
             })
             .on('click', function(d,i){
               //send clicked bar index to server

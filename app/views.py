@@ -30,6 +30,8 @@ class selfgloablvars:
         self.selected_feature = 1
         self.checkedFeatures = 1
         self.feature_his = 1
+        self.filter = 1
+        self.metric = {}
         self.inputInterval = 'Not Signed'
         self.inputOverlap = 'Not Signed'
         self.binTicks = 'Not Signed'
@@ -91,12 +93,14 @@ def feature_ajax():
     *set selfvars.ma
     """
     selected_f = request.json['selected']
+    binsNumber = int(request.json['binsNumber'])
+
     selfvars.selected_feature = selected_f
 
     #update the selfvars.feature_his and generate the
     #primary barChart
     array = selfvars.df[selected_f]
-    selfvars.feature_his, selfvars.binTicks = binGen(array)
+    selfvars.feature_his, selfvars.binTicks = binGen(array,binsNumber)
 
     return json.dumps({'ans':'1'})
 
@@ -112,6 +116,21 @@ def paramsAjax():
         selfvars.inputInterval = int(request.json['interval'])
         selfvars.inputOverlap = float(request.json['overlap'])
         selfvars.checkedFeatures = request.json['checkedFeatures']
+        selfvars.filter = request.json['filter']
+        selfvars.metric['metric'] = request.json['metric']
+
+        #Reconstruct the dataframe based on selected index
+        #!!WHen multipul calls, the features and df are shrinking!! should solve the problem
+        #through redesign a poper user workflow!
+        index = request.json['index']
+        print index
+        if index != 'None':
+            assert index in selfvars.features
+            selfvars.features.remove(index)
+            selfvars.df.index = selfvars.df.ix[:, index]
+            print index
+            del selfvars.df[index]
+
         selfvars.mapperoutput = 1
         return json.dumps({'ans': str(type(selfvars.inputInterval))})
     except Exception,e:
@@ -135,7 +154,7 @@ def uploadFile():
             else:
                 df = pd.read_csv('uploads/'+filename)
             #store the col into selfvars obj
-            selfvars.features = df.columns.values
+            selfvars.features = list(df.columns.values)
             df.replace([np.inf, -np.inf], np.nan)
             selfvars.df = df.dropna()
 
@@ -207,12 +226,30 @@ def runMapper(intervals=8, overlap=50.0):
         intervals = selfvars.inputInterval
         overlap = selfvars.inputOverlap
 
+
+
     in_file = [f for f in os.listdir('uploads/')]
     assert len(in_file) > 0
     in_file = 'uploads/' + session['filename']
     #data = np.loadtxt(str(in_file), delimiter=',', dtype=np.float)
     CF = selfvars.checkedFeatures
     data = selfvars.df.ix[:, CF].values
+    print selfvars.df.head(10).ix[:,CF]
+    print selfvars.features
+
+    '''
+        Step 1: Declare filters and cutoff selection dictionary
+
+    '''
+    filterFuncs = {'eccentricity': jushacore.filters.eccentricity ,
+                  'Gauss_density': jushacore.filters.Gauss_density, 
+                  'kNN_distance': jushacore.filters.kNN_distance,
+                  'distance_to_measure': jushacore.filters.distance_to_measure, 
+                  'graph_Laplacian': jushacore.filters.graph_Laplacian, 
+                  'dm_eigenvector' : jushacore.filters.dm_eigenvector,
+                  'zero_filter': jushacore.filters.zero_filter}
+    cutoff = {'first_gap': jushacore.cutoff.first_gap, 'biggest_gap': jushacore.cutoff.biggest_gap, 
+              'variable_exp_gap':jushacore.cutoff.variable_exp_gap, 'variable_exp_gap2': jushacore.cutoff.variable_exp_gap2}
 
     '''
         Step 2: Metric
@@ -221,12 +258,17 @@ def runMapper(intervals=8, overlap=50.0):
     is_vector_data = data.ndim != 1
     '''
         Step 3: Filter function
+       ['eccentricity', 'Gauss_density', 'kNN_distance',
+           'distance_to_measure', 'graph_Laplacian', 'dm_eigenvector',
+           'zero_filter']
     '''
+
+
+    Filter = filterFuncs[str(selfvars.filter)]
+
     if is_vector_data:
-        metricpar = {'metric': 'euclidean'}
-        f = jushacore.filters.Gauss_density(data,
-            metricpar=metricpar,
-            sigma=1.0)
+        metricpar = selfvars.metric  #{'metric': 'euclidean'}
+        f = Filter(data, metricpar=metricpar)
     else:
         f = jushacore.filters.Gauss_density(data,
             sigma=1.0)
@@ -274,6 +316,19 @@ def runMapper(intervals=8, overlap=50.0):
         G['distinctAttr'] = distinctAttr
         G['colormap'] = genJetColormap(len(distinctAttr))
 
+        #generate two maps for index key-value pairs
+  
+        G['indexNameMap']= {}
+        G['nameIndexMap']= {}
+
+        
+        for k,v in enumerate(selfvars.df.index):
+            G['indexNameMap'][k] = v
+            G['nameIndexMap'][v] = k
+    
+
+
+
         """
         G['subnodes'] = [i['members'] for i in G['vertices']]
 
@@ -302,12 +357,12 @@ def runMapper(intervals=8, overlap=50.0):
 
 
 
-def binGen(array):
+def binGen(array, binsNumber=10):
     """
     input an array
     return a list of dicts for drawing barchart
     """
-    array_his = np.histogram(array)
+    array_his = np.histogram(array,binsNumber)
     array_his = [list(i) for i in array_his]
 
     def getDatainBins(ticks):
@@ -335,10 +390,14 @@ def binGen(array):
     ticks = ['%.2f'%i for i in array_his[1]]
     ticks = zip(ticks[:-1], ticks[1:])
 
+
+    assert type(binsNumber)==int
+    jetcolor = genJetColormap(binsNumber)
     feature_his = []
     for k, v in enumerate(zip(bins, ticks)):
-        dic = {'bins':v[0], 'ticks':v[1], 'binData':binData[k]}
+        dic = {'bins':v[0], 'ticks':v[1], 'binData':binData[k], 'color':jetcolor[k]}
         feature_his.append(dic)
+
     return (feature_his, ticksOrigin)
 
 
@@ -365,8 +424,10 @@ def statistical_tests(vertices):
             rankCols.append([])
             continue
         else:
+            df = copy.deepcopy(selfvars.df)
+            df.index = range(len(df.index))
             for col in selfvars.features:
-                targetSerie = selfvars.df[col]
+                targetSerie = df[col]
                 inNodeArray = targetSerie.ix[targetSerie.index.isin(pts)].values
                 notinNodeArray = targetSerie.ix[~targetSerie.index.isin(pts)].values
                 P4ttest = stats.ttest_ind(inNodeArray, notinNodeArray)[-1]

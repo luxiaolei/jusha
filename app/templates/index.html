@@ -98,6 +98,13 @@
             <button class="btn" id='fileupload'>Upload!</button>
 
             <li class="nav-header">选择需要聚类的特征</li>
+
+            <a>选择索引列</a>
+            <select id='index'>
+              <option value='None' checked=true>使用数字序列(Default)</option>
+            </select>
+
+            <a>选择需要计算的列</a>
             <form id="featuresCheck" method="post" enctype="multipart/form-data">
 
             </form>
@@ -107,6 +114,59 @@
             <input type='text' name='params' id='interval' value='7' maxlength="10" style='width: 60px; height:25px' />
             <a>overlap:</a>
             <input type='text' name='params' id='overlap' value = '30' maxlength="4" style='width: 60px;height:25px'/>
+            <a>filter:</a>
+              <select id='filters'>
+                <option value="eccentricity">Eccentricity (exponent=1)</option>
+                <option value="Gauss_density" >Gauss Density (sigma=1)</option>
+                <option value="kNN_distance">kNN Distance (k=2)</option>
+                <option value="distance_to_measure">Distance to measure (k=2)</option>
+                <option value="graph_Laplacian">Graph Laplacian (eps=1,k=2)</option>
+                <option value="dm_eigenvector">Distance Matrix Eigenvector</option>
+                <option value="zero_filter">Zero Filter</option>
+              </select>
+            <a>metric:<a>
+              <select id='metrics'>
+                <option value="euclidean">euclidean</option>
+                <option value="minkowski" >minkowski</option>
+                <option value="cityblock">cityblock</option>
+                <option value="seuclidean">seuclidean</option>
+                <option value="sqeuclidean">sqeuclidean</option>
+                <option value="cosine">cosine</option>
+                <option value="correlation">correlation</option>
+              </select>   
+
+              
+            <a>cutoff:<a>
+              <select id='cutoff'>
+                <option value="first_gap">first_gap</option>
+                <option value="biggest_gap" >biggest_gap</option>
+                <option value="variable_exp_gap">variable_exp_gap</option>
+                <option value="variable_exp_gap2">variable_exp_gap2</option>
+              </select> 
+
+            <!--
+            <a>cutoff-params:</a>
+            <ul id='cutoffparams'>
+              <ul id='first_gap'>
+                Gap<input type='text' id='gap' value='0.1' maxlength="4" style='display:none;width: 50px; height:25px' />
+              </ul>
+              <ul id='biggest_gap'>
+                Hight<input type='text' id='hight' value='0.1' maxlength="4" style='width: 50px; height:25px' />
+                Diameter<input type='text' id='diam' value='0.1' maxlength="4" style='width: 50px; height:25px' />
+              </ul>  
+              <li id='variable_exp_gap'>
+                Exponent<input type='text' id='exp' value='0.1' maxlength="4" style='width: 30px; height:25px' />
+                Max #clusters<input type='text' id='cluster' value='20' maxlength="4" style='width: 0px; height:25px' />
+              </li>    
+            </ul>
+          -->
+ 
+
+
+
+
+
+            <br>                            
             <button class="btn" id="paramsGenerate">Start Clustering!</button>
             <br/>
 
@@ -122,6 +182,9 @@
             <li class="nav-header">选择特征</li>
             <button class="btn" id="recolor" style="display:none">Re Color!</button>
             <div class=options id="radiocheck"></div>
+            <a>No. Bins: </a>
+            <input type='text' id='bins' value='20' maxlength="10" style='width: 60px; height:25px' />
+
 
 
 
