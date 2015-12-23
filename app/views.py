@@ -32,6 +32,7 @@ class selfgloablvars:
         self.feature_his = 1
         self.filter = 1
         self.metric = {}
+        self.cutoff = 1
         self.inputInterval = 'Not Signed'
         self.inputOverlap = 'Not Signed'
         self.binTicks = 'Not Signed'
@@ -118,6 +119,7 @@ def paramsAjax():
         selfvars.checkedFeatures = request.json['checkedFeatures']
         selfvars.filter = request.json['filter']
         selfvars.metric['metric'] = request.json['metric']
+        selfvars.cutoff = request.json['cutoff']
 
         #Reconstruct the dataframe based on selected index
         #!!WHen multipul calls, the features and df are shrinking!! should solve the problem
@@ -248,8 +250,16 @@ def runMapper(intervals=8, overlap=50.0):
                   'graph_Laplacian': jushacore.filters.graph_Laplacian, 
                   'dm_eigenvector' : jushacore.filters.dm_eigenvector,
                   'zero_filter': jushacore.filters.zero_filter}
-    cutoff = {'first_gap': jushacore.cutoff.first_gap, 'biggest_gap': jushacore.cutoff.biggest_gap, 
-              'variable_exp_gap':jushacore.cutoff.variable_exp_gap, 'variable_exp_gap2': jushacore.cutoff.variable_exp_gap2}
+    cutoffs = {'first_gap': jushacore.cutoff.first_gap(gap=.1), 
+               'biggest_gap': jushacore.cutoff.biggest_gap, 
+               'variable_exp_gap':jushacore.cutoff.variable_exp_gap(exponent=.1, maxcluster=20), 
+               'variable_exp_gap2': jushacore.cutoff.variable_exp_gap2(exponent=.1, maxcluster=20)}
+    
+    Filter = filterFuncs[str(selfvars.filter)]
+    cover = jushacore.cover.cube_cover_primitive(intervals, overlap)
+    cluster = jushacore.single_linkage()
+    metricpar = selfvars.metric
+    cutoff = cutoffs[selfvars.cutoff]
 
     '''
         Step 2: Metric
@@ -264,10 +274,10 @@ def runMapper(intervals=8, overlap=50.0):
     '''
 
 
-    Filter = filterFuncs[str(selfvars.filter)]
+   
 
     if is_vector_data:
-        metricpar = selfvars.metric  #{'metric': 'euclidean'}
+        #metricpar = selfvars.metric  #{'metric': 'euclidean'}
         f = Filter(data, metricpar=metricpar)
     else:
         f = jushacore.filters.Gauss_density(data,
@@ -277,8 +287,7 @@ def runMapper(intervals=8, overlap=50.0):
     '''
         Step 4: jushacore parameters
     '''
-    cover = jushacore.cover.cube_cover_primitive(intervals, overlap)
-    cluster = jushacore.single_linkage()
+    
     if not is_vector_data:
         metricpar = {}
     mapper_output = jushacore.jushacore(data, f,
@@ -287,7 +296,7 @@ def runMapper(intervals=8, overlap=50.0):
         point_labels= None,
         cutoff=None,
         metricpar=metricpar)
-    cutoff = jushacore.cutoff.first_gap(gap=0.1)
+    #cutoff = jushacore.cutoff.first_gap(gap=0.1)
     mapper_output.cutoff(cutoff, f, cover=cover, simple=False)
 
 
