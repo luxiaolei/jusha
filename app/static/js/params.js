@@ -99,8 +99,9 @@ $(function(){
     var overlap = $("#overlap").val();
     var filter = $('#filters').prop('selected',true).val();
     var metric = $('#metrics').prop('selected',true).val();
+    var cutoff = $('#cutoff').prop('selected',true).val();
     var data = {'interval': interval, 'overlap': overlap, 'checkedFeatures': checkedFeatures, 
-                'filter': filter, 'index':index, 'metric':metric}
+                'filter': filter, 'index':index, 'metric':metric, 'cutoff':cutoff}
     
     //send to server
     $.ajax({
