@@ -1,0 +1,214 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<html>
+
+<head>
+  <title>Example for the d3.js export from mapper</title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <script type="text/javascript">
+    var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  </script>
+  <script src="{{ url_for('static', filename='js/jquery-2.1.4.min.js') }}" type="text/javascript" charset="utf-8"></script>
+  <script src="{{url_for('static',filename ='js/featureHandler.js')}}" type="text/javascript" charset="utf-8"></script>
+  <script src="{{url_for('static',filename ='js/search.js')}}" type="text/javascript" charset="utf-8"></script>
+  <script src="{{url_for('static',filename = 'js/barchart.js')}}" type="text/javascript" charset="utf-8"></script>
+  <link href="{{url_for('static',filename = 'css/bar.css')}}" rel="stylesheet" type="text/css">
+  <!-- Bootstrap -->
+  <link href="{{url_for('static',filename = 'css/bootstrap.min.css')}}" rel="stylesheet" media="screen">
+  <link href="{{url_for('static',filename = 'css/layout.css')}}" rel="stylesheet" media="screen">
+
+  <script>
+  $(document).ready(function() {
+       //$(function() { $('#divContainer').draggable(); });
+       //$(function() { $("#divResize").draggable().resizable(); });
+  });
+  </script>
+</head>
+
+<body>
+  <!--Navi bar-->
+  <li>
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container-fluid">
+        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="brand" href="#">聚沙团队的超级聚类算法操作面板</a>
+        <div class="nav-collapse collapse">
+          <p class="navbar-text pull-right">
+            登录 <a href="#" class="navbar-link">以后再弄</a>
+          </p>
+          <ul class="nav">
+            <li class="active"><a href="#"></a></li>
+            <li><a href="#about"></a></li>
+            <li><a href="#contact"></a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+  </div>
+</li>
+
+<div class="row" style="height:20px">
+  <div class="span7">
+  </div>
+</div>
+
+<div class='dataInfo'>
+    <div id=members class="Content">
+  </div>
+</div>
+
+<li>
+
+  <div class="container" style="height: 700px">
+    <div class="span2" style="height: 500px">
+
+        <div >
+          <ul id='explain' class="nav nav-list">
+
+          </ul>
+      </div>
+    </div>
+
+
+
+    <div class="span6" style="height: 500px">
+
+        <div id="graph" style="height: 400px">
+        </div>
+        <div id='barchart' style="width: 380px"></div>
+    </div>
+
+    <div class="row-fluid">
+      <div class="span4">
+        <!--Sidebar content-->
+        <div class="well sidebar-nav">
+          <ul class="nav nav-list">
+            <li class="nav-header">文件上传</li>
+            <form id="upload-file" method="post" enctype="multipart/form-data">
+                <fieldset>
+                    <input  name="file" type="file" value="Choose..">
+                </fieldset>
+
+            </form>
+            <button class="btn" id='fileupload'>Upload!</button>
+
+            <li class="nav-header">选择需要聚类的特征</li>
+
+            <a>选择索引列</a>
+            <select id='index'>
+              <option value='None' checked=true>使用数字序列(Default)</option>
+            </select>
+
+            <a>选择需要计算的列</a>
+            <form id="featuresCheck" method="post" enctype="multipart/form-data">
+
+            </form>
+
+            <li class="nav-header">输入参数</li>
+            <a>Interval: </a>
+            <input type='text' name='params' id='interval' value='7' maxlength="10" style='width: 60px; height:25px' />
+            <a>overlap:</a>
+            <input type='text' name='params' id='overlap' value = '30' maxlength="4" style='width: 60px;height:25px'/>
+            <a>filter:</a>
+              <select id='filters'>
+                <option value="eccentricity">Eccentricity (exponent=1)</option>
+                <option value="Gauss_density" >Gauss Density (sigma=1)</option>
+                <option value="kNN_distance">kNN Distance (k=2)</option>
+                <option value="distance_to_measure">Distance to measure (k=2)</option>
+                <option value="graph_Laplacian">Graph Laplacian (eps=1,k=2)</option>
+                <option value="dm_eigenvector">Distance Matrix Eigenvector</option>
+                <option value="zero_filter">Zero Filter</option>
+              </select>
+            <a>metric:<a>
+              <select id='metrics'>
+                <option value="euclidean">euclidean</option>
+                <option value="minkowski" >minkowski</option>
+                <option value="cityblock">cityblock</option>
+                <option value="seuclidean">seuclidean</option>
+                <option value="sqeuclidean">sqeuclidean</option>
+                <option value="cosine">cosine</option>
+                <option value="correlation">correlation</option>
+              </select>   
+
+              
+            <a>cutoff:<a>
+              <select id='cutoff'>
+                <option value="first_gap">first_gap</option>
+                <option value="biggest_gap" >biggest_gap</option>
+                <option value="variable_exp_gap">variable_exp_gap</option>
+                <option value="variable_exp_gap2">variable_exp_gap2</option>
+              </select> 
+
+            <!--
+            <a>cutoff-params:</a>
+            <ul id='cutoffparams'>
+              <ul id='first_gap'>
+                Gap<input type='text' id='gap' value='0.1' maxlength="4" style='display:none;width: 50px; height:25px' />
+              </ul>
+              <ul id='biggest_gap'>
+                Hight<input type='text' id='hight' value='0.1' maxlength="4" style='width: 50px; height:25px' />
+                Diameter<input type='text' id='diam' value='0.1' maxlength="4" style='width: 50px; height:25px' />
+              </ul>  
+              <li id='variable_exp_gap'>
+                Exponent<input type='text' id='exp' value='0.1' maxlength="4" style='width: 30px; height:25px' />
+                Max #clusters<input type='text' id='cluster' value='20' maxlength="4" style='width: 0px; height:25px' />
+              </li>    
+            </ul>
+          -->
+ 
+
+
+
+
+
+            <br>                            
+            <button class="btn" id="paramsGenerate">Start Clustering!</button>
+            <br/>
+
+            <li class="nav-header">数据搜索</li>
+
+            <li>
+              <a>Search Data:</a>
+              <input type='text' name='search' id='searchbox' style='width: 200px; height:25px'/>
+              <button class="btn" id='searchsubmit'>Search!</button>
+              <button class="btn" id='reverse' style="display:none">Reverse</button>
+            </li>
+
+            <li class="nav-header">选择特征</li>
+            <button class="btn" id="recolor" style="display:none">Re Color!</button>
+            <div class=options id="radiocheck"></div>
+            <a>No. Bins: </a>
+            <input type='text' id='bins' value='20' maxlength="10" style='width: 60px; height:25px' />
+
+
+
+
+          </ul>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</li>
+
+
+
+
+
+
+
+
+
+  <script src="{{ url_for('static', filename = 'js/d3.v3.js') }}" charset="utf-8"></script>
+  <script src="{{ url_for('static', filename = 'js/force_layout.js') }}" charset="utf-8"></script>
+  <script src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename = 'js/params.js') }}"></script>
+
+</body>
+
+</html>
