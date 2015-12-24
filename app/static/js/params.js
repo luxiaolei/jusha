@@ -49,7 +49,7 @@ $(function(){
             genFeaturesCheckBoxes()
 
             $(function(){
-              //when select an index column, del the corresbonding checkbox 
+              //when select an index column, del the corresbonding checkbox
               $('#index').on('change',function(){
                 $('#featuresCheck').children().remove()
                 $('label').remove()
@@ -79,7 +79,16 @@ $(function(){
     }else{
       redandentMetrics.show()
     }
-    
+
+  })
+})
+
+$(function(){
+  $('#cutoff').on('change',function(){
+    var cutoff = $('#cutoff').prop('selected',true).val();
+    if(cutoff == 'ScaleG'){
+      console.log('scale_grapg')
+    }
   })
 })
 
@@ -100,9 +109,12 @@ $(function(){
     var filter = $('#filters').prop('selected',true).val();
     var metric = $('#metrics').prop('selected',true).val();
     var cutoff = $('#cutoff').prop('selected',true).val();
-    var data = {'interval': interval, 'overlap': overlap, 'checkedFeatures': checkedFeatures, 
+    var data = {'interval': interval, 'overlap': overlap, 'checkedFeatures': checkedFeatures,
                 'filter': filter, 'index':index, 'metric':metric, 'cutoff':cutoff}
-    
+
+    //if cutoff is ScaleGraph, then generate params input box for sub params
+    //if(cutoff=='')
+
     //send to server
     $.ajax({
       type : "POST",

@@ -39,7 +39,7 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
    }
 
    $( event.target ).blur();
-      
+
    console.log( options );
    return false;
 });
@@ -61,7 +61,7 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
 
             <li>
             <a herf='#'>上传文件</a>
-            </li>          
+            </li>
             <form id="upload-file" method="post" enctype="multipart/form-data">
                 <fieldset>
                     <input  name="file" type="file" value="Choose..">
@@ -77,14 +77,14 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
               <option value='None' checked=true >使用数字序列</option>
             </select>
 
-          
+
 
             <li>
               <div class="container">
                 <div class="row">
                     <div class="col-lg-12">
                       <div class="button-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span> 
+                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span>
                         <span class="caret"></span>选择需要计算的列</button>
                         <ul class="dropdown-menu" id="featuresCheck" ></ul>
                       </div>
@@ -94,14 +94,6 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
             </li>
 
             </form>
-            <li>
-            <a herf='#'>输入参数</a>
-            </li>
-            <a>Interval: </a>
-            <input type='text' name='params' id='interval' value='7' maxlength="10" style='width: 60px; height:25px' />
-            <a>overlap:</a>
-            <input type='text' name='params' id='overlap' value = '30' maxlength="4" style='width: 60px;height:25px'/>
-
 
             <li>
             <a herf='#'>选择过滤器以及度量类型</a>
@@ -115,7 +107,7 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
                 <option value="dm_eigenvector">Distance Matrix Eigenvector</option>
                 <option value="zero_filter">Zero Filter</option>
               </select>
-     
+
               <select id='metrics' style='width:100px'>
                 <option value="euclidean">Euclidean</option>
                 <option value="minkowski" >Minkowski</option>
@@ -124,7 +116,15 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
                 <option value="sqeuclidean">Sqeuclidean</option>
                 <option value="cosine">Cosine</option>
                 <option value="correlation">Correlation</option>
-              </select>   
+              </select>
+
+            <li>
+            <a herf='#'>输入参数</a>
+            </li>
+            <a>Interval: </a>
+            <input type='text' name='params' id='interval' value='7' maxlength="10" style='width: 60px; height:25px' />
+            <a>overlap:</a>
+            <input type='text' name='params' id='overlap' value = '30' maxlength="4" style='width: 60px;height:25px'/>
 
             <li>
             <a herf='#'>选择阀门类型</a>
@@ -132,16 +132,17 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
               <select id='cutoff'>
                 <option value="first_gap">first_gap</option>
                 <option value="biggest_gap" >biggest_gap</option>
+                <option value="ScaleG">Scale graph algorithm</option>
                 <option value="variable_exp_gap">variable_exp_gap</option>
                 <option value="variable_exp_gap2">variable_exp_gap2</option>
-              </select> 
+              </select>
 
 
 
 
 
 
-            <br>                            
+            <br>
             <button class="btn" id="paramsGenerate">Start Clustering!</button>
             <br/>
             <li>
@@ -156,7 +157,7 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
             <li>
             <a herf='#'>选择钻取特征</a>
             </li>
-         
+
             <div style="max-height: 466px;overflow-y:scroll" class=options id="radiocheck"></div>
             <a>No. Bins: </a>
             <input type='text' id='bins' value='20' maxlength="10" style='width: 60px; height:25px' />
@@ -164,13 +165,13 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
 
 
             <div id='barchart' class='container' style="width:230px; height:230px">
-              
+
             </div>
 
 
 
 
-          
+
             </ul>
         </div>
         <!-- /#sidebar-wrapper -->
@@ -179,10 +180,10 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
         <div id="page-content-wrapper">
             <div class="container-fluid">
                 <div class="row">
-                    <div id='graph' class="col-lg-10">
-                       
-                        
-              
+                    <div id='graph' class="background;col-lg-10">
+
+
+
                     </div>
                 </div>
             </div>
@@ -218,11 +219,11 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
     </div>
 
 
-        
+
     </div>
 
-
-  <script src="{{ url_for('static', filename = 'js/d3.v3.js') }}" charset="utf-8"></script>
+ <script src="//d3js.org/d3.v3.min.js"></script>
+  
   <script src="{{ url_for('static', filename = 'js/force_layout.js') }}" charset="utf-8"></script>
   <script src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script>
   <script src="{{ url_for('static', filename = 'js/params.js') }}"></script>
