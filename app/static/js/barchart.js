@@ -1,12 +1,12 @@
 
 var barChart = function(url, numSvg){
-  var margin = {top: 20, right: 20, bottom: 30, left: 40},
-      width = 560 - margin.left - margin.right,
-      height = 200 - margin.top - margin.bottom;
+  var margin = {top: 1, right: 1, bottom: 1, left: 1},
+      width = $('#barchart').width() //560 - margin.left - margin.right,
+      height = $('#barchart').height() //200 - margin.top - margin.bottom;
 
   console.log(url)
   var x = d3.scale.ordinal()
-      .rangeRoundBands([0, width-80], .1, .4);
+      .rangeRoundBands([0, width], .0,0);
 
   var y = d3.scale.linear()
       .range([height, 0]);
@@ -31,7 +31,7 @@ var barChart = function(url, numSvg){
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
               .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                .attr("transform", "translate(" -10 + "," + margin.top + ")");
 
   d3.json(url,function(error, data) {
     if (error) throw error;
@@ -42,8 +42,8 @@ var barChart = function(url, numSvg){
     y.domain([0, d3.max(data,function(d){return d.bins})]);
     svg.append("g")
         .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis).attr('height', 150).selectAll("text")
+        .attr("transform", "translate(100," + height + ")")
+        .call(xAxis).attr('height', height).selectAll("text")
                     .style("text-anchor", "middle")
                     .attr('transform', 'rotate(-15)');
     svg.append("g")
@@ -73,7 +73,7 @@ var barChart = function(url, numSvg){
             })
             .on('mouseout', function(){
               //change back color, both for the bar and nodes
-              d3.select('svg').selectAll(".node").style('opacity', 1)
+              d3.select('#graph').selectAll(".node").style('opacity', 1)
               d3.select(this).style("fill", function(d){return d.color})
             })
             .on('click', function(d,i){
@@ -93,22 +93,6 @@ var barChart = function(url, numSvg){
               }
 
             })
-    recEnter.append("text")
-            .text(function(d) { return d.bins; })
-            .attr("x", function(d) { return x(d.ticks)+ 7; })
-            .attr("y", function(d) { return y(d.bins) - 5; })//function(d) { return y(d.bins); })
-            .style("stroke", "#1a3ccb")
-            .on('mouseover', function(d){
-              //change color of the rect
-              //search data in the rect
-              searchFunc(d.binData)
 
-              d3.select(this).style("fill", "green")
-            })
-            .on('mouseout', function(){
-              //change back color, both for the bar and nodes
-              d3.select('svg').selectAll(".node").style('opacity', 1)
-              d3.select(this).style("fill", "steelblue")
-            })
           })
         }

@@ -40,9 +40,9 @@ $(function(){
 
             var genFeaturesCheckBoxes = function(){
               for(i in data.features){
-                var checkbox = $("<input type='checkbox' id=fcheck"+i+" checked=true value="
+                var checkbox = $("<li><a><input type='checkbox' id=fcheck"+i+" checked=true value="
                                   +data.features[i]+">"
-                                  +'<label for=fcheck'+i+' class=btn>'+ data.features[i] + '</label>')
+                                  +'<label for=fcheck'+i+' class=btn>'+ data.features[i] + '</label></a></li>')
                 checkbox.appendTo(checkboxesForm)
               }
             }

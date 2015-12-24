@@ -12,7 +12,7 @@ $(function(){
         $("[name='fname']").remove()
       }
      for (i in data.features){
-       var radioBtn = $('<input type="radio" id=rd'+i+' name="features" value= '+data.features[i]+'><label class=btn for=rd'+i+' name=fname>'+data.features[i]+'</label>');
+       var radioBtn = $('<li><input type="radio" id=rd'+i+' name="features" value= '+data.features[i]+'><label class=btn for=rd'+i+' name=fname><a>'+data.features[i]+'</a></label></li>');
        radioBtn.appendTo('#radiocheck');
      };
 
@@ -30,17 +30,12 @@ $(function(){
          contentType: 'application/json;charset=UTF-8',
          success: function(){
            //draw bar chart
-           if($('svg').length == 3){
-           $('svg').last().remove();
-           $('svg').last().remove()
+           if($('svg').length == 2){
+           $('svg').first().remove();
+           
            }
            barChart('/bins',1)
-           $('[id^=bar]').each(function(){
-             $(this).bind('click',function(){
-               console.log('barrr')
-               barChart('/binsSecondary',2)
-             })
-           })
+           
          }
        });
       });

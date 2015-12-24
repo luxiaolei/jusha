@@ -32,7 +32,7 @@ var searchFunc = function(dataname){
           var eid = 'circleid_'+exsitIndexes[i];
           modExsitIndexes.push(eid);}
 
-        var svg = d3.select('svg');
+        var svg = d3.select('#graph');
         var noneExsitIndexes = [];
         svg.selectAll('.node')
            .each(function(d,i){
