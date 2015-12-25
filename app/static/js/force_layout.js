@@ -46,10 +46,20 @@ var runClustering = function(){
                 .attr("height", height)
               .append('g')
                 .attr("transform", "translate(" + margin.left + "," + margin.right + ")")
-                .call(zoom)
 
   var mappersvg = svg.append('g')
 
+    $(document).keydown(function (e) {
+        if (e.keyCode == 16) {
+          svg.call(zoom)
+        }
+    });
+
+    $(document).keyup(function (e) {
+      if (e.keyCode == 16) {
+        svg.on('.zoom',null)
+      }
+  });
   var force = d3.layout.force()
   	.charge(-120)
   	.linkDistance(17)
@@ -111,10 +121,10 @@ var runClustering = function(){
         .style('stroke-width', function(e){return lwscale(e.wt);})
         .style('stroke-opacity', 0.6);
 
-      var node = mappersvg.append('g').selectAll(".node")
+      var node = mappersvg.append('g').attr("class", "node")
+      .selectAll(".node")
       	.data(nodes)
       	.enter().append("circle")
-      	.attr("class", "node")
         .attr("id", function(e){return 'circleid_'+e.index})
       	.attr("r", function(e) { return Sscale(e.members.length) })//Math.min(10,(3+Math.sqrt(e.members.length))); })
       	.style("fill", function(e) { return fscale(e.attribute);})
@@ -137,20 +147,35 @@ var runClustering = function(){
 
       	//.call(force.drag)  ;
 
+        var brusher = d3.svg.brush()
+            .x(d3.scale.identity().domain([0, width]))
+            .y(d3.scale.identity().domain([0, height]))
+            .on("brush", function() {
+              var extent = d3.event.target.extent();
+              node.classed("selected", function(d) {
+                return extent[0][0] <= d.x && d.x < extent[1][0]
+                    && extent[0][1] <= d.y && d.y < extent[1][1];
+              });
+            })
+
+        var brush = mappersvg.append("g")
+        brush.attr("class", "brush").call(brusher)
+        brush.select('.background').style('cursor', 'auto')
+
+
       var label = node.append("text")
           .text(function (d) { return d.index; })
           .style("fill", "#555")
           .style("font-family", "Arial")
           .style("font-size", 12);
 
-
       force.on("tick", function () {
-      	link.attr("x1", function(e) { return e.source.x -100; })
-            .attr("y1", function(e) { return e.source.y - 50; })
-            .attr("x2", function(e) { return e.target.x -100; })
-            .attr("y2", function(e) { return e.target.y - 50; });
-      	node.attr("cx", function(e) { return e.x -100; })
-                  .attr("cy", function(e) { return e.y - 50; });
+      	link.attr("x1", function(e) { return e.source.x ; })//-100; })
+            .attr("y1", function(e) { return e.source.y ; })//- 50; })
+            .attr("x2", function(e) { return e.target.x ; })//-100; })
+            .attr("y2", function(e) { return e.target.y ; })//- 50; });
+      	node.attr("cx", function(e) { return e.x ; })// -100; })
+                  .attr("cy", function(e) { return e.y ; })//- 50; });
       });
   });
     d3.select('#recolor').on('click',function(){
@@ -170,7 +195,7 @@ var runClustering = function(){
           	.range(colormap)
           	.domain(distinctAttr);
 
-          var node = mappersvg.selectAll(".node")
+          var node = mappersvg.selectAll("circle")
           //update the color
           node
           .data(nodes)

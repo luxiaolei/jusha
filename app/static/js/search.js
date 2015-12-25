@@ -34,7 +34,7 @@ var searchFunc = function(dataname){
 
         var svg = d3.select('#graph');
         var noneExsitIndexes = [];
-        svg.selectAll('.node')
+        svg.selectAll('circle')
            .each(function(d,i){
              //find the id of node which does NOT contain the search data
              var flag = $.inArray(this.id, modExsitIndexes);
@@ -71,7 +71,7 @@ $(function(){
   $("#reverse").bind('click',function(){
     $("#reverse").hide()
     var svg = d3.select('svg');
-    svg.selectAll('.node').style('opacity', 1)
+    svg.selectAll('circle').style('opacity', 1)
   })
 
 })

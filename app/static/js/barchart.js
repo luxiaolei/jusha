@@ -73,7 +73,7 @@ var barChart = function(url, numSvg){
             })
             .on('mouseout', function(){
               //change back color, both for the bar and nodes
-              d3.select('#graph').selectAll(".node").style('opacity', 1)
+              d3.select('#graph').selectAll("circle").style('opacity', 1)
               d3.select(this).style("fill", function(d){return d.color})
             })
             .on('click', function(d,i){
