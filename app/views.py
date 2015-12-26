@@ -14,6 +14,7 @@ import pandas as pd
 from scipy import stats
 from matplotlib.cm import jet
 from matplotlib.colors import rgb2hex
+from sklearn.preprocessing import normalize
 
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 ALLOWED_EXTENSIONS = set(['txt', 'csv'])
@@ -29,6 +30,7 @@ class selfgloablvars:
         self.df = 1
         self.selected_feature = 1
         self.checkedFeatures = 1
+        self.checkedFeaturesNorm = 1
         self.feature_his = 1
         self.filter = 1
         self.metric = {}
@@ -117,6 +119,7 @@ def paramsAjax():
         selfvars.inputInterval = int(request.json['interval'])
         selfvars.inputOverlap = float(request.json['overlap'])
         selfvars.checkedFeatures = request.json['checkedFeatures']
+        selfvars.checkedFeaturesNorm = request.json['checkedFeaturesNorm']
         selfvars.filter = request.json['filter']
         selfvars.metric['metric'] = request.json['metric']
         selfvars.cutoff = request.json['cutoff']
@@ -137,6 +140,13 @@ def paramsAjax():
         return json.dumps({'ans': str(type(selfvars.inputInterval))})
     except Exception,e:
         return json.dumps({'ans':str(e)})
+
+@app.route('/explainAjax',  methods= ['POST', 'GET'])
+def explainAjax():
+    SelectionA = request.json['selectionA']
+    SelectionB = request.json['selectionB']
+    test = statistical_tests(SelectionA, SelectionB)
+    return json.dumps(test)#{'ans':str('yeyeye')})
 
 
 @app.route('/uploadFile', methods= ['POST'])
@@ -235,26 +245,34 @@ def runMapper(intervals=8, overlap=50.0):
     in_file = 'uploads/' + session['filename']
     #data = np.loadtxt(str(in_file), delimiter=',', dtype=np.float)
     CF = selfvars.checkedFeatures
-    data = selfvars.df.ix[:, CF].values
-    print selfvars.df.head(10).ix[:,CF]
-    print selfvars.features
+    data = selfvars.df.ix[:, CF]
+    print CF
+    #dataNormed = data.ix[:, ]
+    for col in selfvars.checkedFeaturesNorm:
+        if col not in CF:
+            continue
+        else:
+            print '%s is normalized!'%col
+            data[col] = normalize(data[col].values[:, np.newaxis],axis=0).ravel()
+    #print data
+    data = data.values
 
     '''
         Step 1: Declare filters and cutoff selection dictionary
 
     '''
     filterFuncs = {'eccentricity': jushacore.filters.eccentricity ,
-                  'Gauss_density': jushacore.filters.Gauss_density, 
+                  'Gauss_density': jushacore.filters.Gauss_density,
                   'kNN_distance': jushacore.filters.kNN_distance,
-                  'distance_to_measure': jushacore.filters.distance_to_measure, 
-                  'graph_Laplacian': jushacore.filters.graph_Laplacian, 
+                  'distance_to_measure': jushacore.filters.distance_to_measure,
+                  'graph_Laplacian': jushacore.filters.graph_Laplacian,
                   'dm_eigenvector' : jushacore.filters.dm_eigenvector,
                   'zero_filter': jushacore.filters.zero_filter}
-    cutoffs = {'first_gap': jushacore.cutoff.first_gap(gap=.1), 
-               'biggest_gap': jushacore.cutoff.biggest_gap, 
-               'variable_exp_gap':jushacore.cutoff.variable_exp_gap(exponent=.1, maxcluster=20), 
+    cutoffs = {'first_gap': jushacore.cutoff.first_gap(gap=.1),
+               'biggest_gap': jushacore.cutoff.biggest_gap,
+               'variable_exp_gap':jushacore.cutoff.variable_exp_gap(exponent=.1, maxcluster=20),
                'variable_exp_gap2': jushacore.cutoff.variable_exp_gap2(exponent=.1, maxcluster=20)}
-    
+
     Filter = filterFuncs[str(selfvars.filter)]
     cover = jushacore.cover.cube_cover_primitive(intervals, overlap)
     cluster = jushacore.single_linkage()
@@ -274,7 +292,7 @@ def runMapper(intervals=8, overlap=50.0):
     '''
 
 
-   
+
 
     if is_vector_data:
         #metricpar = selfvars.metric  #{'metric': 'euclidean'}
@@ -287,7 +305,7 @@ def runMapper(intervals=8, overlap=50.0):
     '''
         Step 4: jushacore parameters
     '''
-    
+
     if not is_vector_data:
         metricpar = {}
     mapper_output = jushacore.jushacore(data, f,
@@ -316,7 +334,7 @@ def runMapper(intervals=8, overlap=50.0):
                        mapper_output.simplices[1][e]} for e in
                       mapper_output.simplices[1].keys()]
 
-        G['statisticT'] = statistical_tests(G['vertices'])
+        #G['statisticT'] = statistical_tests(G['vertices'])
 
 
         distinctAttr = [i['attribute'] for i in G['vertices']]
@@ -326,15 +344,15 @@ def runMapper(intervals=8, overlap=50.0):
         G['colormap'] = genJetColormap(len(distinctAttr))
 
         #generate two maps for index key-value pairs
-  
+
         G['indexNameMap']= {}
         G['nameIndexMap']= {}
 
-        
+
         for k,v in enumerate(selfvars.df.index):
             G['indexNameMap'][k] = v
             G['nameIndexMap'][v] = k
-    
+
 
 
 
@@ -414,16 +432,28 @@ def binGen(array, binsNumber=10):
 
 
 
-def statistical_tests(vertices):
+def statistical_tests(SelectionA, SelectionB, top=3):
     """
-    Input is the vertices list, in which element contain members
+    Selection: input list of vertices indexes
     Return a list of ranked features, and p-value for t-unpaied test
     and ks-2samples test
     """
+    #dataIndexesList = [i['members'] for i in vertices]
 
-    dataIndexesList = [i['members'] for i in vertices]
+    def convertSelections(Set):
+        ans = [vertices[i]['members'] for i in Set]
+        #make it flat
+        ans = [item for sublist in ans for item in sublist]
+        #make the items distinctive
+        ans = list(set(ans))
+        return ans
+    vertices = selfvars.mapperoutput['vertices']
+    SeA = convertSelections(SelectionA)
+    SeB = convertSelections(SelectionB)
+
     testsRes = []
     ranks = []
+    """
     for pts in dataIndexesList:
         rankCols = []
         ansDic = {}
@@ -433,35 +463,39 @@ def statistical_tests(vertices):
             rankCols.append([])
             continue
         else:
-            df = copy.deepcopy(selfvars.df)
-            df.index = range(len(df.index))
-            for col in selfvars.features:
-                targetSerie = df[col]
-                inNodeArray = targetSerie.ix[targetSerie.index.isin(pts)].values
-                notinNodeArray = targetSerie.ix[~targetSerie.index.isin(pts)].values
-                P4ttest = stats.ttest_ind(inNodeArray, notinNodeArray)[-1]
-                P4kstest = stats.ks_2samp(inNodeArray, notinNodeArray)[-1]
-                ansDic[col] = [P4ttest, P4kstest, len(pts)]
-                rankCols.append( min(P4kstest, P4ttest))
+    """
+    rankCols = []
+    ansDic = {}
+    df = copy.deepcopy(selfvars.df)
+    for col in selfvars.features:
+        targetSerie = df[col]
+        dataA = targetSerie.ix[targetSerie.index.isin(SeA)].values
+        dataB = targetSerie.ix[targetSerie.index.isin(SeB)].values
+        #notinNodeArray = targetSerie.ix[~targetSerie.index.isin(pts)].values
+        P4ttest = stats.ttest_ind(dataA, dataB)[-1]
+        P4kstest = stats.ks_2samp(dataA, dataB)[-1]
+        ansDic[col] = [round(i, 3) for i in [P4ttest, P4kstest]]
+        rankCols.append( min(P4kstest, P4ttest))
 
-            sortByminPindex = np.argsort(rankCols)
-            sortByCol = [selfvars.features[i] for i in sortByminPindex]
+    sortByminPindex = np.argsort(rankCols)
+    sortByCol = [selfvars.features[i] for i in sortByminPindex]
+    ans = [{'colname': col, 'p4t': ansDic[col][0], 'p4ks':ansDic[col][1]}
+            for k, col in enumerate(sortByCol) if k < top]
+
+    #print sortByCol
+    return ans
 
 
 
 
-            """
-            print 'inNodes :%s'%len(inNodeArray)
-            print 'notInNode:%s'%len(notinNodeArray)
-            print 'Series:%s'%len(targetSerie)
-            print 'DF:%s'%len(selfvars.df)
-            """
 
-            testsRes.append(ansDic)
+
+
+            #testsRes.append(ansDic)
     #print testsRes
     #print 'there r %s doable nodes'%len(testsRes)
     #print 'there r %s nodes '%len(dataIndexesList)
-    return testsRes
+    #return testsRes
 
 
 def genJetColormap(n):

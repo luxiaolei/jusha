@@ -106,7 +106,7 @@ var runClustering = function(){
         .domain([0, d3.max(linkColor)]);
 
       var Sscale = d3.scale.linear()
-        .range([3, 12])
+        .range([4, 9])
         .domain([1, d3.max(nodeSize)])
 
       force.nodes(nodes)
@@ -130,7 +130,7 @@ var runClustering = function(){
       	.style("fill", function(e) { return fscale(e.attribute);})
       	.text(function(e){return e.members.length; })
       	.on('mouseover', function(e) {
-          mouseoverShowExaplain(e,statests)
+          //mouseoverShowExaplain(e,statests)
           //var svgFlag = $('svg').length
           //if (svgFlag > 1){mouseoverHighlightBars(e.members)}
           mouseoverHighlightBars(e.members)
@@ -143,7 +143,7 @@ var runClustering = function(){
       	})
         .on('mouseout',function(){
           $('#explain').children().remove()
-          d3.selectAll('rect').style('fill', 'steelblue')
+          d3.selectAll('rect').style('opacity', 1)
         })
           .call(force.drag)  ;
 
@@ -152,18 +152,32 @@ var runClustering = function(){
             .y(d3.scale.identity().domain([0, height]))
             .on("brush", function() {
               var extent = d3.event.target.extent();
-
               var li = []
+              var selectionIndex = []
+              var members = []
               node.classed("selected", function(d) {
-
                 if( extent[0][0] <= d.x && d.x < extent[1][0]
                     && extent[0][1] <= d.y && d.y < extent[1][1]){
                       li.push(d)
-                      console.log(li.length)
+                      selectionIndex.push(d.index)
 
-                      $('#NumPtsA').html(li.length)
+                      $.each(d.members, function(i,e){members.push(e)})
+
+                      //console.log(li.length)
+
+                      //html(li.length)
                       return d
                     };
+
+                $('[id^=Selection').each(function(){
+                  var display = $(this).children().first()
+                  var btn = $(this).children().last()
+                  if (btn.val()==0){
+                    //console.log(btn.val())
+                    display.html(uniqueArray(members).length)}
+                })
+              //console.log(uniqueArray(members))
+              $('#selection').data('tmp', selectionIndex)
               })//.each(function(e){console.log(e)});
             })
 
@@ -196,28 +210,20 @@ var runClustering = function(){
           for(n in nodes) {
             nodeattr.push(nodes[n].attribute);
           }
-
           var colormap = d['colormap']
           var distinctAttr = d['distinctAttr']
-
           var fscale = d3.scale.linear()
           	.range(colormap)
           	.domain(distinctAttr);
-
           //###D3 way of coloring
           //var node = mappersvg.selectAll("circle")
           //node
           //.data(nodes)
           //.style('fill', function(e) { return fscale(e.attribute);})
-
           $('circle').each(function(){
             //console.log($(this).index())
             $(this).css('fill', function(){return fscale(nodes[$(this).index()].attribute)})
           })
-
-
-
-
         });
       };
       var buttonType = $('#recolor')
@@ -230,6 +236,33 @@ var runClustering = function(){
       }
     })
 }
+
+
+$(function(){
+  $('[id^=Selection]').each(function(){
+    $(this).bind('click',function(){
+      var btn = $(this).children().last()
+      if (btn.val()==0){
+        btn.html('Clear!');
+        btn.val(1);
+        //get selected nodes indexes from temp
+        var selectedArray = $('#selection').data('tmp')
+        //set the array to the clicked button
+        btn.data('selected', selectedArray)
+      }else{
+        btn.html('Select!');
+        btn.val(0);      }
+
+      //controll the explain button display
+      var value = 0;
+      $('[id^=add]').each(function(){
+        value += parseInt($(this).val())
+      })
+      if (value==2){$('#explain').show()}else{$('#explain').hide()}
+
+    })
+  })
+})
 
 var mouseoverHighlightBars = function(datalist){
   //datalist: dataIndex
@@ -247,12 +280,14 @@ var mouseoverHighlightBars = function(datalist){
     //console.log(selectedBinIndexs)
     d3.selectAll('rect')
       .filter(function(d,i){
-        if ($.inArray(i, selectedBinIndexs) == -1){return false}else{return true}
+        if ($.inArray(i, selectedBinIndexs) != -1){return false}else{return true}
       })
-      .style('fill', 'green')
+      .style('opacity', .3)
   })
 }
 
+
+//redundent code!
 var mouseoverShowExaplain = function(e,statests){
   //when mouseover nodes, Get explainjason from the server
   //show the statistic test results by nodes index
@@ -274,4 +309,12 @@ var mouseoverShowExaplain = function(e,statests){
       fhead.appendTo('#explain')
     }
   }
+}
+
+var uniqueArray = function(list) {
+  var result = [];
+  $.each(list, function(i, e) {
+    if ($.inArray(e, result) == -1) result.push(e);
+  });
+  return result;
 }
