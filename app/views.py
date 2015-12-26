@@ -276,6 +276,7 @@ View -> Controller
 take the copy from '/mapperJsonSaved' and perform the re-colouring exercise in correspondence to the feature selected
 refresh the content in this url (the same url)
 """
+@app.route('/newjson')
 def newjson():
     """
     This is for recoloring based on selected feature
