@@ -1,3 +1,7 @@
+"""
+This py contains all the View -> Controller and Controller -> View modules to be executed in the front end j
+"""
+
 #!encoding=utf-8
 from flask import redirect, request, render_template, url_for, session, g, jsonify
 from flask_wtf import Form
@@ -19,11 +23,12 @@ from sklearn.preprocessing import normalize
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 ALLOWED_EXTENSIONS = set(['txt', 'csv'])
 
-
+"""
+This class is used for passing variables between functions
+20151220_TL
+Equivalent to the model in the MVC web app framework, where key user business data are stored and queried from
+"""
 class selfgloablvars:
-    """
-    This class is used for passing variables between functions
-    """
     def __init__(self):
         self.mapperoutput = 1
         self.features = 1
@@ -43,11 +48,25 @@ class selfgloablvars:
 
 selfvars = selfgloablvars()
 
-
+"""
+20151220_TL
+Utilities: input format control
+"""
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+
+"""
+20151220_TL
+View -> Controller
+"""
+
+"""
+20151220_TL
+temp store selected features column data in a url for immediate use, to be updated any time when the new request arrives
+http://flask.pocoo.org/docs/0.10/api/#returning-json
+"""
 @app.route('/features')
 def send_features():
     """
@@ -55,6 +74,10 @@ def send_features():
     """
     return jsonify(features=list(selfvars.features))
 
+"""
+20151220_TL
+Request the bins and feature selection parameters - ticks, and call the send_bins to execute the job
+"""
 @app.route('/bins')
 def send_bins():
     """
@@ -62,6 +85,10 @@ def send_bins():
     """
     return json.dumps(selfvars.feature_his)
 
+"""
+20151220_TL
+For the secondary bar charts? redundant then.
+"""
 @app.route("/binClickedAjax",  methods=['POST','GET'])
 def binClicked():
     """
@@ -73,6 +100,11 @@ def binClicked():
     selfvars.binClicked = int(binClicked)
     return json.dumps({'ans':1})
 
+
+"""
+20151220_TL
+going to get redundant; code-structurally shouldn't be in this part of the code anyways
+"""
 @app.route('/binsSecondary')
 def binsSecondary():
     """
@@ -88,6 +120,11 @@ def binsSecondary():
         array = array.ix[(array >= clickeRange[0]) & (array < clickeRange[1])]
     return json.dumps(binGen(array)[0])
 
+
+"""
+20151220_TL
+from View passed down the re-colour request and this Flask module execute the job for the selected feature
+"""
 @app.route('/feature_ajax', methods=['POST','GET'])
 def feature_ajax():
     """
@@ -107,6 +144,10 @@ def feature_ajax():
 
     return json.dumps({'ans':'1'})
 
+"""
+20151220_TL
+parameter specification passed down from View to fire up jushacore for the main cluster loop
+"""
 @app.route('/paramsAjax', methods=['POST'])
 def paramsAjax():
     """
@@ -149,6 +190,12 @@ def explainAjax():
     return json.dumps(test)#{'ans':str('yeyeye')})
 
 
+
+"""
+20151220_TL
+once the "upload" request occurs, go to the local folder and fetch the dataset csv/txt file and dump it on the "/uploadFile" url for further use
+furthermore, store in the temp object df for jushacore to read as input of the cluster process
+"""
 @app.route('/uploadFile', methods= ['POST'])
 def uploadFile():
     try:
@@ -177,11 +224,21 @@ def uploadFile():
         return json.dumps(str(e))
     return json.dumps({'ans': 'failed!'})
 
+"""
+20151220_TL
+fire up the html to the front end via the Jinja2 framework, no fuss
+http://flask.pocoo.org/docs/0.10/quickstart/
+"""
 @app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
 
+"""
+20151220_TL
+fire up the html to the front end via the Jinja2 framework, no fuss
+http://flask.pocoo.org/docs/0.10/quickstart/
+"""
 @app.route('/mapperjson')
 def mapper_cluster():
     """
@@ -190,6 +247,10 @@ def mapper_cluster():
     selfvars.mapperoutput = runMapper()
     return json.dumps(selfvars.mapperoutput)
 
+"""
+20151220_TL
+save the jushacore output in another url to be re-coloured and for further reference?
+"""
 @app.route('/mapperJsonSaved')
 def mapperRecolored():
     """
@@ -199,7 +260,22 @@ def mapperRecolored():
 
     return json.dumps(selfvars.mapperoutput)
 
-@app.route('/newjson')
+"""
+20151220_TL
+Division between View -> Controller and Controller -> View direction of the interactions
+"""
+
+"""
+20151220_TL
+View -> Controller
+"""
+
+
+"""
+20151220_TL
+take the copy from '/mapperJsonSaved' and perform the re-colouring exercise in correspondence to the feature selected
+refresh the content in this url (the same url)
+"""
 def newjson():
     """
     This is for recoloring based on selected feature
@@ -209,7 +285,12 @@ def newjson():
     return json.dumps(mappernew)
 
 
-
+"""
+20151220_TL
+this module contains pure View-Controller interaction, nothing involves the Model within, however,
+worth keeping a note for Model logging the actions, as registered user later may want to come back to the same state he last time left
+to be called in the "newjson" module
+"""
 def recolor_mapperoutput(mapperjson):
     """
     set selfvars.mappernew to an altered mapper_ouput in json format
@@ -230,7 +311,14 @@ def recolor_mapperoutput(mapperjson):
     target['colormap'] = genJetColormap(len(distinctAttr))
     return target
 
-
+"""
+20151220_TL
+call jushacore engine in the server to execute the cluster process according to the user parameter setting
+interval
+overlap
+*potentially, the ability to select different filter lenses should also be made available once activated
+*as well as whether to perform a scale graph algorithm following the main loop
+"""
 def runMapper(intervals=8, overlap=50.0):
     #type check inputParams, string for default,
     #float for user inputed
@@ -238,13 +326,13 @@ def runMapper(intervals=8, overlap=50.0):
         intervals = selfvars.inputInterval
         overlap = selfvars.inputOverlap
 
-
-
     in_file = [f for f in os.listdir('uploads/')]
     assert len(in_file) > 0
     in_file = 'uploads/' + session['filename']
     #data = np.loadtxt(str(in_file), delimiter=',', dtype=np.float)
+    #  20151220_TL pass on the selected features to be run in Model
     CF = selfvars.checkedFeatures
+
     data = selfvars.df.ix[:, CF]
     print CF
     #dataNormed = data.ix[:, ]
@@ -317,7 +405,14 @@ def runMapper(intervals=8, overlap=50.0):
     #cutoff = jushacore.cutoff.first_gap(gap=0.1)
     mapper_output.cutoff(cutoff, f, cover=cover, simple=False)
 
-
+    """
+	20151220_TL
+	dump the cluster outcome to a json file for d3 template and html to pick up and display in the front ends
+	this includes the following tuples:
+	vertices/nodes
+	edges
+	statistics associated to each vertex/node: number of nodes, ks-test p value, t-test p value	-- to deactivate by default, only switch on when need!!!
+	"""
     def to_d3js_graph(mapper_output):
         """
         Convert the 1-skeleton of a L{mapper_output} to a dictionary
@@ -358,30 +453,24 @@ def runMapper(intervals=8, overlap=50.0):
 
         """
         G['subnodes'] = [i['members'] for i in G['vertices']]
-
         #add subnodes connection,point subnodes to the main one
         org_length = len(G['vertices'])
         new_vertices = []
-
         for key, dic in enumerate(G['vertices']):
-            for elem in dic['members']:
+			for elem in dic['members']:
                 subnodes = {}
                 subnodes['index'] = elem
                 subnodes['members'] = [1]
                 #attribute of the subnodes is the same to the main node
                 subnodes['attribute'] = dic['attribute']
-
                 new_vertices.append(subnodes)
-
                 G['edges'].append({'source':org_length, \
                     'target':dic['index']})
                 org_length +=1
-
         G['vertices'] += new_vertices
         """
         return G
     return to_d3js_graph(mapper_output)
-
 
 
 def binGen(array, binsNumber=10):
@@ -426,10 +515,6 @@ def binGen(array, binsNumber=10):
         feature_his.append(dic)
 
     return (feature_his, ticksOrigin)
-
-
-
-
 
 
 def statistical_tests(SelectionA, SelectionB, top=3):
@@ -486,18 +571,11 @@ def statistical_tests(SelectionA, SelectionB, top=3):
     return ans
 
 
-
-
-
-
-
-            #testsRes.append(ansDic)
-    #print testsRes
-    #print 'there r %s doable nodes'%len(testsRes)
-    #print 'there r %s nodes '%len(dataIndexesList)
-    #return testsRes
-
-
+"""
+20151220_TL
+generate Jet Colour scheme for node colouring
+To be called in "recolor_mapperoutput"
+"""
 def genJetColormap(n):
     """
     give the length of the list contains only distict attribute value
