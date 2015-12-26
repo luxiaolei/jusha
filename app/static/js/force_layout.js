@@ -131,8 +131,9 @@ var runClustering = function(){
       	.text(function(e){return e.members.length; })
       	.on('mouseover', function(e) {
           mouseoverShowExaplain(e,statests)
-          var svgFlag = $('svg').length
-          if (svgFlag > 1){mouseoverHighlightBars(e.members)}
+          //var svgFlag = $('svg').length
+          //if (svgFlag > 1){mouseoverHighlightBars(e.members)}
+          mouseoverHighlightBars(e.members)
 
           var members_string = 'The '+e.index+'th node contains:';
           for (i in e.members){
@@ -144,18 +145,26 @@ var runClustering = function(){
           $('#explain').children().remove()
           d3.selectAll('rect').style('fill', 'steelblue')
         })
-
-      	//.call(force.drag)  ;
+          .call(force.drag)  ;
 
         var brusher = d3.svg.brush()
             .x(d3.scale.identity().domain([0, width]))
             .y(d3.scale.identity().domain([0, height]))
             .on("brush", function() {
               var extent = d3.event.target.extent();
+
+              var li = []
               node.classed("selected", function(d) {
-                return extent[0][0] <= d.x && d.x < extent[1][0]
-                    && extent[0][1] <= d.y && d.y < extent[1][1];
-              });
+
+                if( extent[0][0] <= d.x && d.x < extent[1][0]
+                    && extent[0][1] <= d.y && d.y < extent[1][1]){
+                      li.push(d)
+                      console.log(li.length)
+
+                      $('#NumPtsA').html(li.length)
+                      return d
+                    };
+              })//.each(function(e){console.log(e)});
             })
 
         var brush = mappersvg.append("g")
@@ -179,7 +188,7 @@ var runClustering = function(){
       });
   });
     d3.select('#recolor').on('click',function(){
-      force.stop()
+      //force.stop()
       var refreshGraph = function(url){
         d3.json(url,function(d){
           var nodes = d['vertices'];
@@ -195,11 +204,20 @@ var runClustering = function(){
           	.range(colormap)
           	.domain(distinctAttr);
 
-          var node = mappersvg.selectAll("circle")
-          //update the color
-          node
-          .data(nodes)
-          .style('fill', function(e) { return fscale(e.attribute);})
+          //###D3 way of coloring
+          //var node = mappersvg.selectAll("circle")
+          //node
+          //.data(nodes)
+          //.style('fill', function(e) { return fscale(e.attribute);})
+
+          $('circle').each(function(){
+            //console.log($(this).index())
+            $(this).css('fill', function(){return fscale(nodes[$(this).index()].attribute)})
+          })
+
+
+
+
         });
       };
       var buttonType = $('#recolor')
