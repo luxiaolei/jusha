@@ -18,7 +18,7 @@ import pandas as pd
 from scipy import stats
 from matplotlib.cm import jet
 from matplotlib.colors import rgb2hex
-from sklearn.preprocessing import normalize
+from sklearn.preprocessing import normalize,StandardScaler
 
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 ALLOWED_EXTENSIONS = set(['txt', 'csv'])
@@ -342,8 +342,10 @@ def runMapper(intervals=8, overlap=50.0):
             continue
         else:
             print '%s is normalized!'%col
-            data[col] = normalize(data[col].values[:, np.newaxis],axis=0).ravel()
-    #print data
+            Scaler = StandardScaler()
+            data[col] = Scaler.fit_transform(data[col].values[:, np.newaxis]).ravel()
+    print data.describe()
+
     data = data.values
 
     '''
