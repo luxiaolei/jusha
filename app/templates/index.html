@@ -55,7 +55,9 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <div id="sidebar-wrapper">
+        <div id="sidebar-wrapper" >
+
+
             <ul class="sidebar-nav">
 
 
@@ -184,6 +186,8 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
                 <a id='NumPtsB'></a>
                 <button class="btn" id="addB" value=0 data-selected=[] style="height:26px;">Select!</button>
               </ul>
+              <a id='export2csv' download="Selection.csv" style="display:none">Export</a>
+
               <div id ='selection' data-tmp="I hold temp selection"></div>
               <button class="btn" id="explain" style="align:center;height:26px;display:none">Explain!</button>
               <div style="max-height: 130px;overflow-y:scroll"  id="explainFlists"></div>

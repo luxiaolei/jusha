@@ -528,6 +528,7 @@ def statistical_tests(SelectionA, SelectionB, top=3):
     """
     #dataIndexesList = [i['members'] for i in vertices]
 
+    """
     def convertSelections(Set):
         ans = [vertices[i]['members'] for i in Set]
         #make it flat
@@ -535,9 +536,10 @@ def statistical_tests(SelectionA, SelectionB, top=3):
         #make the items distinctive
         ans = list(set(ans))
         return ans
+    """
     vertices = selfvars.mapperoutput['vertices']
-    SeA = convertSelections(SelectionA)
-    SeB = convertSelections(SelectionB)
+    SeA = SelectionA#convertSelections(SelectionA)
+    SeB = SelectionB#convertSelections(SelectionB)
 
     testsRes = []
     ranks = []

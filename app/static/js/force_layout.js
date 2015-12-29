@@ -158,8 +158,8 @@ var runClustering = function(){
               node.classed("selected", function(d) {
                 if( extent[0][0] <= d.x && d.x < extent[1][0]
                     && extent[0][1] <= d.y && d.y < extent[1][1]){
-                      li.push(d)
-                      selectionIndex.push(d.index)
+                      //li.push(d)
+                      //selectionIndex.push(d.index)
 
                       $.each(d.members, function(i,e){members.push(e)})
 
@@ -168,17 +168,19 @@ var runClustering = function(){
                       //html(li.length)
                       return d
                     };
-
+              var uniquemembers = uniqueArray(members)
                 $('[id^=Selection').each(function(){
                   var display = $(this).children().first()
                   var btn = $(this).children().last()
                   if (btn.val()==0){
                     //console.log(btn.val())
-                    display.html(uniqueArray(members).length)}
+                    display.html(uniquemembers.length)}
                 })
               //console.log(uniqueArray(members))
-              $('#selection').data('tmp', selectionIndex)
+              $('#selection').data('tmp',uniquemembers)
+
               })//.each(function(e){console.log(e)});
+              $('#export2csv').show()
             })
 
         var brush = mappersvg.append("g")
