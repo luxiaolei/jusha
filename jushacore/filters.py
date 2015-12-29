@@ -4,18 +4,7 @@ r'''
   This file is part of the Python jushacore package, an open source tool
   for exploration, analysis and visualization of data.
 
-  Copyright 2011–2015 by the authors:
-      Daniel Müllner, http://danifold.net
-      Aravindakshan Babu, anounceofpractice@hotmail.com
-
-  Python jushacore is distributed under the GPLv3 license. See the project
-  home page
-
-      http://danifold.net/jushacore
-
-  for more information.
-
-  -----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
 
 Filter functions
 ================
