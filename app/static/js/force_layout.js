@@ -77,11 +77,6 @@ var runClustering = function(){
       var colormap = d['colormap']
       var distinctAttr = d['distinctAttr']
 
-      //console.log(d.indexNameMap)
-      var nodeattr = [];
-      for(n in nodes) {
-    	nodeattr.push(nodes[n].attribute);
-        }
 
       var linkColor = []//d3.set();
       for(l in edges){
@@ -95,7 +90,7 @@ var runClustering = function(){
 
       var fscale = d3.scale.linear()
       	.range(colormap)
-      	.domain(distinctAttr)//([0,d3.max(nodeattr)]);//([0,d3.max(nodeattr)]);
+      	.domain(distinctAttr)//[d3.min(distinctAttr), d3.max(distinctAttr)])//([0,d3.max(nodeattr)]);//([0,d3.max(nodeattr)]);
 
       var lscale = d3.scale.linear()
         .range(['blue', 'red'])
@@ -208,12 +203,10 @@ var runClustering = function(){
       var refreshGraph = function(url){
         d3.json(url,function(d){
           var nodes = d['vertices'];
-          var nodeattr = [];
-          for(n in nodes) {
-            nodeattr.push(nodes[n].attribute);
-          }
+
           var colormap = d['colormap']
           var distinctAttr = d['distinctAttr']
+          console.log(distinctAttr)
           var fscale = d3.scale.linear()
           	.range(colormap)
           	.domain(distinctAttr);

@@ -586,10 +586,10 @@ def genJetColormap(n):
     give the length of the list contains only distict attribute value
     return an HX color map range which has the same length
     """
-    interval = 256 / n
+    interval = 256. / n
     indexes = [interval*(i) for i in range(n)]
     indexes[-1] = 255
-    return [str(rgb2hex(jet(j))) for j in indexes]
+    return [str(rgb2hex(jet(int(j)))) for j in indexes]
 
 
     #return [str(rgb2hex(jet(float(i)/n)[:-1])) for i in range(n)]
