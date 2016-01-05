@@ -157,23 +157,20 @@ var runClustering = function(){
                       //selectionIndex.push(d.index)
 
                       $.each(d.members, function(i,e){members.push(e)})
-
+                      var uniquemembers = uniqueArray(members)
+                        $('[id^=Selection').each(function(){
+                          var display = $(this).children().first()
+                          var btn = $(this).children().last()
+                          if (btn.val()==0){
+                            //console.log(btn.val())
+                            display.html(uniquemembers.length)}
+                        })
+                      //console.log(uniqueArray(members))
+                      $('#selection').data('tmp',uniquemembers)
                       //console.log(li.length)
-
                       //html(li.length)
                       return d
                     };
-              var uniquemembers = uniqueArray(members)
-                $('[id^=Selection').each(function(){
-                  var display = $(this).children().first()
-                  var btn = $(this).children().last()
-                  if (btn.val()==0){
-                    //console.log(btn.val())
-                    display.html(uniquemembers.length)}
-                })
-              //console.log(uniqueArray(members))
-              $('#selection').data('tmp',uniquemembers)
-
               })//.each(function(e){console.log(e)});
               $('#export2csv').show()
             })
@@ -309,7 +306,7 @@ var mouseoverShowExaplain = function(e,statests){
 var uniqueArray = function(list) {
   var result = [];
   $.each(list, function(i, e) {
-    if ($.inArray(e, result) == -1) result.push(e);
+    if ($.inArray(e, result) == -1){result.push(e)};
   });
   return result;
 }
