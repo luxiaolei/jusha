@@ -70,8 +70,34 @@ http://flask.pocoo.org/docs/0.10/api/#returning-json
 @app.route('/features')
 def send_features():
     """
-    send feature info to clients
+    Generates new columns for sklearn clustering labels, and its correspongind silhouette_score
+    User Selected Features used for genrating labels
+    Then, update selfvars.df, selfvars.features
     """
+    from sklearn.cluster import KMeans,AffinityPropagation,MeanShift,SpectralClustering,DBSCAN,\
+                                AgglomerativeClustering, Birch
+    from sklearn.metrics import silhouette_score
+
+    data = selfvars.df.ix[:, selfvars.checkedFeatures].values
+    name = ['KMeans', 'AfPropagatn', 'MeanShift', 'SpectralCluster', 'DBSCAN', 'AgCluster', 'Brich']
+
+    #for those clustering emthod require n_clusters, set it tobe the number fo features
+    default_num_clusters = len(selfvars.checkedFeatures)
+    clusteringObjs = [KMeans(n_clusters=default_num_clusters, init='k-means++', n_init=10, max_iter=300, tol=0.0001, precompute_distances='auto', verbose=0, random_state=None, copy_x=True, n_jobs=1),
+                      AffinityPropagation(damping=0.5, max_iter=200, convergence_iter=15, copy=True, preference=None, affinity='euclidean', verbose=False),
+                      MeanShift(bandwidth=None, seeds=None, bin_seeding=False, min_bin_freq=1, cluster_all=True, n_jobs=1),
+                      SpectralClustering(n_clusters=default_num_clusters, eigen_solver=None, random_state=None, n_init=10, gamma=1.0, affinity='rbf', n_neighbors=10, eigen_tol=0.0, assign_labels='kmeans', degree=3, coef0=1, kernel_params=None),
+                      DBSCAN(eps=0.5, min_samples=5, metric='euclidean', algorithm='auto', leaf_size=30, p=None, random_state=None),
+                      AgglomerativeClustering(n_clusters=default_num_clusters, affinity='euclidean',connectivity=None, n_components=None, compute_full_tree='auto', linkage='ward'),
+                      Birch(threshold=0.5, branching_factor=50, n_clusters=default_num_clusters, compute_labels=True, copy=True)]
+    lables = [estimator.fit(data).labels_ for estimator in clusteringObjs]
+    for col_name, lb in zip(name, lables):
+        score = '%.2f'%silhouette_score(data, lb)
+        col_name = ('[{0}]{1}').format(score, col_name)
+        selfvars.df[col_name] = lb
+
+    selfvars.features = list(selfvars.df.columns)
+
     return jsonify(features=list(selfvars.features))
 
 """

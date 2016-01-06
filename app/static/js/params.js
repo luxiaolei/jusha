@@ -125,7 +125,7 @@ $(function(){
       data: JSON.stringify(data),// null, '\t'),
       contentType: 'application/json;charset=UTF-8',
       success: function(result){
-        //console.log(result)
+        console.log('initialization successed!!')
         //when post successed,redraw the graph
         }
       });
