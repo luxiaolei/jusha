@@ -83,7 +83,7 @@ def send_features():
     name = ['KMeans', 'AfPropagatn', 'MeanShift', 'SpectralCluster', 'DBSCAN', 'AgCluster', 'Brich']
     print 'selfvars.checkedFeatures is %s'%selfvars.checkedFeatures
     #for those clustering emthod require n_clusters, set it tobe the number fo features
-    default_num_clusters = len(selfvars.checkedFeatures)
+    default_num_clusters = 5# len(selfvars.checkedFeatures)
     clusteringObjs = [KMeans(n_clusters=default_num_clusters, init='k-means++', n_init=10, max_iter=300, tol=0.0001, precompute_distances='auto', verbose=0, random_state=None, copy_x=True, n_jobs=1),
                       AffinityPropagation(damping=0.5, max_iter=200, convergence_iter=15, copy=True, preference=None, affinity='euclidean', verbose=False),
                       MeanShift(bandwidth=None, seeds=None, bin_seeding=False, min_bin_freq=1, cluster_all=True, n_jobs=1),
@@ -93,14 +93,16 @@ def send_features():
                       Birch(threshold=0.5, branching_factor=50, n_clusters=default_num_clusters, compute_labels=True, copy=True)]
     #lables = [estimator.fit(data).labels_ for estimator in clusteringObjs]
     for k, col_name in enumerate(name):
-
-        try:
-            label = clusteringObjs[k].fit(data).labels_
-            score = '%.2f'%silhouette_score(data, label)
-            col_name = ('[{0}]{1}').format(score, col_name)
-            selfvars.df[col_name] = label
-        except Exception,e:
-            print e
+        if col_name in ['KMeans']:#, 'MeanShift', 'SpectralCluster']:
+            try:
+                label = clusteringObjs[k].fit(data).labels_
+                score = '%.2f'%silhouette_score(data, label)
+                col_name = ('[{0}]{1}').format(score, col_name)
+                selfvars.df[col_name] = label
+            except Exception,e:
+                print e
+        else:
+            continue
 
 
     selfvars.features = list(selfvars.df.columns)
@@ -246,6 +248,7 @@ def uploadFile():
                 df = pd.read_csv('uploads/'+filename, index_col=0)
             else:
                 df = pd.read_csv('uploads/'+filename)
+            df.columns = [str(i).replace(' ','_') for i in df.columns]
             #store the col into selfvars obj
             selfvars.features = list(df.columns.values)
             df.replace([np.inf, -np.inf], np.nan)
@@ -387,7 +390,7 @@ def runMapper(intervals=8, overlap=50.0):
 
     '''
     def selfdefined(data, metricpar):
-        return data[:,-1]
+        return selfvar.df.values[:,-1]
 
     filterFuncs = {'eccentricity': jushacore.filters.eccentricity ,
                   'Gauss_density': jushacore.filters.Gauss_density,
