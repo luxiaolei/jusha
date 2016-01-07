@@ -19,6 +19,7 @@ from scipy import stats
 from matplotlib.cm import jet
 from matplotlib.colors import rgb2hex
 from sklearn.preprocessing import normalize,StandardScaler
+from jushaFilter import svmFilter
 
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 ALLOWED_EXTENSIONS = set(['txt', 'csv'])
@@ -80,7 +81,7 @@ def send_features():
 
     data = selfvars.df.ix[:, selfvars.checkedFeatures].values
     name = ['KMeans', 'AfPropagatn', 'MeanShift', 'SpectralCluster', 'DBSCAN', 'AgCluster', 'Brich']
-
+    print 'selfvars.checkedFeatures is %s'%selfvars.checkedFeatures
     #for those clustering emthod require n_clusters, set it tobe the number fo features
     default_num_clusters = len(selfvars.checkedFeatures)
     clusteringObjs = [KMeans(n_clusters=default_num_clusters, init='k-means++', n_init=10, max_iter=300, tol=0.0001, precompute_distances='auto', verbose=0, random_state=None, copy_x=True, n_jobs=1),
@@ -90,11 +91,17 @@ def send_features():
                       DBSCAN(eps=0.5, min_samples=5, metric='euclidean', algorithm='auto', leaf_size=30, p=None, random_state=None),
                       AgglomerativeClustering(n_clusters=default_num_clusters, affinity='euclidean',connectivity=None, n_components=None, compute_full_tree='auto', linkage='ward'),
                       Birch(threshold=0.5, branching_factor=50, n_clusters=default_num_clusters, compute_labels=True, copy=True)]
-    lables = [estimator.fit(data).labels_ for estimator in clusteringObjs]
-    for col_name, lb in zip(name, lables):
-        score = '%.2f'%silhouette_score(data, lb)
-        col_name = ('[{0}]{1}').format(score, col_name)
-        selfvars.df[col_name] = lb
+    #lables = [estimator.fit(data).labels_ for estimator in clusteringObjs]
+    for k, col_name in enumerate(name):
+
+        try:
+            label = clusteringObjs[k].fit(data).labels_
+            score = '%.2f'%silhouette_score(data, label)
+            col_name = ('[{0}]{1}').format(score, col_name)
+            selfvars.df[col_name] = label
+        except Exception,e:
+            print e
+
 
     selfvars.features = list(selfvars.df.columns)
 
@@ -186,6 +193,7 @@ def paramsAjax():
         selfvars.inputInterval = int(request.json['interval'])
         selfvars.inputOverlap = float(request.json['overlap'])
         selfvars.checkedFeatures = request.json['checkedFeatures']
+        print 'selfvars.checkedFeatures initislaaaaaa %s'%selfvars.checkedFeatures
         selfvars.checkedFeaturesNorm = request.json['checkedFeaturesNorm']
         selfvars.filter = request.json['filter']
         selfvars.metric['metric'] = request.json['metric']
@@ -361,7 +369,7 @@ def runMapper(intervals=8, overlap=50.0):
     CF = selfvars.checkedFeatures
 
     data = selfvars.df.ix[:, CF]
-    print CF
+    print 'jusha is runing with calculating %s'%CF
     #dataNormed = data.ix[:, ]
     for col in selfvars.checkedFeaturesNorm:
         if col not in CF:
@@ -378,13 +386,18 @@ def runMapper(intervals=8, overlap=50.0):
         Step 1: Declare filters and cutoff selection dictionary
 
     '''
+    def selfdefined(data, metricpar):
+        return data[:,-1]
+
     filterFuncs = {'eccentricity': jushacore.filters.eccentricity ,
                   'Gauss_density': jushacore.filters.Gauss_density,
                   'kNN_distance': jushacore.filters.kNN_distance,
                   'distance_to_measure': jushacore.filters.distance_to_measure,
                   'graph_Laplacian': jushacore.filters.graph_Laplacian,
                   'dm_eigenvector' : jushacore.filters.dm_eigenvector,
-                  'zero_filter': jushacore.filters.zero_filter}
+                  'zero_filter': jushacore.filters.zero_filter,
+                  'selfdefined': selfdefined,
+                  'svm': svmFilter}
     cutoffs = {'first_gap': jushacore.cutoff.first_gap(gap=.1),
                'biggest_gap': jushacore.cutoff.biggest_gap,
                'variable_exp_gap':jushacore.cutoff.variable_exp_gap(exponent=.1, maxcluster=20),

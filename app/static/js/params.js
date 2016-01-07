@@ -126,6 +126,7 @@ $(function(){
       contentType: 'application/json;charset=UTF-8',
       success: function(result){
         console.log('initialization successed!!')
+
         //when post successed,redraw the graph
         }
       });

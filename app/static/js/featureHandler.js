@@ -32,10 +32,10 @@ $(function(){
            //draw bar chart
            if($('svg').length == 2){
            $('svg').first().remove();
-           
+
            }
            barChart('/bins',1)
-           
+
          }
        });
       });
