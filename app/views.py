@@ -195,7 +195,6 @@ def paramsAjax():
         selfvars.inputInterval = int(request.json['interval'])
         selfvars.inputOverlap = float(request.json['overlap'])
         selfvars.checkedFeatures = request.json['checkedFeatures']
-        print 'selfvars.checkedFeatures initislaaaaaa %s'%selfvars.checkedFeatures
         selfvars.checkedFeaturesNorm = request.json['checkedFeaturesNorm']
         selfvars.filter = request.json['filter']
         selfvars.metric['metric'] = request.json['metric']
@@ -371,7 +370,7 @@ def runMapper(intervals=8, overlap=50.0):
     #  20151220_TL pass on the selected features to be run in Model
     CF = selfvars.checkedFeatures
 
-    data = selfvars.df.ix[:, CF]
+    data = selfvars.df.ix[:, CF].astype(np.float64)
     print 'jusha is runing with calculating %s'%CF
     #dataNormed = data.ix[:, ]
     for col in selfvars.checkedFeaturesNorm:
@@ -390,7 +389,9 @@ def runMapper(intervals=8, overlap=50.0):
 
     '''
     def selfdefined(data, metricpar):
-        return selfvar.df.values[:,-1]
+        print selfvars.df.ix[:,-1].values.dtype
+        return selfvars.df.ix[:,-1].values
+        #return data[:,-1]
 
     filterFuncs = {'eccentricity': jushacore.filters.eccentricity ,
                   'Gauss_density': jushacore.filters.Gauss_density,
