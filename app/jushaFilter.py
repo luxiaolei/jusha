@@ -13,6 +13,6 @@ def svmFilter(data,kernel='rbf', metricpar={}):
     return dis2hyperplane
 
 
-def selfdefined(data, metricpar):
-    print selfvars.df.ix[:,-1].values.dtype
-    return selfvars.df1.ix[:,-1].values
+def selfdefined(data, metricpar, index=-1):
+    #print selfvars.df.ix[:,-1].values.dtype
+    return data[:,index]

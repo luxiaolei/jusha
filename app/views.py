@@ -449,6 +449,9 @@ def runMapper(intervals=8, overlap=50.0):
 
     if is_vector_data:
         #metricpar = selfvars.metric  #{'metric': 'euclidean'}
+        if str(selfvars.filter) == 'selfdefined':
+            f = Filter(selfvars.df.values, metricpar=metricpar, index= -1)
+
         f = Filter(data, metricpar=metricpar)
     else:
         f = jushacore.filters.Gauss_density(data,
