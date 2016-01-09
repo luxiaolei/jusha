@@ -132,16 +132,12 @@ def send_bins():
     #update the selfvars.feature_his and generate the
     #primary barChart
 
-    df4bins = copy.deepcopy(selfvars.df)
-
-    data = selfvars.df.ix[:, selfvars.checkedFeatures].values
-    for k,f in filterFuncs.iteritems():
-        try:
-            df4bins[k] = f(data, metricpar ={})
-        except Exception,e:
-            print e
-    selfvars.selected_feature = str(selfvars.selected_feature).strip('[F]')
-    array = df4bins[selfvars.selected_feature]
+    if '[F]' in selfvars.selected_feature:
+        data = selfvars.df.ix[:, selfvars.checkedFeatures].values
+        key = str(selfvars.selected_feature).strip('[F]')
+        array = pd.Series(filterFuncs[key](data, metricpar={}))
+    else:
+        array = selfvars.df[selfvars.selected_feature]
     selfvars.feature_his, selfvars.binTicks = binGen(array,selfvars.binsNumber)
     return json.dumps(selfvars.feature_his)
 
