@@ -131,10 +131,15 @@ $(function(){
         }
       });
     //run Clustering
-    runClustering();
+    //runClustering();
     })
   });
 
+$(function(){
+  $('#Clustering').bind('click',function(){
+    runClustering();
+  })
+})
 
 $(function(){
   $('#explain').bind('click',function(){

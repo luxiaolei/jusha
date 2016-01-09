@@ -22,12 +22,13 @@ var barChart = function(url, numSvg){
       .orient("left")
 
   //delete the previous barchart if exsits
-  var svgflag = $("svg").length
-  if (svgflag > numSvg){
-    $("svg:last").remove();
-  };
+  //var svgflag = $("svg").length
+  //if (svgflag > numSvg){
+    //$("svg:last").remove();
+  //};
+  $('#histogram').remove()
 
-  var svg = d3.select("#barchart").append("svg")
+  var svg = d3.select("#barchart").append("svg").attr('id', 'histogram')
                 .attr("width", width + margin.left + margin.right)
                 .attr("height", height + margin.top + margin.bottom)
               .append("g")

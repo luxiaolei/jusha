@@ -19,7 +19,7 @@ from scipy import stats
 from matplotlib.cm import jet
 from matplotlib.colors import rgb2hex
 from sklearn.preprocessing import normalize,StandardScaler
-from jushaFilter import svmFilter
+from jushaFilter import svmFilter, selfdefined
 
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
 ALLOWED_EXTENSIONS = set(['txt', 'csv'])
@@ -43,11 +43,22 @@ class selfgloablvars:
         self.cutoff = 1
         self.inputInterval = 'Not Signed'
         self.inputOverlap = 'Not Signed'
+        self.binsNumber = 20
         self.binTicks = 'Not Signed'
         self.binClicked = 'Not Signed'
 
 
 selfvars = selfgloablvars()
+
+filterFuncs = {'eccentricity': jushacore.filters.eccentricity ,
+              'Gauss_density': jushacore.filters.Gauss_density,
+              'kNN_distance': jushacore.filters.kNN_distance,
+              'distance_to_measure': jushacore.filters.distance_to_measure,
+              'graph_Laplacian': jushacore.filters.graph_Laplacian,
+              'dm_eigenvector' : jushacore.filters.dm_eigenvector,
+              'zero_filter': jushacore.filters.zero_filter,
+              'selfdefined': selfdefined,
+              'svm': svmFilter}
 
 """
 20151220_TL
@@ -106,8 +117,8 @@ def send_features():
 
 
     selfvars.features = list(selfvars.df.columns)
-
-    return jsonify(features=list(selfvars.features))
+    FwithFilters = ['[F]'+k for k in filterFuncs.keys()] + selfvars.features
+    return jsonify(features=list(FwithFilters))
 
 """
 20151220_TL
@@ -118,6 +129,20 @@ def send_bins():
     """
     send the bins and ticks data to client
     """
+    #update the selfvars.feature_his and generate the
+    #primary barChart
+
+    df4bins = copy.deepcopy(selfvars.df)
+
+    data = selfvars.df.ix[:, selfvars.checkedFeatures].values
+    for k,f in filterFuncs.iteritems():
+        try:
+            df4bins[k] = f(data, metricpar ={})
+        except Exception,e:
+            print e
+    selfvars.selected_feature = str(selfvars.selected_feature).strip('[F]')
+    array = df4bins[selfvars.selected_feature]
+    selfvars.feature_his, selfvars.binTicks = binGen(array,selfvars.binsNumber)
     return json.dumps(selfvars.feature_his)
 
 """
@@ -168,14 +193,10 @@ def feature_ajax():
     *set selfvars.ma
     """
     selected_f = request.json['selected']
-    binsNumber = int(request.json['binsNumber'])
+    selfvars.binsNumber = int(request.json['binsNumber'])
 
     selfvars.selected_feature = selected_f
 
-    #update the selfvars.feature_his and generate the
-    #primary barChart
-    array = selfvars.df[selected_f]
-    selfvars.feature_his, selfvars.binTicks = binGen(array,binsNumber)
 
     return json.dumps({'ans':'1'})
 
@@ -252,6 +273,7 @@ def uploadFile():
             selfvars.features = list(df.columns.values)
             df.replace([np.inf, -np.inf], np.nan)
             selfvars.df = df.dropna()
+            selfvars.df1 = df.dropna()
 
             #initialize mapperoutput
             selfvars.mapperoutput = 1
@@ -388,9 +410,6 @@ def runMapper(intervals=8, overlap=50.0):
         Step 1: Declare filters and cutoff selection dictionary
 
     '''
-    def selfdefined(data, metricpar):
-        print selfvars.df.ix[:,-1].values.dtype
-        return selfvars.df.ix[:,-1].values
         #return data[:,-1]
 
     filterFuncs = {'eccentricity': jushacore.filters.eccentricity ,
