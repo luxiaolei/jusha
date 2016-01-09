@@ -135,7 +135,10 @@ def send_bins():
     if '[F]' in selfvars.selected_feature:
         data = selfvars.df.ix[:, selfvars.checkedFeatures].values
         key = str(selfvars.selected_feature).strip('[F]')
-        array = pd.Series(filterFuncs[key](data, metricpar={}))
+        if key == 'selfdefined':
+            array = selfvars.df.ix[:, -1]
+        else:
+            array = pd.Series(filterFuncs[key](data, metricpar={}))
     else:
         array = selfvars.df[selfvars.selected_feature]
     selfvars.feature_his, selfvars.binTicks = binGen(array,selfvars.binsNumber)
@@ -389,6 +392,8 @@ def runMapper(intervals=8, overlap=50.0):
     CF = selfvars.checkedFeatures
 
     data = selfvars.df.ix[:, CF].astype(np.float64)
+
+    data.to_csv('uploads/' + 'RAN'+session['filename'], index=False)
     print 'jusha is runing with calculating %s'%CF
     #dataNormed = data.ix[:, ]
     for col in selfvars.checkedFeaturesNorm:
@@ -446,9 +451,11 @@ def runMapper(intervals=8, overlap=50.0):
     if is_vector_data:
         #metricpar = selfvars.metric  #{'metric': 'euclidean'}
         if str(selfvars.filter) == 'selfdefined':
-            f = Filter(selfvars.df.values, metricpar=metricpar, index= -1)
+            #f = Filter(selfvars.df, metricpar=metricpar, index= -1)
+            f = selfvars.df.ix[:, -1].values
+        else:
 
-        f = Filter(data, metricpar=metricpar)
+            f = Filter(data, metricpar=metricpar)
     else:
         f = jushacore.filters.Gauss_density(data,
             sigma=1.0)

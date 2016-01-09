@@ -51,6 +51,7 @@ var runClustering = function(){
 
     $(document).keydown(function (e) {
         if (e.keyCode == 16) {
+
           svg.call(zoom)
         }
     });
@@ -175,7 +176,7 @@ var runClustering = function(){
               $('#export2csv').show()
             })
 
-        var brush = mappersvg.append("g")
+        var brush = svg
         brush.attr("class", "brush").call(brusher)
         brush.select('.background').style('cursor', 'auto')
 

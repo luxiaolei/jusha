@@ -15,4 +15,5 @@ def svmFilter(data,kernel='rbf', metricpar={}):
 
 def selfdefined(data, metricpar, index=-1):
     #print selfvars.df.ix[:,-1].values.dtype
-    return data[:,index]
+    #return data[:,index]
+    return data['crime'].values
