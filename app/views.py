@@ -58,7 +58,6 @@ filterFuncs = {'eccentricity': jushacore.filters.eccentricity ,
               'graph_Laplacian': jushacore.filters.graph_Laplacian,
               'dm_eigenvector' : jushacore.filters.dm_eigenvector,
               'zero_filter': jushacore.filters.zero_filter,
-              'selfdefined': selfdefined,
               'svm': svmFilter}
 
 """
@@ -136,12 +135,11 @@ def send_bins():
     if '[F]' in selfvars.selected_feature:
         data = selfvars.df.ix[:, selfvars.checkedFeatures].values
         key = str(selfvars.selected_feature).strip('[F]')
-        if key == 'selfdefined':
-            array = selfvars.df.ix[:, -1]
-        else:
-            array = pd.Series(filterFuncs[key](data, metricpar={}))
+
+        array = pd.Series(filterFuncs[key](data, metricpar={"metric":selfvars.parameters['metric']}))
     else:
         array = selfvars.df[selfvars.selected_feature]
+    selfvars.parameters['filter'] = np.array(array)
     selfvars.feature_his, selfvars.binTicks = binGen(array,selfvars.binsNumber)
     return json.dumps(selfvars.feature_his)
 
@@ -194,10 +192,7 @@ def feature_ajax():
     """
     selected_f = request.json['selected']
     selfvars.binsNumber = int(request.json['binsNumber'])
-
     selfvars.selected_feature = selected_f
-
-
     return json.dumps({'ans':'1'})
 
 """
@@ -217,7 +212,7 @@ def paramsAjax():
         selfvars.parameters['overlap'] = float(request.json['overlap'])
         selfvars.checkedFeatures = request.json['checkedFeatures']
         selfvars.checkedFeaturesNorm = request.json['checkedFeaturesNorm']
-        selfvars.parameters['filter'] = request.json['filter']
+        #selfvars.parameters['filter'] = request.json['filter']
         selfvars.parameters['metric'] = request.json['metric']
         selfvars.parameters['cutoff'] = request.json['cutoff']
         selfvars.parameters['weighting'] = request.json['weighting']
@@ -414,23 +409,14 @@ def runMapper(intervals=8, overlap=50.0):
         Step 1: Declare filters and cutoff selection dictionary
 
     '''
-        #return data[:,-1]
 
-    filterFuncs = {'eccentricity': jushacore.filters.eccentricity ,
-                  'Gauss_density': jushacore.filters.Gauss_density,
-                  'kNN_distance': jushacore.filters.kNN_distance,
-                  'distance_to_measure': jushacore.filters.distance_to_measure,
-                  'graph_Laplacian': jushacore.filters.graph_Laplacian,
-                  'dm_eigenvector' : jushacore.filters.dm_eigenvector,
-                  'zero_filter': jushacore.filters.zero_filter,
-                  'selfdefined': selfdefined,
-                  'svm': svmFilter}
     cutoffs = {'first_gap': jushacore.cutoff.first_gap(gap=.1),
                'biggest_gap': jushacore.cutoff.biggest_gap,
                'variable_exp_gap':jushacore.cutoff.variable_exp_gap(exponent=.1, maxcluster=20),
                'variable_exp_gap2': jushacore.cutoff.variable_exp_gap2(exponent=.1, maxcluster=20)}
 
-    Filter = filterFuncs[str(selfvars.parameters['filter'])]
+
+    Filter = selfvars.parameters['filter']
     cover = jushacore.cover.cube_cover_primitive(intervals, overlap)
     cluster = jushacore.single_linkage()
     metricpar = {'metric': selfvars.parameters['metric']}
@@ -438,41 +424,7 @@ def runMapper(intervals=8, overlap=50.0):
     if selfvars.parameters['cutoff'] != 'scale_graph':
         cutoff = cutoffs[selfvars.parameters['cutoff']]
 
-    '''
-        Step 2: Metric
-    '''
-    intrinsic_metric = False
-    is_vector_data = data.ndim != 1
-    '''
-        Step 3: Filter function
-       ['eccentricity', 'Gauss_density', 'kNN_distance',
-           'distance_to_measure', 'graph_Laplacian', 'dm_eigenvector',
-           'zero_filter']
-    '''
-
-
-
-
-    if is_vector_data:
-        #metricpar = selfvars.parameters['metric']  #{'metric': 'euclidean'}
-        if str(selfvars.parameters['filter']) == 'selfdefined':
-            #f = Filter(selfvars.df, metricpar=metricpar, index= -1)
-            f = selfvars.df.ix[:, -1].values
-        else:
-
-            f = Filter(data, metricpar=metricpar)
-    else:
-        f = jushacore.filters.Gauss_density(data,
-            sigma=1.0)
-    # Filter transformation
-
-    '''
-        Step 4: jushacore parameters
-    '''
-
-    if not is_vector_data:
-        metricpar = {}
-    mapper_output = jushacore.jushacore(data, f,
+    mapper_output = jushacore.jushacore(data, Filter,
         cover=cover,
         cluster=cluster,
         point_labels= None,
@@ -480,9 +432,9 @@ def runMapper(intervals=8, overlap=50.0):
         metricpar=metricpar)
     #cutoff = jushacore.cutoff.first_gap(gap=0.1)
     if selfvars.parameters['cutoff'] != 'scale_graph':
-        mapper_output.cutoff(cutoff, f, cover=cover, simple=False)
+        mapper_output.cutoff(cutoff, Filter, cover=cover, simple=False)
     else:
-        jushacore.scale_graph(mapper_output, f,
+        jushacore.scale_graph(mapper_output, Filter,
                             weighting=selfvars.parameters['weighting'],
                             exponent=selfvars.parameters['exponent'],
                             maxcluster=None, expand_intervals=False)

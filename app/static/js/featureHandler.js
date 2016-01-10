@@ -18,7 +18,8 @@ $(function(){
 
     //ajax post the selected feature to server
      $('#radiocheck input').change(function(){
-       var data = {'selected': $('input[name=features]:checked', '#radiocheck').val(),
+       var selectedF = $('input[name=features]:checked', '#radiocheck').val()
+       var data = {'selected': selectedF,
                     'binsNumber': $('#bins').val()};
             console.log(data)
 
@@ -30,11 +31,12 @@ $(function(){
          contentType: 'application/json;charset=UTF-8',
          success: function(){
            //draw bar chart
-           if($('svg').length == 2){
-           $('svg').first().remove();
-
-           }
+           if($('svg').length == 2){$('svg').first().remove();}
            barChart('/bins',1)
+           //indicating Filter is ready
+           console.log(selectedF)
+           $('#filters').html(selectedF)
+           $('#Clustering').show()
 
          }
        });

@@ -124,16 +124,13 @@ $(function(){
     var index = $("#index").prop('checked',true).val();
     var interval = $("#interval").val();
     var overlap = $("#overlap").val();
-    var filter = $('#filters').prop('selected',true).val();
     var metric = $('#metrics').prop('selected',true).val();
     var cutoff = $('#cutoff').prop('selected',true).val();
     var weight = $('#weighting').prop('selected', true).val();
     var exponent = $('#exponent').val();
     var data = {'interval': interval, 'overlap': overlap, 'checkedFeatures': checkedFeatures,
-                'checkedFeaturesNorm': checkedFeaturesNorm, 'filter': filter, 'index':index,
+                'checkedFeaturesNorm': checkedFeaturesNorm, 'index':index,
                 'metric':metric, 'cutoff':cutoff, 'weighting': weight, 'exponent': exponent}
-
-
 
     //send to server
     $.ajax({

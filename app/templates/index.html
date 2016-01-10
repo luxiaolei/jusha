@@ -55,7 +55,7 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
     <div id="wrapper">
 
         <!-- Sidebar -->
-        <div id="sidebar-wrapper" >
+        <div id="sidebar-wrapper" style="max-width = 200px;overflow-x:hidden">
 
 
             <ul class="sidebar-nav">
@@ -117,20 +117,8 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
 
 
             <li>
-            <a herf='#'>选择过滤器以及度量类型</a>
+            <a herf='#'>选择度量以及阀值</a>
             </li>
-              <select id='filters' style='width:100px;height:20px'>
-                <option value="eccentricity">Eccentricity (exponent=1)</option>
-                <option value="Gauss_density" >Gauss Density (sigma=1)</option>
-                <option value="kNN_distance">kNN Distance (k=2)</option>
-                <option value="distance_to_measure">Distance to measure (k=2)</option>
-                <option value="graph_Laplacian">Graph Laplacian (eps=1,k=2)</option>
-                <option value="dm_eigenvector">Distance Matrix Eigenvector</option>
-                <option value="zero_filter">Zero Filter</option>
-                <option value="selfdefined">Selfdefined Filter</option>
-                <option value="svm">Distance to hyperplane</option>
-              </select>
-
               <select id='metrics' style='width:100px'>
                 <option value="euclidean">Euclidean</option>
                 <option value="minkowski" >Minkowski</option>
@@ -141,10 +129,7 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
                 <option value="correlation">Correlation</option>
               </select>
 
-            <li>
-            <a herf='#'>选择阀门类型</a>
-            </li>
-              <select id='cutoff'>
+              <select id='cutoff' style='width:120px'>
                 <option value="scale_graph">Scale Graph</option>
                 <option value="first_gap">first_gap</option>
                 <option value="biggest_gap" >biggest_gap</option>
@@ -167,10 +152,15 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
 
 
 
-
+            <li>
+            <a herf='#'>过程控制</a>
+            </li>
 
             <br>
             <button class="btn" id="paramsGenerate">Inspects!</button>
+            <a > Filter: </a>
+            <a id='filters'></a>
+
             <button class="btn" id="Clustering" style='display:none'>Start Clustering!</button>
             <br/>
             <li>
