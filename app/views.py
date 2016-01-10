@@ -46,6 +46,7 @@ class selfgloablvars:
         self.binsNumber = 20
         self.binTicks = 'Not Signed'
         self.binClicked = 'Not Signed'
+        self.parameters = {}
 
 
 selfvars = selfgloablvars()
@@ -212,13 +213,15 @@ def paramsAjax():
     #if request.method == 'POST'
     try:
         #set input params to selfvars
-        selfvars.inputInterval = int(request.json['interval'])
-        selfvars.inputOverlap = float(request.json['overlap'])
+        selfvars.parameters['interval'] = int(request.json['interval'])
+        selfvars.parameters['overlap'] = float(request.json['overlap'])
         selfvars.checkedFeatures = request.json['checkedFeatures']
         selfvars.checkedFeaturesNorm = request.json['checkedFeaturesNorm']
-        selfvars.filter = request.json['filter']
-        selfvars.metric['metric'] = request.json['metric']
-        selfvars.cutoff = request.json['cutoff']
+        selfvars.parameters['filter'] = request.json['filter']
+        selfvars.parameters['metric'] = request.json['metric']
+        selfvars.parameters['cutoff'] = request.json['cutoff']
+        selfvars.parameters['weighting'] = request.json['weighting']
+        selfvars.parameters['exponent'] = float(request.json['exponent'])
 
         #Reconstruct the dataframe based on selected index
         #!!WHen multipul calls, the features and df are shrinking!! should solve the problem
@@ -233,7 +236,7 @@ def paramsAjax():
             del selfvars.df[index]
 
         selfvars.mapperoutput = 1
-        return json.dumps({'ans': str(type(selfvars.inputInterval))})
+        return json.dumps({'ans': str(type(selfvars.parameters['interval']))})
     except Exception,e:
         return json.dumps({'ans':str(e)})
 
@@ -380,9 +383,9 @@ overlap
 def runMapper(intervals=8, overlap=50.0):
     #type check inputParams, string for default,
     #float for user inputed
-    if type(selfvars.inputInterval) == int:
-        intervals = selfvars.inputInterval
-        overlap = selfvars.inputOverlap
+    if type(selfvars.parameters['interval']) == int:
+        intervals = selfvars.parameters['interval']
+        overlap = selfvars.parameters['overlap']
 
     in_file = [f for f in os.listdir('uploads/')]
     assert len(in_file) > 0
@@ -427,11 +430,13 @@ def runMapper(intervals=8, overlap=50.0):
                'variable_exp_gap':jushacore.cutoff.variable_exp_gap(exponent=.1, maxcluster=20),
                'variable_exp_gap2': jushacore.cutoff.variable_exp_gap2(exponent=.1, maxcluster=20)}
 
-    Filter = filterFuncs[str(selfvars.filter)]
+    Filter = filterFuncs[str(selfvars.parameters['filter'])]
     cover = jushacore.cover.cube_cover_primitive(intervals, overlap)
     cluster = jushacore.single_linkage()
-    metricpar = selfvars.metric
-    cutoff = cutoffs[selfvars.cutoff]
+    metricpar = {'metric': selfvars.parameters['metric']}
+
+    if selfvars.parameters['cutoff'] != 'scale_graph':
+        cutoff = cutoffs[selfvars.parameters['cutoff']]
 
     '''
         Step 2: Metric
@@ -449,8 +454,8 @@ def runMapper(intervals=8, overlap=50.0):
 
 
     if is_vector_data:
-        #metricpar = selfvars.metric  #{'metric': 'euclidean'}
-        if str(selfvars.filter) == 'selfdefined':
+        #metricpar = selfvars.parameters['metric']  #{'metric': 'euclidean'}
+        if str(selfvars.parameters['filter']) == 'selfdefined':
             #f = Filter(selfvars.df, metricpar=metricpar, index= -1)
             f = selfvars.df.ix[:, -1].values
         else:
@@ -474,7 +479,13 @@ def runMapper(intervals=8, overlap=50.0):
         cutoff=None,
         metricpar=metricpar)
     #cutoff = jushacore.cutoff.first_gap(gap=0.1)
-    mapper_output.cutoff(cutoff, f, cover=cover, simple=False)
+    if selfvars.parameters['cutoff'] != 'scale_graph':
+        mapper_output.cutoff(cutoff, f, cover=cover, simple=False)
+    else:
+        jushacore.scale_graph(mapper_output, f,
+                            weighting=selfvars.parameters['weighting'],
+                            exponent=selfvars.parameters['exponent'],
+                            maxcluster=None, expand_intervals=False)
 
     """
 	20151220_TL

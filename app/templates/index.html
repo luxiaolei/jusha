@@ -145,11 +145,23 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
             <a herf='#'>选择阀门类型</a>
             </li>
               <select id='cutoff'>
+                <option value="scale_graph">Scale Graph</option>
                 <option value="first_gap">first_gap</option>
                 <option value="biggest_gap" >biggest_gap</option>
                 <option value="variable_exp_gap">variable_exp_gap</option>
                 <option value="variable_exp_gap2">variable_exp_gap2</option>
               </select>
+
+
+              <a id=scalegraph>
+              <select id='weighting'>
+                <option value="linear">Linear</option>
+                <option value="inverse">Inverse</option>
+                <option value="log" >Log</option>
+              </select>
+              <a id='atag'>Exponent:</a>
+                <input type='text' id='exponent' value='0.0' maxlength="10" style='width: 60px; height:25px' />
+              </a>
 
 
 

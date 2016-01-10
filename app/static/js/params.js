@@ -92,6 +92,20 @@ $(function(){
 })
 
 $(function(){
+  $('#cutoff').on('change',function(){
+    if ($(this).val()!= 'scale_graph'){
+      $('#weighting').hide()
+      $('#exponent').hide()
+      $('#atag').html('')
+    }else{
+      $('#weighting').show()
+      $('#exponent').show()
+      $('#atag').html('Exponent:')
+    }
+  })
+})
+
+$(function(){
   $("#paramsGenerate").bind('click',function(){
 
 
@@ -113,9 +127,13 @@ $(function(){
     var filter = $('#filters').prop('selected',true).val();
     var metric = $('#metrics').prop('selected',true).val();
     var cutoff = $('#cutoff').prop('selected',true).val();
+    var weight = $('#weighting').prop('selected', true).val();
+    var exponent = $('#exponent').val();
     var data = {'interval': interval, 'overlap': overlap, 'checkedFeatures': checkedFeatures,
                 'checkedFeaturesNorm': checkedFeaturesNorm, 'filter': filter, 'index':index,
-                'metric':metric, 'cutoff':cutoff}
+                'metric':metric, 'cutoff':cutoff, 'weighting': weight, 'exponent': exponent}
+
+
 
     //send to server
     $.ajax({
