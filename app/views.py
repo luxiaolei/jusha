@@ -590,13 +590,17 @@ def statistical_tests(SelectionA, SelectionB, top=3):
     df = copy.deepcopy(selfvars.df)
     for col in selfvars.features:
         targetSerie = df[col]
-        dataA = targetSerie.ix[targetSerie.index.isin(SeA)].values
-        dataB = targetSerie.ix[targetSerie.index.isin(SeB)].values
-        #notinNodeArray = targetSerie.ix[~targetSerie.index.isin(pts)].values
-        P4ttest = stats.ttest_ind(dataA, dataB)[-1]
-        P4kstest = stats.ks_2samp(dataA, dataB)[-1]
-        ansDic[col] = [round(i, 3) for i in [P4ttest, P4kstest]]
-        rankCols.append( min(P4kstest, P4ttest))
+        try:
+            targetSerie.astype(np.float)
+            dataA = targetSerie.ix[targetSerie.index.isin(SeA)].values
+            dataB = targetSerie.ix[targetSerie.index.isin(SeB)].values
+            #notinNodeArray = targetSerie.ix[~targetSerie.index.isin(pts)].values
+            P4ttest = stats.ttest_ind(dataA, dataB)[-1]
+            P4kstest = stats.ks_2samp(dataA, dataB)[-1]
+            ansDic[col] = [round(i, 3) for i in [P4ttest, P4kstest]]
+            rankCols.append( min(P4kstest, P4ttest))
+        except:
+            continue
 
     sortByminPindex = np.argsort(rankCols)
     sortByCol = [selfvars.features[i] for i in sortByminPindex]
