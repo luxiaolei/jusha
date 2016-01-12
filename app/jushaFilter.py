@@ -11,9 +11,3 @@ def svmFilter(data,kernel='rbf', metricpar={}):
         clf.fit(data)
         dis2hyperplane = clf.decision_function(data).T[0]
     return dis2hyperplane
-
-
-def selfdefined(data, metricpar, index=-1):
-    #print selfvars.df.ix[:,-1].values.dtype
-    #return data[:,index]
-    return data['crime'].values
