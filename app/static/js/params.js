@@ -153,6 +153,55 @@ $(function(){
   $('#Clustering').bind('click',function(){
     runClustering();
     $('#Clustering').hide()
+    $('#saveimg').show()
+  })
+})
+
+$(function(){
+  $('#saveimg').bind('click',function(){
+
+    $('#graph').appendTo($('#svgrecorder'))
+
+    var html = new XMLSerializer().serializeToString(document.getElementById(`graph`).querySelector('svg'));
+    var imgsrc = 'data:image/svg+xml;base64,' + btoa(html);
+    var image = new Image;
+    image.src = imgsrc;
+
+    image.onload = function() {
+      var svgshot = $('<img>').attr('id', 'svgimg').attr('width','202px').attr('height',"202px")
+                    .attr('src', imgsrc);
+
+      var interval = $("#interval").val();
+      var overlap = $("#overlap").val();
+      var metric = $('#metrics').prop('selected',true).val();
+      var cutoff = $('#cutoff').prop('selected',true).val();
+      var filter = $('#filters').html();
+
+      var savedGrapg = $('<li><a herf=#>Saved Graph </a></li>'+
+                         '<li>Filter:'+filter+'</li>'+
+                         '<li>Interval:'+interval+'</li>'+
+                         '<li>Overlap:'+overlap+'</li>')
+      savedGrapg.appendTo($('#svgimgs'))
+      svgshot.appendTo($('#svgimgs'))
+
+      $('img').on('click',function(){
+        window.open(imgsrc, 'width:1200;height:1000')
+        //$(this).width(1000).height(1000)
+      })
+      /*
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      canvasdata = canvas.toDataURL("image/png");
+      var a = document.createElement("a");
+      a.id = "imagepng"
+      a.innerHTML = "hello!i m xl";
+      a.download = "output.png";
+      a.href = canvasdata;
+      console.log(imgsrc)
+      $('#svgimg').attr('src', imgsrc)
+      //a.appendTo($('#canvas'))
+      //document.body.insertBefore(a, document.getElementById(`graph`));
+      */
+    }
   })
 })
 

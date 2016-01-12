@@ -70,30 +70,16 @@ var barChart = function(url, numSvg){
               //change color of the rect
               //search data in the rect
               searchFunc(d.binData)
+              d3.selectAll('line').style('opacity', .1)
               d3.select(this).style("fill", "green")
             })
             .on('mouseout', function(){
               //change back color, both for the bar and nodes
+              d3.selectAll('line').style('opacity', 1)
               d3.select('#graph').selectAll("circle").style('opacity', 1)
               d3.select(this).style("fill", function(d){return d.color})
             })
-            .on('click', function(d,i){
-              //send clicked bar index to server
-              if (numSvg == 1){
-                var data = {'binClicked': i}
-                $.ajax({
-                  type : "POST",
-                  //mimic the url_for function when this js file is external
-                  url : "/binClickedAjax",
-                  data: JSON.stringify(data),
-                  contentType: 'application/json;charset=UTF-8',
-                  success: function(){
-                    console.log('barClicked index post successed!')
-                  }
-                });
-              }
 
-            })
 
           })
         }

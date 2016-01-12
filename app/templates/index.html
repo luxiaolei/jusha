@@ -58,7 +58,7 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
         <div id="sidebar-wrapper" style="max-width = 200px;overflow-x:hidden">
 
 
-            <ul class="sidebar-nav">
+            <ul id=sidebar class="sidebar-nav">
 
 
             <li>
@@ -156,12 +156,13 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
             <a herf='#'>过程控制</a>
             </li>
 
-            <br>
             <button class="btn" id="paramsGenerate">Inspects!</button>
             <a > Filter: </a>
             <a id='filters'></a>
 
             <button class="btn" id="Clustering" style='display:none'>Start Clustering!</button>
+
+            <button class="btn" id="saveimg" style='display:none'>Save Me!</button>
             <br/>
             <li>
             <a herf='#'>搜索数据</a>
@@ -201,12 +202,13 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
             <div id='barchart' class='container' style="width:230px; height:180px">
 
             </div>
-
-
-
-
-
+            <div id=svgimgs>
+              <!--
+              <img id=svgimg style="width:202px;height:202px">
+            -->
+            </div>
             </ul>
+
         </div>
         <!-- /#sidebar-wrapper -->
 
@@ -214,6 +216,7 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
         <div id="page-content-wrapper">
             <div class="container-fluid">
                 <div class="row">
+
                     <div id='graph' class="col-lg-10">
 
 
@@ -254,14 +257,15 @@ $( '.dropdown-menu a' ).on( 'click', function( event ) {
 
 
 
-    </div>
+  </div>
+   <canvas id=canvas width=200 height=200>kkk</canvas>
 
 
   <script src="{{ url_for('static', filename = 'js/d3.v3.js') }}" charset="utf-8"></script>
   <script src="{{ url_for('static', filename = 'js/force_layout.js') }}" charset="utf-8"></script>
   <script src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script>
   <script src="{{ url_for('static', filename = 'js/params.js') }}"></script>
-
+<a id=svgrecoder style="display:None"></a>
 </body>
 
 </html>

@@ -9,8 +9,25 @@ var searchFunc = function(dataname){
       //retrive the indexes of nodes which contain the searched data
       $.getJSON('/mapperJsonSaved', function(data){
         var nodes = data['vertices'];
-        var exsitIndexes = [];
 
+        for (i in nodes){
+          var theNodeID = 'circleid_' + nodes[i]['index']
+          var members = nodes[i]['members'];
+          var nodesize = nodes[i]['members'].length
+          var numIn = 0.;
+          for (m in members){
+            var flag = $.inArray(members[m], dataname)
+            if (flag != -1){numIn += 1}
+          }
+          d3.select('#'+theNodeID).style('opacity', numIn/nodesize)
+        }
+
+
+
+
+
+        /*
+        var exsitIndexes = [];
         for (d in dataname){
           for (i in nodes){
             var members = nodes[i]['members'];
@@ -53,6 +70,7 @@ var searchFunc = function(dataname){
              //.transition()
              .style('opacity', 0.1)
         }
+        */
       })
     }
 
