@@ -109,6 +109,16 @@ var runClustering = function(){
       	.links(edges)
       	.start();
 
+      var tooltip = mappersvg.append("g").attr("transform", "translate(-300,0)");
+        //add rectangle to teh group
+        tooltip.append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 300)
+        .attr("height", height)
+        .attr("color", "black")
+        .attr("opacity", 0.8);
+
       var link = mappersvg.append('g').selectAll(".link")
       	.data(edges)
       	.enter().append("line")
@@ -125,6 +135,29 @@ var runClustering = function(){
       	.attr("r", function(e) { return Sscale(e.members.length) })//Math.min(10,(3+Math.sqrt(e.members.length))); })
       	.style("fill", function(e) { return fscale(e.attribute);})
       	.text(function(e){return e.members.length; })
+        .on('click',function(){
+          if (tooltip.data && d.name == tooltip.data.name) {
+            //if clicked on the same node again close
+            tooltip.classed("open", false);
+            tooltip
+              .transition()
+              .attr("transform", "translate(-300,0)")//slide via translate
+              .duration(1000);
+            tooltip.data = undefined;//set the data to be undefined since the tooltip is closed
+            return;
+          }
+          tooltip.data = d;//set the data to teh opened node
+          tooltip.classed("open", true);//set the class as open since the tooltip is opened
+          tooltip
+            .transition()
+            .attr("transform", "translate(0,0)")
+            .duration(1000);
+          d3.selectAll(".text-tip").remove();  //remove old text
+          tooltip.append("text")//set the value to the text
+          .attr("transform", "translate(10,100)")
+          .attr("class","text-tip").text(d.name);
+
+        })
       	.on('mouseover', function(e) {
           //mouseoverShowExaplain(e,statests)
           //var svgFlag = $('svg').length

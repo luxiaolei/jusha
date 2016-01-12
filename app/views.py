@@ -16,7 +16,7 @@ import numpy as np
 import os.path as op
 import pandas as pd
 from jushawrapper import runJusha
-from utilityFuncs import binGen, recolor_mapperoutput
+from utilityFuncs import binGen, recolor_mapperoutput, statistical_tests
 from jushaFilter import svmFilter
 
 app.secret_key = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
@@ -209,7 +209,7 @@ def paramsAjax():
 def explainAjax():
     SelectionA = request.json['selectionA']
     SelectionB = request.json['selectionB']
-    test = statistical_tests(SelectionA, SelectionB)
+    test = statistical_tests(selfvars, SelectionA, SelectionB)
     return json.dumps(test)#{'ans':str('yeyeye')})
 
 

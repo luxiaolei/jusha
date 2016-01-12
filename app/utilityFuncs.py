@@ -1,9 +1,11 @@
 #!encoding=utf-8
 import pandas as pd
 import numpy as np
+import copy
 from scipy import stats
 from matplotlib.cm import jet
 from matplotlib.colors import rgb2hex
+
 
 
 """
@@ -77,7 +79,7 @@ def binGen(array, binsNumber=10):
     return (feature_his, ticksOrigin)
 
 
-def statistical_tests(SelectionA, SelectionB, top=3):
+def statistical_tests(selfvars, SelectionA, SelectionB, top=3):
     """
     Selection: input list of vertices indexes
     Return a list of ranked features, and p-value for t-unpaied test
