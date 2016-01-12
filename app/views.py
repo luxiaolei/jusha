@@ -293,5 +293,5 @@ def newjson():
     This is for recoloring based on selected feature
     """
     a = copy.deepcopy(selfvars.mapperoutput)
-    mappernew = recolor_mapperoutput(a)
+    mappernew = recolor_mapperoutput(selfvars, a)
     return json.dumps(mappernew)

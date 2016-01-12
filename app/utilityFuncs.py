@@ -1,3 +1,4 @@
+#!encoding=utf-8
 import pandas as pd
 import numpy as np
 from scipy import stats
@@ -11,7 +12,7 @@ this module contains pure View-Controller interaction, nothing involves the Mode
 worth keeping a note for Model logging the actions, as registered user later may want to come back to the same state he last time left
 to be called in the "newjson" module
 """
-def recolor_mapperoutput(mapperjson):
+def recolor_mapperoutput(selfvars,mapperjson):
     """
     set selfvars.mappernew to an altered mapper_ouput in json format
     the attartribut of vertices become the avg values of elements in the vertices
