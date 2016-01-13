@@ -1,13 +1,24 @@
 //search data utility
-var searchFunc = function(dataname){
+var searchFunc = function(dataname, inputSearch){
   //recieve an list of data indexes
   //color the corresponding nodes
 
-      for (i in dataname){
-        dataname[i] = parseInt(dataname[i])
-      }
+
+
       //retrive the indexes of nodes which contain the searched data
       $.getJSON('/mapperJsonSaved', function(data){
+        var nameIndexMap = data['nameIndexMap']
+        for (i in dataname){
+          var searchelem = parseInt(dataname[i])
+          if(isNaN(searchelem)){
+            dataname[i] = nameIndexMap[dataname[i]]
+          }else{
+            dataname[i] = searchelem
+          }
+        }
+        console.log(dataname)
+
+
         var nodes = data['vertices'];
 
         for (i in nodes){
@@ -19,8 +30,13 @@ var searchFunc = function(dataname){
             var flag = $.inArray(members[m], dataname)
             if (flag != -1){numIn += 1}
           }
+          if (!inputSearch & numIn==1){
+            d3.select('#'+theNodeID).style('opacity', 1)
+          }else{
           d3.select('#'+theNodeID).style('opacity', numIn/nodesize)
+          }
         }
+
 
 
 
@@ -80,7 +96,8 @@ $(function(dataname){
   $('#searchsubmit').bind('click',function(){
     $("#reverse").show()
     var dataname = $('#searchbox').val().split(',')
-    searchFunc(dataname);
+    searchFunc(dataname,false);
+    d3.selectAll('line').style('opacity', .1)
   })
 })
 
@@ -88,8 +105,8 @@ $(function(dataname){
 $(function(){
   $("#reverse").bind('click',function(){
     $("#reverse").hide()
-    var svg = d3.select('svg');
-    svg.selectAll('circle').style('opacity', 1)
+    d3.selectAll('circle').style('opacity', 1)
+    d3.selectAll('line').style('opacity', 1)
   })
 
 })

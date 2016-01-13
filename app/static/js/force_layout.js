@@ -78,6 +78,7 @@ var runClustering = function(url){
       var statests = d['statisticT']
       var colormap = d['colormap']
       var distinctAttr = d['distinctAttr']
+      var indexNameMap = d['indexNameMap']
 
 
       var linkColor = []//d3.set();
@@ -137,30 +138,31 @@ var runClustering = function(url){
       	.style("fill", function(e) { return fscale(e.attribute);})
       	.text(function(e){return e.members.length; })
         .on('click',function(d){
-          console.log(d.x)
-          console.log(d.y)
-          if (tooltip.data && d.name == tooltip.data.name) {
-            //if clicked on the same node again close
-            tooltip.classed("open", false);
+            console.log(d.x)
+            console.log(d.y)
+            if (tooltip.data && d.name == tooltip.data.name) {
+              //if clicked on the same node again close
+              tooltip.classed("open", false);
+              tooltip
+                .transition()
+                .attr("transform", "translate(-300,0)")//slide via translate
+                .duration(1000);
+              tooltip.data = undefined;//set the data to be undefined since the tooltip is closed
+              return;
+            }
+            tooltip.data = d;//set the data to teh opened node
+            tooltip.classed("open", true);//set the class as open since the tooltip is opened
             tooltip
               .transition()
-              .attr("transform", "translate(-300,0)")//slide via translate
+              .attr("transform", "translate(0,0)")
               .duration(1000);
-            tooltip.data = undefined;//set the data to be undefined since the tooltip is closed
-            return;
-          }
-          tooltip.data = d;//set the data to teh opened node
-          tooltip.classed("open", true);//set the class as open since the tooltip is opened
-          tooltip
-            .transition()
-            .attr("transform", "translate(0,0)")
-            .duration(1000);
-          d3.selectAll(".text-tip").remove();  //remove old text
-          tooltip.append("text")//set the value to the text
-          .attr("transform", "translate(10,100)")
-          .attr("class","text-tip").text(d.name);
-        })
+            d3.selectAll(".text-tip").remove();  //remove old text
+            tooltip.append("text")//set the value to the text
+            .attr("transform", "translate(10,100)")
+            .attr("class","text-tip").text(d.name);
+          })
       	.on('mouseover', function(e) {
+
           //mouseoverShowExaplain(e,statests)
           //var svgFlag = $('svg').length
           //if (svgFlag > 1){mouseoverHighlightBars(e.members)}
@@ -194,6 +196,17 @@ var runClustering = function(url){
 
                       $.each(d.members, function(i,e){members.push(e)})
                       var uniquemembers = uniqueArray(members)
+
+
+                      var stringIndex = []
+                      for (i in uniquemembers){
+                        stringIndex.push(indexNameMap[uniquemembers[i]])
+
+                      }
+                      d3.selectAll('text').remove()
+
+                      showDataname(svg, stringIndex, width, height)
+
                         $('[id^=Selection').each(function(){
                           var display = $(this).children().first()
                           var btn = $(this).children().last()
@@ -210,6 +223,7 @@ var runClustering = function(url){
               })//.each(function(e){console.log(e)});
               $('#export2csv').show()
             })
+            d3.selectAll('text').remove()
 
         var brush = svg
         brush.attr("class", "brush").call(brusher)
@@ -339,4 +353,12 @@ var uniqueArray = function(list) {
     if ($.inArray(e, result) == -1){result.push(e)};
   });
   return result;
+}
+
+var showDataname = function(svg, stringIndex, width, height){
+  for (i in stringIndex){
+    svg.append('g').append('text')
+                     .attr('x', 10).attr('y', i*20+20)
+                     .text(stringIndex[i])
+  }
 }

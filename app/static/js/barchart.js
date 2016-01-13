@@ -69,7 +69,7 @@ var barChart = function(url, numSvg){
             .on('mouseover', function(d){
               //change color of the rect
               //search data in the rect
-              searchFunc(d.binData)
+              searchFunc(d.binData, true)
               d3.selectAll('line').style('opacity', .1)
               d3.select(this).style("fill", "green")
             })
