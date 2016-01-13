@@ -29,19 +29,15 @@ Equivalent to the model in the MVC web app framework, where key user business da
 """
 class selfgloablvars:
     def __init__(self):
-        self.mapperoutput = 1
+        self.jushaoutput = 1
         self.features = 1
         self.df = 1
         self.selected_feature = 1
         self.checkedFeatures = 1
         self.checkedFeaturesNorm = 1
-        self.feature_his = 1
-        self.inputInterval = 'Not Signed'
-        self.inputOverlap = 'Not Signed'
-        self.binsNumber = 20
-        self.binTicks = 'Not Signed'
-        self.binClicked = 'Not Signed'
+        self.barchart = 'Not Signed'
         self.parameters = {}
+        self.graphStates = {'svgimg0': {'parameters': [], 'vertices': [], 'nodes': []}}
 
 selfvars = selfgloablvars()
 
@@ -86,7 +82,7 @@ def send_features():
 
     data = selfvars.df.ix[:, selfvars.checkedFeatures].values
     name = ['KMeans', 'AfPropagatn', 'MeanShift', 'SpectralCluster', 'DBSCAN', 'AgCluster', 'Brich']
-    print 'selfvars.checkedFeatures is %s'%selfvars.checkedFeatures
+    #print 'selfvars.checkedFeatures is %s'%selfvars.checkedFeatures
     #for those clustering emthod require n_clusters, set it tobe the number fo features
     default_num_clusters = 5# len(selfvars.checkedFeatures)
     clusteringObjs = [KMeans(n_clusters=default_num_clusters, init='k-means++', n_init=10, max_iter=300, tol=0.0001, precompute_distances='auto', verbose=0, random_state=None, copy_x=True, n_jobs=1),
@@ -131,24 +127,10 @@ def send_bins():
         array = pd.Series(filterFuncs[key](data, metricpar={"metric":selfvars.parameters['metric']}))
     else:
         array = selfvars.df[selfvars.selected_feature]
-    selfvars.parameters['filter'] = np.array(array)
-    selfvars.feature_his, selfvars.binTicks = binGen(array,selfvars.binsNumber)
-    return json.dumps(selfvars.feature_his)
+    selfvars.parameters['filter'] = list(array)
+    selfvars.barchart = binGen(array,selfvars.binsNumber)
+    return json.dumps(selfvars.barchart[0])
 
-"""
-20151220_TL
-For the secondary bar charts? redundant then.
-"""
-@app.route("/binClickedAjax",  methods=['POST','GET'])
-def binClicked():
-    """
-    recieve clicked bin index from client
-    assign the index to selvar.binclicked
-    to perform the sub barchart generation
-    """
-    binClicked = request.json['binClicked']
-    selfvars.binClicked = int(binClicked)
-    return json.dumps({'ans':1})
 
 """
 20151220_TL
@@ -174,7 +156,7 @@ parameter specification passed down from View to fire up jushacore for the main 
 def paramsAjax():
     """
     *recieve params from clients
-    *call jushacore function to statisticT new Json
+    *when user click inspect
     """
     #if request.method == 'POST'
     try:
@@ -183,7 +165,6 @@ def paramsAjax():
         selfvars.parameters['overlap'] = float(request.json['overlap'])
         selfvars.checkedFeatures = request.json['checkedFeatures']
         selfvars.checkedFeaturesNorm = request.json['checkedFeaturesNorm']
-        #selfvars.parameters['filter'] = request.json['filter']
         selfvars.parameters['metric'] = request.json['metric']
         selfvars.parameters['cutoff'] = request.json['cutoff']
         selfvars.parameters['weighting'] = request.json['weighting']
@@ -192,15 +173,15 @@ def paramsAjax():
         #!!WHen multipul calls, the features and df are shrinking!! should solve the problem
         #through redesign a poper user workflow!
         index = request.json['index']
-        print index
+
         if index != 'None':
             assert index in selfvars.features
             selfvars.features.remove(index)
             selfvars.df.index = selfvars.df.ix[:, index]
-            print index
+
             del selfvars.df[index]
 
-        selfvars.mapperoutput = 1
+        selfvars.jushaoutput = 1
         return json.dumps({'ans': str(type(selfvars.parameters['interval']))})
     except Exception,e:
         return json.dumps({'ans':str(e)})
@@ -212,6 +193,38 @@ def explainAjax():
     test = statistical_tests(selfvars, SelectionA, SelectionB)
     return json.dumps(test)#{'ans':str('yeyeye')})
 
+@app.route('/graphstateAjax',  methods= ['POST', 'GET'])
+def graphStateSaver():
+    """
+    when user click saveimg button, save nodes co-ordinates and parameters
+    """
+    coordinates = request.json['xy']
+    assert type(coordinates)==list
+    stateId = request.json['stateId']
+    #construct the state dictionary
+    savedOutput = selfvars.jushaoutput.copy()
+    for key, xy in enumerate(coordinates):
+        assert type(xy)==list
+        xy = [float(i) for i in xy]
+        savedOutput['vertices'][key]['x'] = xy[0]
+        savedOutput['vertices'][key]['y'] = xy[1]
+    savedOutput['parameters'] = selfvars.parameters.copy()
+    #savedOutput['parameters']['filter'] = list(savedOutput['parameters']['filter'])
+    savedOutput['selected_feature'] = selfvars.selected_feature
+    selfvars.graphStates[stateId] = savedOutput
+    return json.dumps({'ans':stateId})
+
+@app.route('/Restore', methods= ['POST', 'GET'])
+def graphstateRestoreAjax():
+    """
+    when user click the minisvg, do the restoring
+    """
+    stateId = request.json['stateId']
+    return json.dumps({'ans':stateId})
+
+@app.route('/restoreJson/<svgimgid>')
+def restorejson(svgimgid):
+    return json.dumps(selfvars.graphStates[svgimgid])
 
 """
 20151220_TL
@@ -241,8 +254,8 @@ def uploadFile():
             selfvars.df = df.dropna()
             selfvars.df1 = df.dropna()
 
-            #initialize mapperoutput
-            selfvars.mapperoutput = 1
+            #initialize jushaoutput
+            selfvars.jushaoutput = 1
         return jsonify(features=list(selfvars.features))#json.dumps({'result': 'Successfully Uploaded!'})
     except Exception,e:
         return json.dumps(str(e))
@@ -265,10 +278,24 @@ http://flask.pocoo.org/docs/0.10/quickstart/
 @app.route('/mapperjson')
 def mapper_cluster():
     """
-    Generates mapperoutput
+    Generates jushaoutput
     """
-    selfvars.mapperoutput = runJusha(selfvars, session['filename'])
-    return json.dumps(selfvars.mapperoutput)
+    #check if the current params setting has been processed
+    for dic in selfvars.graphStates.values():
+        try:
+            if selfvars.parameters == dic['parameters']:
+                #print ('Restoring the old graph with settings: {0}').format(dic['parameters'])
+                selfvars.jushaoutput = dic
+                return json.dumps(selfvars.jushaoutput)
+        except Exception,e:
+            print e
+            continue
+    #for first time run the current params settings, save the result
+    selfvars.jushaoutput = runJusha(selfvars, session['filename'])
+    #tempkey = np.random.randint(1000)
+    #selfvars.graphStates[tempkey] = copy.deepcopy(selfvars.jushaoutput)
+    #selfvars.graphStates[tempkey]['parameters'] = selfvars.parameters
+    return json.dumps(selfvars.jushaoutput)
 
 """
 20151220_TL
@@ -279,7 +306,7 @@ def mapperRecolored():
     """
     This is for search utility to look up data in nodes
     """
-    return json.dumps(selfvars.mapperoutput)
+    return json.dumps(selfvars.jushaoutput)
 
 
 """
@@ -292,6 +319,6 @@ def newjson():
     """
     This is for recoloring based on selected feature
     """
-    a = copy.deepcopy(selfvars.mapperoutput)
+    a = copy.deepcopy(selfvars.jushaoutput)
     mappernew = recolor_mapperoutput(selfvars, a)
     return json.dumps(mappernew)

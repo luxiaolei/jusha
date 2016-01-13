@@ -49,7 +49,7 @@ def runJusha(selfvars, filename, intervals=8, overlap=50.0):
     print data.describe()
     data = data.values
 
-    Filter = selfvars.parameters['filter']
+    Filter = np.array(selfvars.parameters['filter'])
     cover = jushacore.cover.cube_cover_primitive(intervals, overlap)
     cluster = jushacore.single_linkage()
     metricpar = {'metric': selfvars.parameters['metric']}

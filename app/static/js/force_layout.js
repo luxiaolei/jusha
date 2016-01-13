@@ -1,4 +1,4 @@
-var runClustering = function(){
+var runClustering = function(url){
 
     $("#generate").hide()
   var svgFlag = $("#graph").children("svg").length
@@ -71,7 +71,8 @@ var runClustering = function(){
         k = k + 1;
     }
 
-  d3.json("/mapperjson", function(d) {
+  d3.json(url, function(d) {
+
       var nodes = d['vertices'];
       var edges = d['edges'];
       var statests = d['statisticT']
@@ -135,7 +136,9 @@ var runClustering = function(){
       	.attr("r", function(e) { return Sscale(e.members.length) })//Math.min(10,(3+Math.sqrt(e.members.length))); })
       	.style("fill", function(e) { return fscale(e.attribute);})
       	.text(function(e){return e.members.length; })
-        .on('click',function(){
+        .on('click',function(d){
+          console.log(d.x)
+          console.log(d.y)
           if (tooltip.data && d.name == tooltip.data.name) {
             //if clicked on the same node again close
             tooltip.classed("open", false);
@@ -156,7 +159,6 @@ var runClustering = function(){
           tooltip.append("text")//set the value to the text
           .attr("transform", "translate(10,100)")
           .attr("class","text-tip").text(d.name);
-
         })
       	.on('mouseover', function(e) {
           //mouseoverShowExaplain(e,statests)
@@ -241,13 +243,7 @@ var runClustering = function(){
           var fscale = d3.scale.linear()
           	.range(colormap)
           	.domain(distinctAttr);
-          //###D3 way of coloring
-          //var node = mappersvg.selectAll("circle")
-          //node
-          //.data(nodes)
-          //.style('fill', function(e) { return fscale(e.attribute);})
           $('circle').each(function(){
-            //console.log($(this).index())
             $(this).css('fill', function(){return fscale(nodes[$(this).index()].attribute)})
           })
         });

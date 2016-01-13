@@ -151,7 +151,7 @@ $(function(){
 
 $(function(){
   $('#Clustering').bind('click',function(){
-    runClustering();
+    runClustering('/mapperjson');
     $('#Clustering').hide()
     $('#saveimg').show()
   })
@@ -160,15 +160,15 @@ $(function(){
 $(function(){
   $('#saveimg').bind('click',function(){
 
-    $('#graph').appendTo($('#svgrecorder'))
-
+    //save to a mini graph
     var html = new XMLSerializer().serializeToString(document.getElementById(`graph`).querySelector('svg'));
     var imgsrc = 'data:image/svg+xml;base64,' + btoa(html);
     var image = new Image;
     image.src = imgsrc;
 
     image.onload = function() {
-      var svgshot = $('<img>').attr('id', 'svgimg').attr('width','202px').attr('height',"202px")
+      var id = 'svgimg'+ $('[id^=svgimg]').length
+      var svgshot = $('<img>').attr('id', id).attr('width','202px').attr('height',"202px")
                     .attr('src', imgsrc);
 
       var interval = $("#interval").val();
@@ -181,13 +181,58 @@ $(function(){
                          '<li>Filter:'+filter+'</li>'+
                          '<li>Interval:'+interval+'</li>'+
                          '<li>Overlap:'+overlap+'</li>')
-      savedGrapg.appendTo($('#svgimgs'))
-      svgshot.appendTo($('#svgimgs'))
+      savedGrapg.appendTo($('#timemachine'))
+      svgshot.appendTo($('#timemachine'))
 
       $('img').on('click',function(){
         window.open(imgsrc, 'width:1200;height:1000')
-        //$(this).width(1000).height(1000)
+        //send id to server and re-store the graph when successed
+        var data = {'stateId': id}
+        $.ajax({
+          type : "POST",
+          //mimic the url_for function when this js file is external
+          url : "/Restore",
+          data: JSON.stringify(data),// null, '\t'),
+          contentType: 'application/json;charset=UTF-8',
+          success: function(result){
+            console.log('I am restoring!!')
+            //result = $.parseJSON(result)
+            console.log(result)
+            console.log(typeof result)
+            //when post successed,redraw the graph
+            console.log('this id is '+id)
+
+            }
+          });
+          $(function(){
+            $('[id^=svgimg]').each(function(){
+              $(this).bind('click',function(){
+                runClustering('/restoreJson/'+$(this).attr('id'))
+              })
+            })
+          })
+
       })
+
+      //send x,y coo-dinate of nodes to server
+      var coordinates = []
+      $('circle').each(function(){
+        var xy = [$(this).attr('cx'), $(this).attr('cy')]
+        coordinates.push(xy)
+      })
+      var data = {'xy': coordinates, 'stateId': id}
+      console.log(coordinates)
+      $.ajax({
+        type : "POST",
+        //mimic the url_for function when this js file is external
+        url : "/graphstateAjax",
+        data: JSON.stringify(data),// null, '\t'),
+        contentType: 'application/json;charset=UTF-8',
+        success: function(result){
+          console.log('Graph State recording successed!!')
+          }
+        });
+
       /*
       context.drawImage(image, 0, 0, canvas.width, canvas.height);
       canvasdata = canvas.toDataURL("image/png");
@@ -204,6 +249,8 @@ $(function(){
     }
   })
 })
+
+
 
 $(function(){
   $('#explain').bind('click',function(){

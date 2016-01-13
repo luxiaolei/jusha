@@ -86,7 +86,7 @@ def statistical_tests(selfvars, SelectionA, SelectionB, top=3):
     and ks-2samples test
     """
     #dataIndexesList = [i['members'] for i in vertices]
-    vertices = selfvars.mapperoutput['vertices']
+    vertices = selfvars.jushaoutput['vertices']
     SeA = SelectionA#convertSelections(SelectionA)
     SeB = SelectionB#convertSelections(SelectionB)
     testsRes = []
