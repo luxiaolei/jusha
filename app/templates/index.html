@@ -6,7 +6,11 @@
   <title>Example for the d3.js export from mapper</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
   <script type="text/javascript">
-    var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    var $SCRIPT_ROOT = {
+      {
+        request.script_root | tojson | safe
+      }
+    };
   </script>
   <script src="{{ url_for('static', filename='js/jquery-2.1.4.min.js') }}" type="text/javascript" charset="utf-8"></script>
   <script src="{{url_for('static',filename ='js/featureHandler.js')}}" type="text/javascript" charset="utf-8"></script>
@@ -21,247 +25,238 @@
 
 
   <script>
-  var options = [];
+    var options = [];
 
-$( '.dropdown-menu a' ).on( 'click', function( event ) {
+    $('.dropdown-menu a').on('click', function(event) {
 
-   var $target = $( event.currentTarget ),
-       val = $target.attr( 'data-value' ),
-       $inp = $target.find( 'input' ),
-       idx;
+      var $target = $(event.currentTarget),
+        val = $target.attr('data-value'),
+        $inp = $target.find('input'),
+        idx;
 
-   if ( ( idx = options.indexOf( val ) ) > -1 ) {
-      options.splice( idx, 1 );
-      setTimeout( function() { $inp.prop( 'checked', false ) }, 0);
-   } else {
-      options.push( val );
-      setTimeout( function() { $inp.prop( 'checked', true ) }, 0);
-   }
+      if ((idx = options.indexOf(val)) > -1) {
+        options.splice(idx, 1);
+        setTimeout(function() {
+          $inp.prop('checked', false)
+        }, 0);
+      } else {
+        options.push(val);
+        setTimeout(function() {
+          $inp.prop('checked', true)
+        }, 0);
+      }
 
-   $( event.target ).blur();
+      $(event.target).blur();
 
-   console.log( options );
-   return false;
-});
-  $(document).ready(function() {
-       //$(function() { $('#divContainer').draggable(); });
-       //$(function() { $("#divResize").draggable().resizable(); });
-  });
+      console.log(options);
+      return false;
+    });
+    $(document).ready(function() {
+      //$(function() { $('#divContainer').draggable(); });
+      //$(function() { $("#divResize").draggable().resizable(); });
+    });
   </script>
 </head>
 
 <body>
 
-    <div id="wrapper">
+  <div id="wrapper">
 
-        <!-- Sidebar -->
-        <div id="sidebar-wrapper" style="max-width = 200px;overflow-x:hidden">
-
-
-            <ul id=sidebar class="sidebar-nav">
+    <!-- Sidebar -->
+    <div id="sidebar-wrapper" style="max-width = 200px;overflow-x:hidden">
 
 
-            <li>
-            <a herf='#'>上传文件</a>
-            </li>
-            <form id="upload-file" method="post" enctype="multipart/form-data">
-                <fieldset>
-                    <input  name="file" type="file" value="Choose..">
-                </fieldset>
+      <ul id=sidebar class="sidebar-nav">
 
-            </form>
 
-            <button class="btn" id='fileupload'>Upload!</button>
+        <li>
+          <a herf='#'>上传文件</a>
+        </li>
+        <form id="upload-file" method="post" enctype="multipart/form-data">
+          <fieldset>
+            <input name="file" type="file" value="Choose..">
+          </fieldset>
 
-              <li>
-            <a herf='#'>选择索引列</a>
-            </li>
-            <li>
-              <div class="container">
-                <div class="row">
-                  <div class="col-lg-2">
-                  <select id='index' >
-                    <option value='None' checked=true >使用数字序列</option>
-                  </select>
+        </form>
+
+        <button class="btn" id='fileupload'>Upload!</button>
+
+        <li>
+          <a herf='#'>选择索引列</a>
+        </li>
+        <li>
+          <div class="container">
+            <div class="row">
+              <div class="col-lg-2">
+                <select id='index'>
+                  <option value='None' checked=true>使用数字序列</option>
+                </select>
+              </div>
+              <br>
+              <div class="col-lg-2">
+                <div class="button-group">
+                  <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-cog"></span>
+                    <span class="caret"></span>选择需要计算的列</button>
+                  <ul class="dropdown-menu" id="featuresCheck"></ul>
                 </div>
-                <br>
-                    <div class="col-lg-2">
-                      <div class="button-group">
-                        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span>
-                        <span class="caret"></span>选择需要计算的列</button>
-                        <ul class="dropdown-menu" id="featuresCheck" ></ul>
-                      </div>
-                    </div>
-                    <br>
-                    <div class="col-lg-2">
-                    <div class="button-group">
-                      <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-cog"></span>
-                      <span class="caret"></span>选择需要标准的列</button>
-                      <ul class="dropdown-menu" id="featuresNorm" ></ul>
-                    </div>
               </div>
+              <br>
+              <div class="col-lg-2">
+                <div class="button-group">
+                  <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-cog"></span>
+                    <span class="caret"></span>选择需要标准的列</button>
+                  <ul class="dropdown-menu" id="featuresNorm"></ul>
+                </div>
               </div>
-            </li>
-
-
-
-
-            </form>
-            <li>
-            <a herf='#'>输入参数</a>
-            </li>
-            <a>Interval: </a>
-            <input type='text' name='params' id='interval' value='7' maxlength="10" style='width: 60px; height:25px' />
-            <a>overlap:</a>
-            <input type='text' name='params' id='overlap' value = '30' maxlength="4" style='width: 60px;height:25px'/>
-
-
-            <li>
-            <a herf='#'>选择度量以及阀值</a>
-            </li>
-              <select id='metrics' style='width:100px'>
-                <option value="euclidean">Euclidean</option>
-                <option value="minkowski" >Minkowski</option>
-                <option value="cityblock">Cityblock</option>
-                <option value="seuclidean">Seuclidean</option>
-                <option value="sqeuclidean">Sqeuclidean</option>
-                <option value="cosine">Cosine</option>
-                <option value="correlation">Correlation</option>
-              </select>
-
-              <select id='cutoff' style='width:120px'>
-                <option value="scale_graph">Scale Graph</option>
-                <option value="first_gap">first_gap</option>
-                <option value="biggest_gap" >biggest_gap</option>
-                <option value="variable_exp_gap">variable_exp_gap</option>
-                <option value="variable_exp_gap2">variable_exp_gap2</option>
-              </select>
-
-
-              <a id=scalegraph>
-              <select id='weighting'>
-                <option value="linear">Linear</option>
-                <option value="root">Root</option>
-                <option value="inverse">Inverse</option>
-                <option value="log" >Log</option>
-              </select>
-              <a id='atag'>Exponent:</a>
-                <input type='text' id='exponent' value='0.0' maxlength="10" style='width: 60px; height:25px' />
-              </a>
-
-
-
-
-            <li>
-            <a herf='#'>过程控制</a>
-            </li>
-
-            <button class="btn" id="paramsGenerate">Inspects!</button>
-            <a > Filter: </a>
-            <a id='filters'></a>
-
-            <button class="btn" id="Clustering" style='display:none'>Start Clustering!</button>
-
-            <button class="btn" id="saveimg" style='display:none'>Save Me!</button>
-            <br/>
-            <li>
-            <a herf='#'>搜索数据</a>
-            </li>
-
-            <li>
-              <input type='text' name='search' id='searchbox' style='width: 200px; height:25px'/>
-              <button class="btn" id='searchsubmit'>Search!</button>
-              <button class="btn" id='reverse' style="display:none">Reverse</button>
-            </li>
-            <li>
-            <a herf='#'>选择钻取特征</a>
-            </li>
-
-            <div style="max-height: 300px;overflow-y:scroll" class=options id="radiocheck"></div>
-            <a>No. Bins: </a>
-            <input type='text' id='bins' value='20' maxlength="10" style='width: 60px; height:25px' />
-            <button class="btn" id="recolor" style="height:26px;display:none">Re Color!</button>
-            <li>
-            <a herf='#'>对两个群解释</a>
-            </li>
-              <ul id=SelectionA>
-                <a id='NumPtsA'></a>
-                <button class="btn" id="addA" value=0 data-selected=[] style="height:26px;">Select!</button>
-              </ul>
-
-              <ul id=SelectionB>
-                <a id='NumPtsB'></a>
-                <button class="btn" id="addB" value=0 data-selected=[] style="height:26px;">Select!</button>
-              </ul>
-              <a id='export2csv' download="Selection.csv" style="display:none">Export</a>
-
-              <div id ='selection' data-tmp="I hold temp selection"></div>
-              <button class="btn" id="explain" style="align:center;height:26px;display:none">Explain!</button>
-              <div style="max-height: 130px;overflow-y:scroll"  id="explainFlists"></div>
-
-            <div id='barchart' class='container' style="width:230px; height:180px">
-
             </div>
-            <div id=timemachine>
-            </div>
-            </ul>
+        </li>
+
+
+
+
+        </form>
+        <li>
+          <a herf='#'>输入参数</a>
+        </li>
+        <a>Interval: </a>
+        <input type='text' name='params' id='interval' value='7' maxlength="10" style='width: 60px; height:25px' />
+        <a>overlap:</a>
+        <input type='text' name='params' id='overlap' value='30' maxlength="4" style='width: 60px;height:25px' />
+
+
+        <li>
+          <a herf='#'>选择度量以及阀值</a>
+        </li>
+        <select id='metrics' style='width:100px'>
+          <option value="euclidean">Euclidean</option>
+          <option value="minkowski">Minkowski</option>
+          <option value="cityblock">Cityblock</option>
+          <option value="seuclidean">Seuclidean</option>
+          <option value="sqeuclidean">Sqeuclidean</option>
+          <option value="cosine">Cosine</option>
+          <option value="correlation">Correlation</option>
+        </select>
+
+        <select id='cutoff' style='width:120px'>
+          <option value="scale_graph">Scale Graph</option>
+          <option value="first_gap">first_gap</option>
+          <option value="biggest_gap">biggest_gap</option>
+          <option value="variable_exp_gap">variable_exp_gap</option>
+          <option value="variable_exp_gap2">variable_exp_gap2</option>
+        </select>
+
+
+        <a id=scalegraph>
+          <select id='weighting'>
+            <option value="linear">Linear</option>
+            <option value="root">Root</option>
+            <option value="inverse">Inverse</option>
+            <option value="log">Log</option>
+          </select>
+          <a id='atag'>Exponent:</a>
+          <input type='text' id='exponent' value='0.0' maxlength="10" style='width: 60px; height:25px' />
+        </a>
+
+
+
+
+        <li>
+          <a herf='#'>过程控制</a>
+        </li>
+
+        <button class="btn" id="paramsGenerate">Inspects!</button>
+        <a> Filter: </a>
+        <a id='filters'></a>
+
+        <button class="btn" id="Clustering" style='display:none'>Start Clustering!</button>
+
+        <button class="btn" id="saveimg" style='display:none'>Save Me!</button>
+        <br/>
+        <li>
+          <a herf='#'>搜索数据</a>
+        </li>
+
+        <li>
+          <input type='text' name='search' id='searchbox' style='width: 200px; height:25px' />
+          <button class="btn" id='searchsubmit'>Search!</button>
+          <button class="btn" id='reverse' style="display:none">Reverse</button>
+        </li>
+        <li>
+          <a herf='#'>选择钻取特征</a>
+        </li>
+
+        <div style="max-height: 300px;overflow-y:scroll" class=options id="radiocheck"></div>
+        <a>No. Bins: </a>
+        <input type='text' id='bins' value='20' maxlength="10" style='width: 60px; height:25px' />
+        <button class="btn" id="recolor" style="height:26px;display:none">Re Color!</button>
+        <li>
+          <a herf='#'>对两个群解释</a>
+        </li>
+        <ul id=SelectionA>
+          <a id='NumPtsA'></a>
+          <button class="btn" id="addA" value=0 data-selected=[] style="height:26px;">Select!</button>
+        </ul>
+
+        <ul id=SelectionB>
+          <a id='NumPtsB'></a>
+          <button class="btn" id="addB" value=0 data-selected=[] style="height:26px;">Select!</button>
+        </ul>
+        <a id='export2csv' download="Selection.csv" style="display:none">Export</a>
+
+        <div id='selection' data-tmp="I hold temp selection"></div>
+        <button class="btn" id="explain" style="align:center;height:26px;display:none">Explain!</button>
+        <div style="max-height: 130px;overflow-y:scroll" id="explainFlists"></div>
+
+        <div id='barchart' class='container' style="width:230px; height:180px">
 
         </div>
-        <!-- /#sidebar-wrapper -->
-
-        <!-- Page Content -->
-        <div id="page-content-wrapper">
-            <div class="container-fluid">
-                <div class="row">
-
-                    <div id='graph' class="col-lg-10">
-
-
-
-                    </div>
-                </div>
-            </div>
+        <div id=timemachine>
         </div>
-        <!-- /#page-content-wrapper -->
+      </ul>
+
+      </div>
+      <!-- /#sidebar-wrapper -->
+
+      <!-- Page Content -->
+      <div id="page-content-wrapper">
+        <div class="container-fluid">
+          <div class="row">
+
+            <div id='graph' class="col-lg-10">
+
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /#page-content-wrapper -->
 
     </div>
-
-
-
-
-
-<div class="row" style="height:20px">
-  <div class="span7">
-  </div>
-</div>
-
-<div class='dataInfo'>
-    <div id=members class="Content">
-  </div>
-</div>
-
-<li>
-
-  <div class="container" style="height: 700px">
-    <div class="span2" style="height: 500px">
-
-        <div >
-          <ul id='explain' class="nav nav-list">
-
-          </ul>
+    <div class="row" style="height:20px">
+      <div class="span7">
       </div>
     </div>
+    <div class='dataInfo'>
+      <div id=members class="Content">
+      </div>
+    </div>
+    <li>
+      <div class="container" style="height: 700px">
+        <div class="span2" style="height: 500px">
+          <div>
+            <ul id='explain' class="nav nav-list">
+            </ul>
+          </div>
+        </div>
+      </div>
 
-
-
-  </div>
-   <canvas id=canvas width=200 height=200>kkk</canvas>
-
-
-  <script src="{{ url_for('static', filename = 'js/d3.v3.js') }}" charset="utf-8"></script>
-  <script src="{{ url_for('static', filename = 'js/force_layout.js') }}" charset="utf-8"></script>
-  <script src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script>
-  <script src="{{ url_for('static', filename = 'js/params.js') }}"></script>
+      <script src="{{ url_for('static', filename = 'js/d3.v3.js') }}" charset="utf-8"></script>
+      <script src="{{ url_for('static', filename = 'js/force_layout.js') }}" charset="utf-8"></script>
+      <script src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script>
+      <script src="{{ url_for('static', filename = 'js/params.js') }}"></script>
 
 </body>
 
