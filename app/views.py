@@ -3,7 +3,7 @@ This py contains all the View -> Controller and Controller -> View modules to be
 """
 
 #!encoding=utf-8
-from flask import redirect, request, render_template, url_for, session, g, jsonify
+from flask import redirect, request, render_template, url_for, session, g, jsonify, make_response
 from flask_wtf import Form
 from wtforms import RadioField
 from app import app
@@ -268,7 +268,8 @@ http://flask.pocoo.org/docs/0.10/quickstart/
 """
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    headers = {'Content-Type': 'text/html'}
+    return make_response(render_template('index.html'),200,headers)
 
 """
 20151220_TL

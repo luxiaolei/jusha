@@ -26,11 +26,12 @@ $(function() {
       async: false,
       success: function(data) {
         //generate checkbox for each features
-        var checkboxesForm = $('#featuresCheck')
-        var featureNormForm = $('#featuresNorm')
+        //var checkboxesForm = $('#featuresCheck')
+        //var featureNormForm = $('#featuresNorm')
+        var featuresTable = $('#featuresTable')
         var indexradiobox = $('#index')
-        checkboxesForm.children().remove()
-        featureNormForm.children().remove()
+        indexradiobox.children().remove()
+        $('tr').each(function(){$(this).remove()})
 
         //generates index selection dropbox and features selection checkboxes
         var genIndexDropbox = $(function() {
@@ -42,12 +43,14 @@ $(function() {
 
         var genFeaturesCheckBoxes = function() {
           for (i in data.features) {
-            var checkbox = $("<li><a><input type='checkbox' id=fcheckF" + i + " checked=true value=" + data.features[i] + ">" + '<label for=fcheckF' + i + ' class=btn>' + data.features[i] + '</label></a></li>')
-            checkbox.appendTo(checkboxesForm)
 
-            var checkboxNorm = $("<li><a><input type='checkbox' id=fcheckNorm" + i + " checked=true value=" + data.features[i] + ">" + '<label for=fcheckNorm' + i + ' class=btn>' + data.features[i] + '</label></a></li>')
+            var tds = $("<tr>"+"<td style='width:15px'><input type='checkbox' id=fcheckF" + i + " checked=true value=" + data.features[i] + "></td>"+"<td style='width:25px'><input type='checkbox' id=fcheckNorm" + i + " checked=true value=" + data.features[i] + "></td>"+"<td>"+ data.features[i] +"</td></tr>")
+          //  var checkbox = $("<li><a><input type='checkbox' id=fcheckF" + i + " checked=true value=" + data.features[i] + ">" + '<label for=fcheckF' + i + ' class=btn>' + data.features[i] + '</label></a></li>')
+          //  checkbox.appendTo(checkboxesForm)
 
-            checkboxNorm.appendTo(featureNormForm)
+            //var checkboxNorm = $("<li><a><input type='checkbox' id=fcheckNorm" + i + " checked=true value=" + data.features[i] + ">" + '<label for=fcheckNorm' + i + ' class=btn>' + data.features[i] + '</label></a></li>')
+
+            tds.appendTo(featuresTable)
           }
         }
         genFeaturesCheckBoxes()
@@ -117,6 +120,7 @@ $(function() {
     $('[id^=fcheckNorm]:checked').each(function() {
       checkedFeaturesNorm.push(this.value)
     })
+    console.log(checkedFeaturesNorm)
 
     //post params
     var index = $("#index").prop('checked', true).val();

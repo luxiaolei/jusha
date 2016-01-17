@@ -12,7 +12,7 @@ $(function() {
         $("[name='fname']").remove()
       }
       for (i in data.features) {
-        var radioBtn = $("<li><input type=radio id=rd" + i + ' name="features" value= ' + data.features[i] + "><label class=btn style='font-size: 1.2em' for=rd" + i + ' name=fname><a>' + data.features[i] + '</a></label></li>');
+        var radioBtn = $('<li><input type="radio" id=rd' + i + ' name="features" value= ' + data.features[i] + '><label class=btn for=rd' + i + ' name=fname><a>' + data.features[i] + '</a></label></li>');
         radioBtn.appendTo('#radiocheck');
       };
 

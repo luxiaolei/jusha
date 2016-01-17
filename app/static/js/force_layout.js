@@ -228,7 +228,7 @@ var runClustering = function(url) {
 
               showDataname(svg, stringIndex, width, height)
 
-              $('[id^=Selection').each(function() {
+              $('[id^=Selection]').each(function() {
                   var display = $(this).children().first()
                   var btn = $(this).children().last()
                   if (btn.val() == 0) {

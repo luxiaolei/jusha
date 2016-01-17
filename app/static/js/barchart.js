@@ -36,7 +36,7 @@ var barChart = function(url, numSvg) {
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
-    .attr("transform", "translate(" - 10 + "," + margin.top + ")");
+    .attr("transform", "translate(" - 50+ "," + margin.top + ")");
 
   d3.json(url, function(error, data) {
     if (error) throw error;

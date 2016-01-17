@@ -1,22 +1,24 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!DOCTYPE HTML PUBLIC >
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <html>
 
 <head>
-  <title>Example for the d3.js export from mapper</title>
+  <title>Jusha科技</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
-  <script type="text/javascript">
-    var $SCRIPT_ROOT = {
-      {
-        request.script_root | tojson | safe
-      }
-    };
-  </script>
-  <script src="{{ url_for('static', filename='js/jquery-2.1.4.min.js') }}" type="text/javascript" charset="utf-8"></script>
+
+  <script src="{{ url_for('static', filename='js/resources/jquery-2.1.4.min.js') }}" type="text/javascript" charset="utf-8"></script>
   <script src="{{url_for('static',filename ='js/featureHandler.js')}}" type="text/javascript" charset="utf-8"></script>
   <script src="{{url_for('static',filename ='js/search.js')}}" type="text/javascript" charset="utf-8"></script>
+  <script src="{{url_for('static',filename ='js/resources/jquery-ui.js')}}" type="text/javascript" charset="utf-8"></script>
+
   <script src="{{url_for('static',filename = 'js/barchart.js')}}" type="text/javascript" charset="utf-8"></script>
   <link href="{{url_for('static',filename = 'css/bar.css')}}" rel="stylesheet" type="text/css">
+
+  <link href="{{url_for('static',filename = 'css/resources/jquery-ui.min.css')}}" rel="stylesheet" type="text/css">
+  <link href="{{url_for('static',filename = 'css/resources/jquery-ui.structure.min.css')}}" rel="stylesheet" type="text/css">
+
+  <link href="{{url_for('static',filename = 'css/resources/jquery-ui.theme.min.css')}}" rel="stylesheet" type="text/css">
+
   <!-- Bootstrap -->
   <link href="{{url_for('static',filename = 'css/bootstrap.min.css')}}" rel="stylesheet" media="screen">
   <link href="{{url_for('static',filename = 'css/layout.css')}}" rel="stylesheet" media="screen">
@@ -24,240 +26,226 @@
   <link href="{{url_for('static',filename = 'css/simple-sidebar.css')}}" rel="stylesheet">
 
 
-  <script>
-    var options = [];
-
-    $('.dropdown-menu a').on('click', function(event) {
-
-      var $target = $(event.currentTarget),
-        val = $target.attr('data-value'),
-        $inp = $target.find('input'),
-        idx;
-
-      if ((idx = options.indexOf(val)) > -1) {
-        options.splice(idx, 1);
-        setTimeout(function() {
-          $inp.prop('checked', false)
-        }, 0);
-      } else {
-        options.push(val);
-        setTimeout(function() {
-          $inp.prop('checked', true)
-        }, 0);
-      }
-
-      $(event.target).blur();
-
-      console.log(options);
-      return false;
-    });
-    $(document).ready(function() {
-      //$(function() { $('#divContainer').draggable(); });
-      //$(function() { $("#divResize").draggable().resizable(); });
-    });
-  </script>
 </head>
 
 <body>
+  <div id='graph'>
 
-  <div id="wrapper">
-
-    <!-- Sidebar -->
-    <div id="sidebar-wrapper" style="max-width = 200px;overflow-x:hidden">
+  </div>
 
 
-      <ul id=sidebar class="sidebar-nav">
-
-
-        <li>
-          <a herf='#'>上传文件</a>
-        </li>
-        <form id="upload-file" method="post" enctype="multipart/form-data">
-          <fieldset>
-            <input name="file" type="file" value="Choose..">
-          </fieldset>
-
-        </form>
-
-        <button class="btn" id='fileupload'>Upload!</button>
-
-        <li>
-          <a herf='#'>选择索引列</a>
-        </li>
-        <li>
-          <div class="container">
-            <div class="row">
-              <div class="col-lg-2">
-                <select id='index'>
-                  <option value='None' checked=true>使用数字序列</option>
-                </select>
-              </div>
-              <br>
-              <div class="col-lg-2">
-                <div class="button-group">
-                  <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-                    <span class="glyphicon glyphicon-cog"></span>
-                    <span class="caret"></span>选择需要计算的列</button>
-                  <ul class="dropdown-menu" id="featuresCheck"></ul>
-                </div>
-              </div>
-              <br>
-              <div class="col-lg-2">
-                <div class="button-group">
-                  <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown">
-                    <span class="glyphicon glyphicon-cog"></span>
-                    <span class="caret"></span>选择需要标准的列</button>
-                  <ul class="dropdown-menu" id="featuresNorm"></ul>
-                </div>
-              </div>
-            </div>
-        </li>
+  <!-- ETL draggable container -->
 
 
 
+  <div id=draggableTimemachine class="ui-widget ui-widget-content ui-corner-all portlet" style="position: fixed; top:2%; left:2%; width: 180px; height: auto; ">
 
-        </form>
-        <li>
-          <a herf='#'>输入参数</a>
-        </li>
-        <a>Interval: </a>
-        <input type='text' name='params' id='interval' value='7' maxlength="10" style='width: 60px; height:25px' />
-        <a>overlap:</a>
-        <input type='text' name='params' id='overlap' value='30' maxlength="4" style='width: 60px;height:25px' />
+    <div class="portlet-header"></div>
+    <li>
 
 
-        <li>
-          <a herf='#'>选择度量以及阀值</a>
-        </li>
-        <select id='metrics' style='width:100px'>
-          <option value="euclidean">Euclidean</option>
-          <option value="minkowski">Minkowski</option>
-          <option value="cityblock">Cityblock</option>
-          <option value="seuclidean">Seuclidean</option>
-          <option value="sqeuclidean">Sqeuclidean</option>
-          <option value="cosine">Cosine</option>
-          <option value="correlation">Correlation</option>
-        </select>
-
-        <select id='cutoff' style='width:120px'>
-          <option value="scale_graph">Scale Graph</option>
-          <option value="first_gap">first_gap</option>
-          <option value="biggest_gap">biggest_gap</option>
-          <option value="variable_exp_gap">variable_exp_gap</option>
-          <option value="variable_exp_gap2">variable_exp_gap2</option>
-        </select>
-
-
-        <a id=scalegraph>
-          <select id='weighting'>
-            <option value="linear">Linear</option>
-            <option value="root">Root</option>
-            <option value="inverse">Inverse</option>
-            <option value="log">Log</option>
-          </select>
-          <a id='atag'>Exponent:</a>
-          <input type='text' id='exponent' value='0.0' maxlength="10" style='width: 60px; height:25px' />
-        </a>
-
-
-
-
-        <li>
-          <a herf='#'>过程控制</a>
-        </li>
-
-        <button class="btn" id="paramsGenerate">Inspects!</button>
-        <a> Filter: </a>
-        <a id='filters'></a>
-
-        <button class="btn" id="Clustering" style='display:none'>Start Clustering!</button>
-
-        <button class="btn" id="saveimg" style='display:none'>Save Me!</button>
-        <br/>
-        <li>
-          <a herf='#'>搜索数据</a>
-        </li>
-
-        <li>
-          <input type='text' name='search' id='searchbox' style='width: 200px; height:25px' />
-          <button class="btn" id='searchsubmit'>Search!</button>
-          <button class="btn" id='reverse' style="display:none">Reverse</button>
-        </li>
-        <li>
-          <a herf='#'>选择钻取特征</a>
-        </li>
-
-        <div style="max-height: 300px;overflow-y:scroll" class=options id="radiocheck"></div>
-        <a>No. Bins: </a>
-        <input type='text' id='bins' value='20' maxlength="10" style='width: 60px; height:25px' />
-        <button class="btn" id="recolor" style="height:26px;display:none">Re Color!</button>
-        <li>
-          <a herf='#'>对两个群解释</a>
-        </li>
+      <div class="portlet-content">
         <ul id=SelectionA>
           <a id='NumPtsA'></a>
-          <button class="btn" id="addA" value=0 data-selected=[] style="height:26px;">Select!</button>
+          <button id="addA" value=0 data-selected=[] class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+            <span class="ui-button-text">Select</span>
         </ul>
 
         <ul id=SelectionB>
           <a id='NumPtsB'></a>
-          <button class="btn" id="addB" value=0 data-selected=[] style="height:26px;">Select!</button>
+          <button id="addB" value=0 data-selected=[] class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+            <span class="ui-button-text">Select</span>
         </ul>
-        <a id='export2csv' download="Selection.csv" style="display:none">Export</a>
 
-        <div id='selection' data-tmp="I hold temp selection"></div>
-        <button class="btn" id="explain" style="align:center;height:26px;display:none">Explain!</button>
-        <div style="max-height: 130px;overflow-y:scroll" id="explainFlists"></div>
+    </li>
 
-        <div id='barchart' class='container' style="width:230px; height:180px">
-
-        </div>
-        <div id=timemachine>
-        </div>
-      </ul>
-
-      </div>
-      <!-- /#sidebar-wrapper -->
-
-      <!-- Page Content -->
-      <div id="page-content-wrapper">
-        <div class="container-fluid">
-          <div class="row">
-
-            <div id='graph' class="col-lg-10">
-
-
-
-            </div>
-          </div>
-        </div>
-      </div>
-      <!-- /#page-content-wrapper -->
-
-    </div>
-    <div class="row" style="height:20px">
-      <div class="span7">
-      </div>
-    </div>
-    <div class='dataInfo'>
-      <div id=members class="Content">
-      </div>
-    </div>
     <li>
-      <div class="container" style="height: 700px">
-        <div class="span2" style="height: 500px">
-          <div>
-            <ul id='explain' class="nav nav-list">
-            </ul>
-          </div>
+
+
+    </li>
+    <a id='export2csv' download="Selection.csv" style="display:none">Export</a>
+
+    <div id='selection' data-tmp="I hold temp selection"></div>
+    <span class="ui-button" id="explain" style="align:center;height:26px;display:none">Explain!</span>
+    <div style="max-height: 130px;overflow-y:scroll" id="explainFlists"></div>
+    <span class="ui-button" id="saveimg" style='display:none'>Save Me!</span>
+
+    <div id=timemachine>
+
+      I am a time machine
+    </div>
+    </div>
+  </div>
+
+
+
+
+
+
+
+  <!-- Controlls draggable Tab container -->
+  <div id=controlls role="tablist" class="ui-accordion ui-widget ui-helper-reset ui-widget-content ui-corner-all" style="position: fixed; top:2%; right:2%; width: 220px; height: auto;">
+    <div id="accordion">
+
+      <h4>ETL</h4>
+      <div>
+        <form id="upload-file" method="post" enctype="multipart/form-data">
+          <fieldset>
+            <input class="ui-widget" name="file" type="file" value="Choose..">
+          </fieldset>
+        </form>
+
+        <button id="fileupload" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+          <span class="ui-button-text">Upload</span>
+        </button>
+
+        <hr>
+        <select id="index" style="display: none;">
+          <option value='None' checked=true>使用数字序列</option>
+        </select>
+        <span class="ui-selectmenu-button ui-widget ui-state-default ui-corner-all" tabindex="0" id="index-button" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-owns="selectmenu-menu" aria-haspopup="true" style="width: 100px;" aria-activedescendant="ui-id-24"
+        aria-labelledby="ui-id-24" aria-disabled="false">
+        </span>
+
+        <div style="max-height: 300px; width: 300px; overflow-y:scroll" id="featuresCheck">
+
+          <table class="ui-widget" style='width:191px' id='featuresTable'>
+            <tr>
+              <th>标准化</th>
+              <th>纳入计算</th>
+              <th>特征名称</th>
+            </tr>
+          </table>
         </div>
+
+
+      </div>
+      <h4 tabindex="-1" aria-expanded="false" aria-selected="false" aria-controls="ui-id-4" id="ui-id-3" role="tab" class="ui-accordion-header ui-state-default ui-accordion-icons ui-corner-all">
+        <span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span>Params</h4>
+      <div aria-hidden="true" role="tabpanel" aria-labelledby="ui-id-3" id="ui-id-4" style="display: none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
+
+
+        <div class="theme-group-content corner-bottom clearfix">
+
+
+          <li class='ui-widget'>
+            <a>Interval:
+          <input type='text' name='params' id='interval' value='7' maxlength="10" style='width: 40px; height:18px; color:#f6931f; font-weight:bold;' />
+          </a>
+            <a>overlap:
+          <input type='text' name='params' id='overlap' value='30' maxlength="4" style='width: 40px;height:18px; color:#f6931f; font-weight:bold;' />
+          </a>
+          </li>
+
+          <li>
+            <select id='metrics' style='width:78px'>
+              <option value="euclidean">Euclidean</option>
+              <option value="minkowski">Minkowski</option>
+              <option value="cityblock">Cityblock</option>
+              <option value="seuclidean">Seuclidean</option>
+              <option value="sqeuclidean">Sqeuclidean</option>
+              <option value="cosine">Cosine</option>
+              <option value="correlation">Correlation</option>
+            </select>
+            <select id='cutoff' style='width:78px'>
+              <option value="scale_graph">Scale Graph</option>
+              <option value="first_gap">first_gap</option>
+              <option value="biggest_gap">biggest_gap</option>
+              <option value="variable_exp_gap">variable_exp_gap</option>
+              <option value="variable_exp_gap2">variable_exp_gap2</option>
+            </select>
+          </li>
+          <li id=scalegraph>
+            <select id='weighting' style='width:78px'>
+              <option value="linear">Linear</option>
+              <option value="root">Root</option>
+              <option value="inverse">Inverse</option>
+              <option value="log">Log</option>
+            </select>
+            <a id='atag'>Exponent:</a>
+            <input type='text' id='exponent' value='1.0' maxlength="10" style='width: 40px;height:18px; color:#f6931f; font-weight:bold;' />
+        </div>
+        </li>
+
       </div>
 
-      <script src="{{ url_for('static', filename = 'js/d3.v3.js') }}" charset="utf-8"></script>
-      <script src="{{ url_for('static', filename = 'js/force_layout.js') }}" charset="utf-8"></script>
-      <script src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script>
-      <script src="{{ url_for('static', filename = 'js/params.js') }}"></script>
+      <h4 tabindex="-1" aria-expanded="false" aria-selected="false" aria-controls="ui-id-4" id="paramsGenerate" role="tab" class="ui-accordion-header ui-state-default ui-accordion-icons ui-corner-all">
+        <span class="ui-accordion-header-icon ui-icon ui-icon-triangle-1-e"></span>Drill</h4>
+      <div aria-hidden="true" role="tabpanel" aria-labelledby="ui-id-3" id="ui-id-5" style="display: none" class="ui-accordion-content ui-helper-reset ui-widget-content ui-corner-bottom">
 
+
+        <li>
+
+          <button id="Clustering" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+            <span class="ui-button-text">Clustering</span>
+          </button>
+          <a>Filter:</a>
+          <a id='filters'></a>
+        </li>
+
+
+
+        <div style="max-height: 300px;overflow-y:scroll" class=options id="radiocheck"></div>
+
+
+        <a>No. Bins:
+            <input type='text' id='bins' value='20' maxlength="10" style='width: 40px; height:18px; color:#f6931f; font-weight:bold;' />
+            </a>
+
+        <button id="recolor" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+          <span class="ui-button-text">ColorIt</span>
+        </button>
+
+        <div id='barchart' class='container' style="width:210px; height:180px">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    $(function() {
+      $("[id^=draggable]").each(function() {
+        $(this).draggable({});
+      })
+    });
+
+    $('#radiocheck').sortable()
+
+    $('#index').selectmenu()
+    $('#metrics').selectmenu()
+    $('#cutoff').selectmenu()
+    $('#weighting').selectmenu()
+
+    $(".portlet")
+      .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+      .find(".portlet-header")
+      .addClass("ui-widget-header ui-corner-all")
+      .prepend("<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+
+    $(".portlet-toggle").click(function() {
+      var icon = $(this);
+      icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
+      icon.closest(".portlet").find(".portlet-content").toggle();
+    });
+
+    $(function() {
+      $("#paramenu").menu({
+        items: "> :not(.ui-widget-header)"
+      });
+    });
+
+
+    $('#controlls').accordion({
+      heightStyle: "content",
+      header: 'h4'
+    }).draggable()
+  </script>
+  <script src="{{ url_for('static', filename = 'js/resources/d3.v3.js') }}" charset="utf-8"></script>
+  <script src="{{ url_for('static', filename = 'js/force_layout.js') }}" charset="utf-8"></script>
+  <script src="{{ url_for('static', filename = 'js/resources/bootstrap.min.js') }}"></script>
+  <script src="{{ url_for('static', filename = 'js/params.js') }}"></script>
 </body>
 
 </html>

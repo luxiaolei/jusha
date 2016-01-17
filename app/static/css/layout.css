@@ -9,8 +9,19 @@
 .Content
 {
 
-}
 
+
+}
+.portlet {
+  margin: 0 1em 1em 0;
+  padding: 0.3em;
+}
+.ui-menu { width: 178px; }
+.ui-widget-header { padding: 0.2em; }
+body{
+		font: 82.5% "Trebuchet MS", sans-serif;
+		margin: 50px;
+	}
 .dataInfo
 {
   height: 50px;
