@@ -228,15 +228,16 @@ var runClustering = function(url) {
 
               showDataname(svg, stringIndex, width, height)
 
-              $('[id^=Selection]').each(function() {
-                  var display = $(this).children().first()
-                  var btn = $($(this).children()[1])
-                  var label = $($(this).children()[3])
+              $('[id^=addtemp]').each(function() {
+                  //var display = $(this).children().first()
+                  //var btn = $($(this).children()[1])
+                  //var label = $($(this).children()[3])
 
+                  var elm = $(this)
 
-                  if (btn.prop('checked')==false) {
+                  if (elm.attr('value')==0) {
                     //console.log(btn.val())
-                    display.html('Selected:'+uniquemembers.length)
+                    elm.html('Selected:'+uniquemembers.length)
                   }
                 })
                 //console.log(uniqueArray(members))
@@ -315,42 +316,50 @@ var runClustering = function(url) {
 }
 
 
-$(function() {
-  $('[id^=Selection]').each(function() {
-    $(this).bind('click', function() {
-      var btn = $(this).children().last()
-      var elm = $($(this).children()[1])
-
-      if (btn.prop('checked')==false) {
-
-        btn.prop('checked', true)
-        //get selected nodes indexes from temp
-        var selectedArray = $('#selection').data('tmp')
-          //set the array to the clicked button
-
-        elm.data('selected', selectedArray)
-
-      } else {
-
-        btn.prop('checked', false)
-      }
-
-      //controll the explain button display
-      var value = 0;
-      $('[id^=add]').each(function() {
-        if ($(this).prop('checked')==true){
-        value += 1
-      }
-      })
-      if (value == 2) {
-        $('#explain').show()
-      } else {
-        $('#explain').hide()
-      }
-
-    })
+$(function(){
+  var sebtn = $('#sebtnA');
+  var display = $('#addtempA');
+  sebtn.bind('click',function(){
+    var selectedArray = $('#selection').data('tmp')
+    if(display.attr('value')==0){
+    display.data('selected', selectedArray)
+    display.attr('value',1)
+  }else{
+    display.attr('value',0)
+  }
   })
 })
+$(function(){
+  var sebtn = $('#sebtnB');
+  var display = $('#addtempB');
+  sebtn.bind('click',function(){
+    var selectedArray = $('#selection').data('tmp')
+    if(display.attr('value')==0){
+    display.data('selected', selectedArray)
+    display.attr('value',1)
+  }else{
+    display.attr('value',0)
+  }
+  })
+})
+
+
+$(function() {
+  $('[id^=sebtn]').each(function() {
+    $(this).bind('click', function() {
+      //style it
+      if($(this).hasClass('ui-state-hover')){
+        $(this).removeClass('ui-state-hover')
+      }else{
+        $(this).addClass('ui-state-hover')
+      }
+    })
+  })
+
+})
+
+
+
 
 var mouseoverHighlightBars = function(datalist) {
   //datalist: dataIndex

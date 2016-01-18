@@ -41,29 +41,49 @@
     <li class="ui-widget-header">Selecte Explain and Export</li>
     <div>
 
-        <section id=SelectionA>
-          <a id='NumPtsA'></a>
-          <input type="checkbox" id="addA" value=0 data-selected=[]/>
-          <label id='NumPtsA' for="addA">Select</label>
-        </section>
-        <section id=SelectionB>
-          <a id='NumPtsB'></a>
-          <input type="checkbox" id="addB" value=0 data-selected=[]/>
-          <label for="addB">Select</label>
+      <table class="ui-widget" style='color:white; text-align: center; width: 145px; top:50px' >
+        <tr>
+          <td>
+            <span id="sebtnA" class="ui-button" style='color:#f6931f; font-weight:bold; font-size:12'>Select-A</span>
 
-        </section>
+          </td>
+          <td>
+            <a id="addtempA" value=0 data-selected=[]>None</a>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span id="sebtnB" class="ui-button" style='color:#f6931f; font-weight:bold; font-size:12'>Select-B</span>
 
-      <button id="export2csv" download="Selection.csv" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
-        <span id="export2csvlabel" class="ui-button-text">Export</span>
-      </button>
+          </td>
+          <td>
+            <a id="addtempB" value=0 data-selected=[]>None</a>
+          </td>
+        </tr>
 
+        <tr>
+          <td>
+            <button id="export2csv" download="Selection.csv" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+              <span id="export2csvlabel" class="ui-button-text">Export</span>
+            </button>
+          </td>
+          <td>
+            <button id="explain" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+              <span id="explainlabel" class="ui-button-text">Explain</span>
+            </button>
+          </td>
+        </tr>
+      </table>
       <div id='selection' data-tmp="I hold temp selection"></div>
 
-      <button id="explain" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
-        <span id="explainlabel" class="ui-button-text">Explain</span>
-      </button>
+      <div style="max-height: 130px;overflow-y:scroll" >
+        <table class="ui-widget" style='color:white; text-align: center; width: 145px; top:50px' id='explainFlists'>
 
-      <div style="max-height: 130px;overflow-y:scroll" id="explainFlists"></div>
+        </table>
+      </div>
+
+
+
 
       <input type='text' id='searchbox' title='输入数据的名称或者数字索引，用‘，’分开多条数搜索' style='width: 100px; height:18px; color:#f6931f; font-weight:bold;' />
 
@@ -210,6 +230,7 @@
 
       <h4>ETL</h4>
       <div>
+        <li>
         <form id="upload-file" method="post" enctype="multipart/form-data">
           <fieldset>
             <input class="ui-widget" name="file" type="file" value="Choose..">
@@ -219,7 +240,7 @@
         <button id="fileupload" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
           <span class="ui-button-text">Upload</span>
         </button>
-
+  </li>
         <hr>
         <select id="index">
           <option value='None' checked=true>使用数字序列</option>
@@ -351,7 +372,7 @@
 
     $(function() {
   $( "#draggableTimemachine" ).menu({
-    items: ".ssss"
+    items: ".ssssjjjjjj"
   })
 
 });
