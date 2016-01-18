@@ -8,12 +8,7 @@ $(function() {
   $("#fileupload").bind('click', function() {
 
     $('#index').children().not(':first').remove();
-    var flag = $("[name='features']").length
-    if (flag >= 1) {
-      $("[name='features']").remove()
-      $("[name='fname']").remove()
-      $("#generate").hide()
-    }
+
     //upload file first!
     var form_data = new FormData($('#upload-file')[0]);
     $.ajax({
@@ -30,27 +25,30 @@ $(function() {
         //var featureNormForm = $('#featuresNorm')
         var featuresTable = $('#featuresTable')
         var indexradiobox = $('#index')
+
         featuresTable.children().remove()
+
 
         //$('tr').each(function(){$(this).remove()})
 
         //generates index selection dropbox and features selection checkboxes
         var genIndexDropbox = $(function() {
+
           for (i in data.features) {
+
             var radiodropdown = $("<option value=" + data.features[i] + ">" + data.features[i] + "</option>")
-            radiodropdown.appendTo(indexradiobox)
+            radiodropdown.appendTo(indexradiobox).trigger('chosen:updated')
+
           }
         })
+        indexradiobox.selectmenu("refresh")
 
         var genFeaturesCheckBoxes = function() {
           for (i in data.features) {
-
             var tds = $("<tr>"+"<td style='width:25px'><input type='checkbox' id=fcheckF" + i + " title='勾选此特征作为计算考虑' checked=true value=" + data.features[i] + "></td>"+"<td style='width:40px'><input type='checkbox' title='对此特征进行标准化' id=fcheckNorm" + i + " checked=true value=" + data.features[i] + "></td>"+"<td style='color:white'>"+ data.features[i] +"</td></tr>")
           //  var checkbox = $("<li><a><input type='checkbox' id=fcheckF" + i + " checked=true value=" + data.features[i] + ">" + '<label for=fcheckF' + i + ' class=btn>' + data.features[i] + '</label></a></li>')
           //  checkbox.appendTo(checkboxesForm)
-
             //var checkboxNorm = $("<li><a><input type='checkbox' id=fcheckNorm" + i + " checked=true value=" + data.features[i] + ">" + '<label for=fcheckNorm' + i + ' class=btn>' + data.features[i] + '</label></a></li>')
-
             tds.appendTo(featuresTable)
           }
         }
@@ -59,14 +57,13 @@ $(function() {
         $(function() {
           //when select an index column, del the corresbonding checkbox
           $('#index').on('change', function() {
-            $('#featuresCheck').children().remove()
-            $('label').remove()
+
             genFeaturesCheckBoxes()
             var index = $("#index").prop('checked', true).val()
             $('#featuresCheck').children().filter(function() {
               return this.value == index
             }).remove()
-            $('label:contains(' + index + ')').remove()
+            //$('label:contains(' + index + ')').remove()
           })
         })
       },
