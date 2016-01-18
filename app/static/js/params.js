@@ -30,7 +30,8 @@ $(function() {
         //var featureNormForm = $('#featuresNorm')
         var featuresTable = $('#featuresTable')
         var indexradiobox = $('#index')
-        //indexradiobox.children().remove()
+        featuresTable.children().remove()
+
         //$('tr').each(function(){$(this).remove()})
 
         //generates index selection dropbox and features selection checkboxes
