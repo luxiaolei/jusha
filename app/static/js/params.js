@@ -31,7 +31,7 @@ $(function() {
         var featuresTable = $('#featuresTable')
         var indexradiobox = $('#index')
         //indexradiobox.children().remove()
-        $('tr').each(function(){$(this).remove()})
+        //$('tr').each(function(){$(this).remove()})
 
         //generates index selection dropbox and features selection checkboxes
         var genIndexDropbox = $(function() {
@@ -44,7 +44,7 @@ $(function() {
         var genFeaturesCheckBoxes = function() {
           for (i in data.features) {
 
-            var tds = $("<tr>"+"<td style='width:25px'><input type='checkbox' id=fcheckF" + i + " checked=true value=" + data.features[i] + "></td>"+"<td style='width:40px'><input type='checkbox' id=fcheckNorm" + i + " checked=true value=" + data.features[i] + "></td>"+"<td style='color:white'>"+ data.features[i] +"</td></tr>")
+            var tds = $("<tr>"+"<td style='width:25px'><input type='checkbox' id=fcheckF" + i + " title='勾选此特征作为计算考虑' checked=true value=" + data.features[i] + "></td>"+"<td style='width:40px'><input type='checkbox' title='对此特征进行标准化' id=fcheckNorm" + i + " checked=true value=" + data.features[i] + "></td>"+"<td style='color:white'>"+ data.features[i] +"</td></tr>")
           //  var checkbox = $("<li><a><input type='checkbox' id=fcheckF" + i + " checked=true value=" + data.features[i] + ">" + '<label for=fcheckF' + i + ' class=btn>' + data.features[i] + '</label></a></li>')
           //  checkbox.appendTo(checkboxesForm)
 
@@ -163,6 +163,19 @@ $(function() {
   $('#Clustering').bind('click', function() {
     runClustering('/mapperjson');
     //$('#Clustering').hide()
+
+    var interval = $("#interval").val();
+    var overlap = $("#overlap").val();
+    var metric = $('#metrics').prop('selected', true).val();
+    var cutoff = $('#cutoff').prop('selected', true).val();
+    var filter = $('#filters').html();
+
+    $('#tdfilter').html(filter)
+    $('#tdinterval').html(interval)
+    $('#tdoverlap').html(overlap)
+    $('#tdcutoff').html(cutoff)
+    $('#tdmetric').html(metric)
+
     $('#saveimg').show()
   })
 })
@@ -186,9 +199,9 @@ $(function() {
       var metric = $('#metrics').prop('selected', true).val();
       var cutoff = $('#cutoff').prop('selected', true).val();
       var filter = $('#filters').html();
-      var li = $('<li></li>')
+      var li = $('<div></div>')
 
-      var savedGrapg = $('<li><a herf=#>Saved Graph </a></li>' +
+      var savedGrapg = $(
         '<li>Filter:' + filter + '</li>' +
         '<li>Interval:' + interval + '</li>' +
         '<li>Overlap:' + overlap + '</li>')
@@ -263,7 +276,7 @@ $(function() {
     var dataLi = []
     $('[id^=Selection]').each(function() {
       var selection = $($(this).children()[1]).data('selected')
-      
+
       dataLi.push(selection)
     })
     var data = {

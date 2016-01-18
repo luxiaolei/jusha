@@ -38,10 +38,47 @@
 
   <div id=draggableTimemachine class="ui-widget ui-widget-content ui-corner-all portlet" style="position: fixed; top:2%; left:2%; width: 180px; height: auto; ">
 
+    <h6 tabindex="-1" aria-expanded="false" aria-selected="false" aria-controls="ui-id-4"  role="tab" class="ui-accordion-header ui-state-default ui-accordion-icons ui-corner-all">
+    </span>Current Parameters</h6>
+      <table class="ui-widget"  style='color:white; text-align: center; width: 145px; top:50px' id='currentParams'>
+        <tr>
+            <td>
+              Filter :
+            </td>
+            <td id='tdfilter'>
+              None
+            </td>
+        </tr>
+        <tr>
+            <td>
+              Interval :
+            </td>
+            <td id='tdinterval'>
+              None
+            </td>
+        </tr>
+        <tr>
+            <td>
+              Cutoff :
+            </td>
+            <td id='tdcutoff'>
+              None
+            </td>
+        </tr>
+        <tr>
+            <td>
+              metric :
+            </td>
+            <td id='tdmetric'>
+              None
+            </td>
+        </tr>
+      </table>
+
+
+      <h6 tabindex="-1" aria-expanded="false" aria-selected="false" aria-controls="ui-id-4"  role="tab" class="ui-accordion-header ui-state-default ui-accordion-icons ui-corner-all">
+      </span>Selecte Explain and Export</h6>
     <li>
-
-
-
 
         <ul id=SelectionA>
           <a id='NumPtsA'></a>
@@ -54,22 +91,28 @@
         </ul>
     </li>
 
+    <button id="export2csv"  download="Selection.csv" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+      <span id="export2csvlabel" class="ui-button-text">Export</span>
+    </button>
 
     <div id='selection' data-tmp="I hold temp selection"></div>
 
-    <button id="explain" style='display:none' class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+    <button id="explain" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
       <span id="explainlabel" class="ui-button-text">Explain</span>
-    </button>
-
-    <button id="export2csv" style='display:none' download="Selection.csv" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
-      <span id="export2csvlabel" class="ui-button-text">Export</span>
     </button>
 
     <div style="max-height: 130px;overflow-y:scroll" id="explainFlists"></div>
 
-  <hr>
-    <button id="saveimg" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
-      <span id="saveimglabel"  class="ui-button-text">Save Current Result</span>
+    <input type='text' id='searchbox' title='输入数据的名称或者数字索引，用‘，’分开多条数搜索' style='width: 100px; height:18px; color:#f6931f; font-weight:bold;' />
+
+<button id="searchsubmit"  class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+  <span class="ui-button-text" id='searchsubmitlabel'>Search</span>
+</button>
+
+    <h6 tabindex="-1" aria-expanded="false" aria-selected="false" aria-controls="ui-id-4"  role="tab" class="ui-accordion-header ui-state-default ui-accordion-icons ui-corner-all">
+    </span>Result Timemachine</h6>
+    <button id="saveimg" title='保存当前结果以便之后快速返回' class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+      <span id="saveimglabel" title='保存当前结果以便之后快速返回' class="ui-button-text">Save Current Result</span>
     </button>
 
 
@@ -127,10 +170,12 @@
 
           <li class='ui-widget'>
             <a>Interval:
-          <input type='text' name='params' id='interval' value='7' maxlength="10" style='width: 40px; height:18px; color:#f6931f; font-weight:bold;' />
+          <input type='text' name='params' id='interval' value='7' maxlength="10"
+                title="请输入整数介于1于数据量之间"  style='width: 40px; height:18px; color:#f6931f; font-weight:bold;' />
           </a>
             <a>overlap:
-          <input type='text' name='params' id='overlap' value='30' maxlength="4" style='width: 40px;height:18px; color:#f6931f; font-weight:bold;' />
+          <input type='text' name='params' id='overlap'
+                value='30' maxlength="4" title='请输入0-100之间的数值' style='width: 40px;height:18px; color:#f6931f; font-weight:bold;' />
           </a>
           </li>
 
@@ -185,7 +230,7 @@
             <input type='text' id='bins' value='20' maxlength="10" style='width: 40px; height:18px; color:#f6931f; font-weight:bold;' />
             </a>
 
-        <button id="recolor" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+        <button id="recolor" title='根据当前勾选特征的数值大小，对结果进行重新着色' class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
           <span class="ui-button-text" id='recolorlabel'>ColorIt</span>
         </button>
 
@@ -204,12 +249,18 @@
       })
     });
 
+    var tooltipdoms = [$('#overlap'), $('#interval'), $('#recolor'), $('#saveimglabel'), $('#searchbox')]
+    for (dom in tooltipdoms){
+      tooltipdoms[dom].tooltip()
+    }
+
+
+
     $('#radiocheck').sortable()
     $('#timemachine').sortable()
 
     $('#addA').button()
     $('#addB').button()
-
 
 
     $('#index').selectmenu()

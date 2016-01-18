@@ -16,6 +16,10 @@ $(function() {
         radioBtn.appendTo('#radiocheck');
       };
 
+      $('[id^=fcheck]').each(function(){
+        $(this).tooltip()
+      })
+
       //ajax post the selected feature to server
       $('#radiocheck input').change(function() {
         var selectedF = $('input[name=features]:checked', '#radiocheck').val()
