@@ -300,12 +300,12 @@ var runClustering = function(url) {
         })
       });
     };
-    var buttonType = $('#recolor')
-    if (buttonType.html() == 'Re Color!') {
+    var buttonType = $('#recolorlabel')
+    if (buttonType.html() == 'ColorIt') {
       refreshGraph('/newjson')
       buttonType.html('Reverse!')
     } else {
-      buttonType.html('Re Color!')
+      buttonType.html('ColorIt')
       refreshGraph('/mapperJsonSaved')
     }
   })

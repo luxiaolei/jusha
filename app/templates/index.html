@@ -34,52 +34,50 @@
   </div>
 
 
-  <!-- ETL draggable container -->
-
-
+  <!-- View container -->
 
   <div id=draggableTimemachine class="ui-widget ui-widget-content ui-corner-all portlet" style="position: fixed; top:2%; left:2%; width: 180px; height: auto; ">
-
     <div class="portlet-header"></div>
     <li>
-
-
       <div class="portlet-content">
         <ul id=SelectionA>
           <a id='NumPtsA'></a>
           <button id="addA" value=0 data-selected=[] class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
-            <span class="ui-button-text">Select</span>
+            <span id="addAlabel" class="ui-button-text">Select</span>
+          </button>
         </ul>
-
         <ul id=SelectionB>
           <a id='NumPtsB'></a>
           <button id="addB" value=0 data-selected=[] class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
-            <span class="ui-button-text">Select</span>
+            <span id="addBlabel" class="ui-button-text">Select</span>
+          </button>
         </ul>
-
     </li>
-
     <li>
-
-
     </li>
-    <a id='export2csv' download="Selection.csv" style="display:none">Export</a>
 
     <div id='selection' data-tmp="I hold temp selection"></div>
-    <span class="ui-button" id="explain" style="align:center;height:26px;display:none">Explain!</span>
+
+    <button id="explain" style='display:none' class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+      <span id="explainlabel" class="ui-button-text">Explain</span>
+    </button>
+
+    <button id="export2csv" style='display:none' download="Selection.csv" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+      <span id="export2csvlabel" class="ui-button-text">Export</span>
+    </button>
+
     <div style="max-height: 130px;overflow-y:scroll" id="explainFlists"></div>
-    <span class="ui-button" id="saveimg" style='display:none'>Save Me!</span>
+
+  <hr>
+    <button id="saveimg" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+      <span id="saveimglabel" class="ui-button-text">Save Current Result</span>
+    </button>
+
 
     <div id=timemachine>
-
-      I am a time machine
     </div>
     </div>
   </div>
-
-
-
-
 
 
 
@@ -100,7 +98,7 @@
         </button>
 
         <hr>
-        <select id="index" style="display: none;">
+        <select id="index" >
           <option value='None' checked=true>使用数字序列</option>
         </select>
         <span class="ui-selectmenu-button ui-widget ui-state-default ui-corner-all" tabindex="0" id="index-button" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-owns="selectmenu-menu" aria-haspopup="true" style="width: 100px;" aria-activedescendant="ui-id-24"
@@ -182,18 +180,14 @@
           <a>Filter:</a>
           <a id='filters'></a>
         </li>
-
-
-
+        <hr>
         <div style="max-height: 300px;overflow-y:scroll" class=options id="radiocheck"></div>
-
-
         <a>No. Bins:
             <input type='text' id='bins' value='20' maxlength="10" style='width: 40px; height:18px; color:#f6931f; font-weight:bold;' />
             </a>
 
         <button id="recolor" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
-          <span class="ui-button-text">ColorIt</span>
+          <span class="ui-button-text" id='recolorlabel'>ColorIt</span>
         </button>
 
         <div id='barchart' class='container' style="width:210px; height:180px">

@@ -33,9 +33,9 @@ $(function() {
           contentType: 'application/json;charset=UTF-8',
           success: function() {
             //draw bar chart
-            if ($('svg').length == 2) {
-              $('svg').first().remove();
-            }
+            $('#barchart').children().remove()
+
+
             barChart('/bins', 1)
               //indicating Filter is ready
             console.log(selectedF)
