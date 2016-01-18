@@ -36,62 +36,143 @@
 
   <!-- View container -->
 
-  <div id=draggableTimemachine class="ui-widget ui-widget-content ui-corner-all portlet" style="position: fixed; top:2%; left:2%; width: 180px; height: auto; ">
+  <ul id="draggableTimemachine" class="ui-widget ui-widget-content ui-corner-all portlet" style="position: fixed; top:2%; left:2%; width: 180px; height: auto; ">
 
-    <h6 tabindex="-1" aria-expanded="false" aria-selected="false" aria-controls="ui-id-4"  role="tab" class="ui-accordion-header ui-state-default ui-accordion-icons ui-corner-all">
-    </span>Current Parameters</h6>
-      <table class="ui-widget"  style='color:white; text-align: center; width: 145px; top:50px' id='currentParams'>
+    <li class="ui-widget-header">Selecte Explain and Export</li>
+    <div>
+
+        <section id=SelectionA>
+          <a id='NumPtsA'></a>
+          <input type="checkbox" id="addA" value=0 data-selected=[]/>
+          <label id='NumPtsA' for="addA">Select</label>
+        </section>
+        <section id=SelectionB>
+          <a id='NumPtsB'></a>
+          <input type="checkbox" id="addB" value=0 data-selected=[]/>
+          <label for="addB">Select</label>
+
+        </section>
+
+      <button id="export2csv" download="Selection.csv" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+        <span id="export2csvlabel" class="ui-button-text">Export</span>
+      </button>
+
+      <div id='selection' data-tmp="I hold temp selection"></div>
+
+      <button id="explain" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+        <span id="explainlabel" class="ui-button-text">Explain</span>
+      </button>
+
+      <div style="max-height: 130px;overflow-y:scroll" id="explainFlists"></div>
+
+      <input type='text' id='searchbox' title='输入数据的名称或者数字索引，用‘，’分开多条数搜索' style='width: 100px; height:18px; color:#f6931f; font-weight:bold;' />
+
+      <button id="searchsubmit" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+        <span class="ui-button-text" id='searchsubmitlabel'>Search</span>
+      </button>
+    </div>
+    <li class="ui-widget-header">Current Parameters</li>
+    <div>
+      <table class="ui-widget" style='color:white; text-align: center; width: 145px; top:50px' id='currentParams'>
         <tr>
-            <td>
-              Filter :
-            </td>
-            <td id='tdfilter'>
-              None
-            </td>
+          <td>
+            Filter :
+          </td>
+          <td id='tdfilter'>
+            None
+          </td>
         </tr>
         <tr>
-            <td>
-              Interval :
-            </td>
-            <td id='tdinterval'>
-              None
-            </td>
+          <td>
+            Interval :
+          </td>
+          <td id='tdinterval'>
+            None
+          </td>
         </tr>
         <tr>
-            <td>
-              Cutoff :
-            </td>
-            <td id='tdcutoff'>
-              None
-            </td>
+          <td>
+            Cutoff :
+          </td>
+          <td id='tdcutoff'>
+            None
+          </td>
         </tr>
         <tr>
-            <td>
-              metric :
-            </td>
-            <td id='tdmetric'>
-              None
-            </td>
+          <td>
+            metric :
+          </td>
+          <td id='tdmetric'>
+            None
+          </td>
         </tr>
       </table>
+    </div>
+    <button id="saveimg" title='保存当前结果以便之后快速返回' class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+      <span id="saveimglabel" title='保存当前结果以便之后快速返回' class="ui-button-text">Save Result</span>
+    </button>
+    <div style="max-height: 470px;overflow-y:scroll" id=timemachine>
+    </div>
+  </ul>
+
+<!--
+  <div id=draggableTimemachine class="ui-widget ui-widget-content ui-corner-all portlet" style="position: fixed; top:2%; left:2%; width: 180px; height: auto; ">
+
+    <h6 tabindex="-1" aria-expanded="false" aria-selected="false" aria-controls="ui-id-4" role="tab" class="ui-accordion-header ui-state-default ui-accordion-icons ui-corner-all">
+      </span>Current Parameters</h6>
+    <table class="ui-widget" style='color:white; text-align: center; width: 145px; top:50px' id='currentParams'>
+      <tr>
+        <td>
+          Filter :
+        </td>
+        <td id='tdfilter'>
+          None
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Interval :
+        </td>
+        <td id='tdinterval'>
+          None
+        </td>
+      </tr>
+      <tr>
+        <td>
+          Cutoff :
+        </td>
+        <td id='tdcutoff'>
+          None
+        </td>
+      </tr>
+      <tr>
+        <td>
+          metric :
+        </td>
+        <td id='tdmetric'>
+          None
+        </td>
+      </tr>
+    </table>
 
 
-      <h6 tabindex="-1" aria-expanded="false" aria-selected="false" aria-controls="ui-id-4"  role="tab" class="ui-accordion-header ui-state-default ui-accordion-icons ui-corner-all">
+    <h6 tabindex="-1" aria-expanded="false" aria-selected="false" aria-controls="ui-id-4" role="tab" class="ui-accordion-header ui-state-default ui-accordion-icons ui-corner-all">
       </span>Selecte Explain and Export</h6>
     <li>
+      <ul id=SelectionA>
+        <a id='NumPtsA'></a>
+        <input type="checkbox" id="addA" value=0 data-selected=[]>
+        <label for="addA">Select</label>
+      </ul>
+      <ul id=SelectionB>
+        <a id='NumPtsB'></a>
+        <input type="checkbox" id="addB" value=0 data-selected=[]>
+        <label for="addB">Select</label>
 
-        <ul id=SelectionA>
-          <a id='NumPtsA'></a>
-          <input type="checkbox" id="addA" value=0 data-selected=[]><label for="addA">Select</label>
-        </ul>
-        <ul id=SelectionB>
-          <a id='NumPtsB'></a>
-          <input type="checkbox" id="addB" value=0 data-selected=[]><label for="addB">Select</label>
-
-        </ul>
+      </ul>
     </li>
 
-    <button id="export2csv"  download="Selection.csv" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+    <button id="export2csv" download="Selection.csv" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
       <span id="export2csvlabel" class="ui-button-text">Export</span>
     </button>
 
@@ -105,12 +186,12 @@
 
     <input type='text' id='searchbox' title='输入数据的名称或者数字索引，用‘，’分开多条数搜索' style='width: 100px; height:18px; color:#f6931f; font-weight:bold;' />
 
-<button id="searchsubmit"  class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
-  <span class="ui-button-text" id='searchsubmitlabel'>Search</span>
-</button>
+    <button id="searchsubmit" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+      <span class="ui-button-text" id='searchsubmitlabel'>Search</span>
+    </button>
 
-    <h6 tabindex="-1" aria-expanded="false" aria-selected="false" aria-controls="ui-id-4"  role="tab" class="ui-accordion-header ui-state-default ui-accordion-icons ui-corner-all">
-    </span>Result Timemachine</h6>
+    <h6 tabindex="-1" aria-expanded="false" aria-selected="false" aria-controls="ui-id-4" role="tab" class="ui-accordion-header ui-state-default ui-accordion-icons ui-corner-all">
+      </span>Result Timemachine</h6>
     <button id="saveimg" title='保存当前结果以便之后快速返回' class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
       <span id="saveimglabel" title='保存当前结果以便之后快速返回' class="ui-button-text">Save Current Result</span>
     </button>
@@ -120,7 +201,7 @@
     </div>
 
   </div>
-
+-->
 
 
   <!-- Controlls draggable Tab container -->
@@ -140,7 +221,7 @@
         </button>
 
         <hr>
-        <select id="index" >
+        <select id="index">
           <option value='None' checked=true>使用数字序列</option>
         </select>
         <span class="ui-selectmenu-button ui-widget ui-state-default ui-corner-all" tabindex="0" id="index-button" role="combobox" aria-expanded="false" aria-autocomplete="list" aria-owns="selectmenu-menu" aria-haspopup="true" style="width: 100px;" aria-activedescendant="ui-id-24"
@@ -250,7 +331,7 @@
     });
 
     var tooltipdoms = [$('#overlap'), $('#interval'), $('#recolor'), $('#saveimglabel'), $('#searchbox')]
-    for (dom in tooltipdoms){
+    for (dom in tooltipdoms) {
       tooltipdoms[dom].tooltip()
     }
 
@@ -268,6 +349,15 @@
     $('#cutoff').selectmenu()
     $('#weighting').selectmenu()
 
+    $(function() {
+  $( "#draggableTimemachine" ).menu({
+    items: ".ssss"
+  })
+
+});
+
+
+
     $(".portlet")
       .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
       .find(".portlet-header")
@@ -281,11 +371,27 @@
     });
 
     $(function() {
-      $("#paramenu").menu({
+      $("#draggableTimemachine").menu({
         items: "> :not(.ui-widget-header)"
       });
     });
 
+
+    $('#11draggableTimemachine').accordion({
+      heightStyle: "content",
+      header: 'h6'
+    })
+
+    $('button').each(function(){
+      $(this).hover(function(){
+        $(this).addClass('ui-state-hover')
+      })
+
+      $(this).mouseout(function(){
+        $(this).removeClass('ui-state-hover')
+      })
+
+    })
 
     $('#controlls').accordion({
       heightStyle: "content",
