@@ -186,13 +186,16 @@ $(function() {
       var metric = $('#metrics').prop('selected', true).val();
       var cutoff = $('#cutoff').prop('selected', true).val();
       var filter = $('#filters').html();
+      var li = $('<li></li>')
 
       var savedGrapg = $('<li><a herf=#>Saved Graph </a></li>' +
         '<li>Filter:' + filter + '</li>' +
         '<li>Interval:' + interval + '</li>' +
         '<li>Overlap:' + overlap + '</li>')
-      savedGrapg.appendTo($('#timemachine'))
-      svgshot.appendTo($('#timemachine'))
+
+      savedGrapg.appendTo(li)
+      svgshot.appendTo(li)
+      li.appendTo($('#timemachine'))
 
       $('img').on('click', function() {
         window.open(imgsrc, 'width:1200;height:1000')
