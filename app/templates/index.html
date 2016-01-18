@@ -37,24 +37,25 @@
   <!-- View container -->
 
   <div id=draggableTimemachine class="ui-widget ui-widget-content ui-corner-all portlet" style="position: fixed; top:2%; left:2%; width: 180px; height: auto; ">
-    <div class="portlet-header"></div>
+
     <li>
-      <div class="portlet-content">
+
+
+
+
         <ul id=SelectionA>
           <a id='NumPtsA'></a>
-          <button id="addA" value=0 data-selected=[] class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
-            <span id="addAlabel" class="ui-button-text">Select</span>
-          </button>
+          <input type="checkbox" id="addA" value=0 data-selected=[]><label for="addA">Select</label>
+
+
         </ul>
         <ul id=SelectionB>
           <a id='NumPtsB'></a>
-          <button id="addB" value=0 data-selected=[] class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
-            <span id="addBlabel" class="ui-button-text">Select</span>
-          </button>
+          <input type="checkbox" id="addB" value=0 data-selected=[]><label for="addB">Select</label>
+
         </ul>
     </li>
-    <li>
-    </li>
+  
 
     <div id='selection' data-tmp="I hold temp selection"></div>
 
@@ -76,7 +77,7 @@
 
     <div style="max-height: 470px;overflow-y:scroll" id=timemachine>
     </div>
-    </div>
+
   </div>
 
 
@@ -207,6 +208,11 @@
 
     $('#radiocheck').sortable()
     $('#timemachine').sortable()
+
+    $('#addA').button()
+    $('#addB').button()
+
+
 
     $('#index').selectmenu()
     $('#metrics').selectmenu()

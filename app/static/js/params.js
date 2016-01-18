@@ -261,8 +261,9 @@ $(function() {
     var ssc = $('#explainFlists').children().remove()
       //collect
     var dataLi = []
-    $('[id^=add]').each(function() {
-      var selection = $(this).data('selected')
+    $('[id^=Selection]').each(function() {
+      var selection = $($(this).children()[1]).data('selected')
+      
       dataLi.push(selection)
     })
     var data = {

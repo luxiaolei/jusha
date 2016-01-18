@@ -230,10 +230,13 @@ var runClustering = function(url) {
 
               $('[id^=Selection]').each(function() {
                   var display = $(this).children().first()
-                  var btn = $(this).children().last()
-                  if (btn.val() == 0) {
+                  var btn = $($(this).children()[1])
+                  var label = $($(this).children()[3])
+
+
+                  if (btn.prop('checked')==false) {
                     //console.log(btn.val())
-                    display.html(uniquemembers.length)
+                    display.html('Selected:'+uniquemembers.length)
                   }
                 })
                 //console.log(uniqueArray(members))
@@ -289,7 +292,7 @@ var runClustering = function(url) {
 
         var colormap = d['colormap']
         var distinctAttr = d['distinctAttr']
-        console.log(distinctAttr)
+
         var fscale = d3.scale.linear()
           .range(colormap)
           .domain(distinctAttr);
@@ -316,22 +319,28 @@ $(function() {
   $('[id^=Selection]').each(function() {
     $(this).bind('click', function() {
       var btn = $(this).children().last()
-      if (btn.val() == 0) {
-        btn.html('Clear!');
-        btn.val(1);
+      var elm = $($(this).children()[1])
+
+      if (btn.prop('checked')==false) {
+
+        btn.prop('checked', true)
         //get selected nodes indexes from temp
         var selectedArray = $('#selection').data('tmp')
           //set the array to the clicked button
-        btn.data('selected', selectedArray)
+
+        elm.data('selected', selectedArray)
+
       } else {
-        btn.html('Select!');
-        btn.val(0);
+
+        btn.prop('checked', false)
       }
 
       //controll the explain button display
       var value = 0;
       $('[id^=add]').each(function() {
-        value += parseInt($(this).val())
+        if ($(this).prop('checked')==true){
+        value += 1
+      }
       })
       if (value == 2) {
         $('#explain').show()
