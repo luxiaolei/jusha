@@ -274,6 +274,11 @@ $(function() {
     var ssc = $('#explainFlists').children().remove()
       //collect
     var dataLi = []
+    $('[id^=sebtn]').each(function() {
+
+          $(this).removeClass('ui-state-hover')
+
+      })
     $('[id^=addtemp]').each(function() {
       //release the selections
       $(this).attr('value',0)

@@ -41,7 +41,7 @@
     <li class="ui-widget-header">Selecte Explain and Export</li>
     <div>
 
-      <table class="ui-widget" style='color:white; text-align: center; width: 145px; top:50px' >
+      <table class="ui-widget" style='color:white; text-align: center; width: 145px; top:50px'>
         <tr>
           <td>
             <span id="sebtnA" class="ui-button" style='color:#f6931f; font-weight:bold; font-size:12'>Select-A</span>
@@ -76,11 +76,12 @@
       </table>
       <div id='selection' data-tmp="I hold temp selection"></div>
 
-      <div style="max-height: 130px;overflow-y:scroll" >
+      <div style="max-height: 130px;overflow-y:scroll">
         <table class="ui-widget" style='color:white; text-align: center; width: 145px; top:50px' id='explainFlists'>
 
         </table>
       </div>
+
 
 
 
@@ -135,7 +136,7 @@
     </div>
   </ul>
 
-<!--
+  <!--
   <div id=draggableTimemachine class="ui-widget ui-widget-content ui-corner-all portlet" style="position: fixed; top:2%; left:2%; width: 180px; height: auto; ">
 
     <h6 tabindex="-1" aria-expanded="false" aria-selected="false" aria-controls="ui-id-4" role="tab" class="ui-accordion-header ui-state-default ui-accordion-icons ui-corner-all">
@@ -231,16 +232,16 @@
       <h4>ETL</h4>
       <div>
         <li>
-        <form id="upload-file" method="post" enctype="multipart/form-data">
-          <fieldset>
-            <input class="ui-widget" name="file" type="file" value="Choose..">
-          </fieldset>
-        </form>
+          <form id="upload-file"  method="post" enctype="multipart/form-data">
+            <fieldset class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+              <input class="ui-widget" name="file" type="file" value="Choose.." class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+            </fieldset>
+          </form>
 
-        <button id="fileupload" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
-          <span class="ui-button-text">Upload</span>
-        </button>
-  </li>
+          <button id="fileupload" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button">
+            <span class="ui-button-text">Upload</span>
+          </button>
+        </li>
         <hr>
         <select id="index">
           <option value='None' checked=true>使用数字序列</option>
@@ -371,11 +372,11 @@
     $('#weighting').selectmenu()
 
     $(function() {
-  $( "#draggableTimemachine" ).menu({
-    items: ".ssssjjjjjj"
-  })
+      $("#draggableTimemachine").menu({
+        items: ".ssssjjjjjj"
+      })
 
-});
+    });
 
 
 
@@ -403,12 +404,12 @@
       header: 'h6'
     })
 
-    $('button').each(function(){
-      $(this).hover(function(){
+    $('button').each(function() {
+      $(this).hover(function() {
         $(this).addClass('ui-state-hover')
       })
 
-      $(this).mouseout(function(){
+      $(this).mouseout(function() {
         $(this).removeClass('ui-state-hover')
       })
 
