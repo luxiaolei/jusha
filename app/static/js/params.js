@@ -45,7 +45,8 @@ $(function() {
 
         var genFeaturesCheckBoxes = function() {
           for (i in data.features) {
-            var tds = $("<tr>"+"<td style='width:25px'><input type='checkbox' id=fcheckF" + i + " title='勾选此特征作为计算考虑' checked=true value=" + data.features[i] + "></td>"+"<td style='width:40px'><input type='checkbox' title='对此特征进行标准化' id=fcheckNorm" + i + " checked=true value=" + data.features[i] + "></td>"+"<td style='color:white'>"+ data.features[i] +"</td></tr>")
+            var tds = $("<tr>"+"<td style='width:25px'><input type='checkbox' id=fcheckF" + i + " title='勾选此特征作为计算考虑' checked=true value=" + data.features[i] + "></td>"+"<td style='color:white'>"+ data.features[i] +"</td></tr>")
+           // var tds = $("<tr>"+"<td style='width:25px'><input type='checkbox' id=fcheckF" + i + " title='勾选此特征作为计算考虑' checked=true value=" + data.features[i] + "></td>"+"<td style='width:40px'><input type='checkbox' title='对此特征进行标准化' id=fcheckNorm" + i + " checked=true value=" + data.features[i] + "></td>"+"<td style='color:white'>"+ data.features[i] +"</td></tr>")
           //  var checkbox = $("<li><a><input type='checkbox' id=fcheckF" + i + " checked=true value=" + data.features[i] + ">" + '<label for=fcheckF' + i + ' class=btn>' + data.features[i] + '</label></a></li>')
           //  checkbox.appendTo(checkboxesForm)
             //var checkboxNorm = $("<li><a><input type='checkbox' id=fcheckNorm" + i + " checked=true value=" + data.features[i] + ">" + '<label for=fcheckNorm' + i + ' class=btn>' + data.features[i] + '</label></a></li>')
@@ -114,11 +115,11 @@ $(function() {
       checkedFeatures.push(this.value)
     })
 
-    var checkedFeaturesNorm = []
-    $('[id^=fcheckNorm]:checked').each(function() {
-      checkedFeaturesNorm.push(this.value)
-    })
-    console.log(checkedFeaturesNorm)
+//    var checkedFeaturesNorm = []
+//    $('[id^=fcheckNorm]:checked').each(function() {
+//      checkedFeaturesNorm.push(this.value)
+//    })
+//    console.log(checkedFeaturesNorm)
 
     //post params
     var index = $("#index").prop('checked', true).val();
@@ -132,7 +133,7 @@ $(function() {
       'interval': interval,
       'overlap': overlap,
       'checkedFeatures': checkedFeatures,
-      'checkedFeaturesNorm': checkedFeaturesNorm,
+//      'checkedFeaturesNorm': checkedFeaturesNorm,
       'index': index,
       'metric': metric,
       'cutoff': cutoff,

@@ -34,7 +34,7 @@ class selfgloablvars:
         self.df = 1
         self.selected_feature = 1
         self.checkedFeatures = 1
-        self.checkedFeaturesNorm = 1
+#        self.checkedFeaturesNorm = 1
         self.barchart = 'Not Signed'
         self.parameters = {}
         self.graphStates = {'svgimg0': {'parameters': [], 'vertices': [], 'nodes': []}}
@@ -164,7 +164,7 @@ def paramsAjax():
         selfvars.parameters['interval'] = int(request.json['interval'])
         selfvars.parameters['overlap'] = float(request.json['overlap'])
         selfvars.checkedFeatures = request.json['checkedFeatures']
-        selfvars.checkedFeaturesNorm = request.json['checkedFeaturesNorm']
+#        selfvars.checkedFeaturesNorm = request.json['checkedFeaturesNorm']
         selfvars.parameters['metric'] = request.json['metric']
         selfvars.parameters['cutoff'] = request.json['cutoff']
         selfvars.parameters['weighting'] = request.json['weighting']

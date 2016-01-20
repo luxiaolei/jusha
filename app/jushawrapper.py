@@ -39,13 +39,13 @@ def runJusha(selfvars, filename, intervals=8, overlap=50.0):
     data.to_csv('uploads/' + 'RAN'+ filename, index=False)
     print 'jusha is runing with calculating %s'%CF
     #dataNormed = data.ix[:, ]
-    for col in selfvars.checkedFeaturesNorm:
-        if col not in CF:
-            continue
-        else:
-            print '%s is normalized!'%col
-            Scaler = StandardScaler()
-            data[col] = Scaler.fit_transform(data[col].values[:, np.newaxis]).ravel()
+    #for col in selfvars.checkedFeaturesNorm:
+    #    if col not in CF:
+    #        continue
+    #    else:
+    #        print '%s is normalized!'%col
+    #        Scaler = StandardScaler()
+    #        data[col] = Scaler.fit_transform(data[col].values[:, np.newaxis]).ravel()
     print data.describe()
     data = data.values
 

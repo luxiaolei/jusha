@@ -79,7 +79,7 @@ def binGen(array, binsNumber=10):
     return (feature_his, ticksOrigin)
 
 
-def statistical_tests(selfvars, SelectionA, SelectionB, top=3):
+def statistical_tests(selfvars, SelectionA, SelectionB, top=20):
     """
     Selection: input list of vertices indexes
     Return a list of ranked features, and p-value for t-unpaied test
