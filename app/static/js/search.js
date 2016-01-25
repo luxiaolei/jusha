@@ -11,7 +11,8 @@ var searchFunc = function(dataname, inputSearch) {
     var nameIndexMap = data['nameIndexMap']
     for (i in dataname) {
       var searchelem = parseInt(dataname[i])
-      if (isNaN(searchelem)) {
+      //if (isNaN(searchelem)) {
+        if (dataname[i].indexOf('-')!= -1 ){
         dataname[i] = nameIndexMap[dataname[i]]
       } else {
         dataname[i] = searchelem

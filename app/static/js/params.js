@@ -108,6 +108,7 @@ $(function() {
 $(function() {
   $("#paramsGenerate").bind('click', function() {
 
+    genCandles()
 
     //get checked features and
     var checkedFeatures = []

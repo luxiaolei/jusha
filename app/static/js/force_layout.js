@@ -427,7 +427,7 @@ var uniqueArray = function(list) {
 var showDataname = function(svg, stringIndex, width, height) {
   for (i in stringIndex) {
     svg.append('g').append('text')
-      .attr('x', 10).attr('y', i * 20 + 20)
+      .attr('x', 10).attr('y', i * 20 + 10)
       .text(stringIndex[i])
   }
 }

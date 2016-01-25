@@ -5,6 +5,8 @@
 <head>
   <title>Jusha科技</title>
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://techanjs.org/techan.min.js"></script>
 
   <script src="{{ url_for('static', filename='js/resources/jquery-2.1.4.min.js') }}" type="text/javascript" charset="utf-8"></script>
   <script src="{{url_for('static',filename ='js/featureHandler.js')}}" type="text/javascript" charset="utf-8"></script>
@@ -29,9 +31,14 @@
 </head>
 
 <body>
+  <div id='candles'>
+
+  </div>
   <div id='graph'>
 
   </div>
+
+  <button id=refresharrow >refreshArrow</button>
 
 
   <!-- View container -->
@@ -417,6 +424,7 @@
       header: 'h4'
     }).draggable()
   </script>
+  <script src="{{ url_for('static', filename = 'js/candlestick.js') }}" charset="utf-8"></script>
   <script src="{{ url_for('static', filename = 'js/resources/d3.v3.js') }}" charset="utf-8"></script>
   <script src="{{ url_for('static', filename = 'js/force_layout.js') }}" charset="utf-8"></script>
   <script src="{{ url_for('static', filename = 'js/resources/bootstrap.min.js') }}"></script>

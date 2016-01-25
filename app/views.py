@@ -3,7 +3,7 @@ This py contains all the View -> Controller and Controller -> View modules to be
 """
 
 #!encoding=utf-8
-from flask import redirect, request, render_template, url_for, session, g, jsonify, make_response
+from flask import redirect, request, render_template, url_for, session, g, jsonify, make_response, send_file
 from flask_wtf import Form
 from wtforms import RadioField
 from app import app
@@ -109,6 +109,18 @@ def send_features():
     FwithFilters = ['[F]'+k for k in filterFuncs.keys()] + selfvars.features
     return jsonify(features=list(FwithFilters))
 
+
+@app.route('/ohlc')
+def olhc():
+    #df = pd.read_csv('data.csv').ix[2000:,:].to_csv('data.csv',index=False)
+
+    return send_file('../data/stock.csv',
+                 mimetype='text/csv',
+                 attachment_filename='stock.csv',
+                 as_attachment=True)
+    #return json.dumps(selfvars.df.to_json(orient='records'))
+
+
 """
 20151220_TL
 Request the bins and feature selection parameters - ticks, and call the send_bins to execute the job
@@ -143,6 +155,7 @@ def feature_ajax():
     *call recolor function
     *set selfvars.ma
     """
+
     selected_f = request.json['selected']
     selfvars.binsNumber = int(request.json['binsNumber'])
     selfvars.selected_feature = selected_f
@@ -158,6 +171,7 @@ def paramsAjax():
     *recieve params from clients
     *when user click inspect
     """
+
     #if request.method == 'POST'
     try:
         #set input params to selfvars
@@ -247,12 +261,15 @@ def uploadFile():
                 df = pd.read_csv('uploads/'+filename, index_col=0)
             else:
                 df = pd.read_csv('uploads/'+filename)
+            
             df.columns = [str(i).replace(' ','_') for i in df.columns]
             #store the col into selfvars obj
             selfvars.features = list(df.columns.values)
             df.replace([np.inf, -np.inf], np.nan)
             selfvars.df = df.dropna()
-            selfvars.df1 = df.dropna()
+
+
+
 
             #initialize jushaoutput
             selfvars.jushaoutput = 1
@@ -269,7 +286,7 @@ http://flask.pocoo.org/docs/0.10/quickstart/
 @app.route('/', methods=['GET', 'POST'])
 def index():
     headers = {'Content-Type': 'text/html'}
-    return make_response(render_template('index.html'),200,headers)
+    return render_template('index.html')
 
 """
 20151220_TL
