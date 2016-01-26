@@ -127,6 +127,7 @@ def send_bins():
         array = pd.Series(filterFuncs[key](data, metricpar={"metric":selfvars.parameters['metric']}))
     else:
         array = selfvars.df[selfvars.selected_feature]
+    selfvars.binsArray = array.values
     selfvars.parameters['filter'] = list(array)
     selfvars.barchart = binGen(array,selfvars.binsNumber)
     return json.dumps(selfvars.barchart[0])
