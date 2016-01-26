@@ -289,11 +289,14 @@ var runClustering = function(url) {
     //force.stop()
     var refreshGraph = function(url) {
       d3.json(url, function(d) {
+        console.log(url)
+        console.log(d['vertices'])
         var nodes = d['vertices'];
 
         var colormap = d['colormap']
         var distinctAttr = d['distinctAttr']
 
+        console.log(distinctAttr)
         var fscale = d3.scale.linear()
           .range(colormap)
           .domain(distinctAttr);
