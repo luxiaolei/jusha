@@ -19,27 +19,16 @@ def recolor_mapperoutput(selfvars,mapperjson):
     set selfvars.mappernew to an altered mapper_ouput in json format
     the attartribut of vertices become the avg values of elements in the vertices
     """
-    print '****selected F******'*10
-    print selfvars.selected_feature
     target = mapperjson
     for key, each_dic in enumerate(target['vertices']):
         elements_index = each_dic['members'] #list
         coresspoding_rows = list(selfvars.df.ix[elements_index, [str(selfvars.selected_feature)]].values)
 
-        for k,v in enumerate(coresspoding_rows):
-            if np.isnan(v[0]):
-                print 'i m nana!!!!'
-                coresspoding_rows[k] = np.array([0.])
-
-
         average_value = np.average(coresspoding_rows)
         target['vertices'][key]['attribute'] = average_value
 
-
-
     #generate colormap both for domain and range
     distinctAttr = [i['attribute'] for i in target['vertices']]
-    print distinctAttr
     distinctAttr = list(set(distinctAttr))
     distinctAttr.sort()
     target['distinctAttr'] = distinctAttr

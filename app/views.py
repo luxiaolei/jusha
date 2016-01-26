@@ -247,12 +247,15 @@ def uploadFile():
                 df = pd.read_csv('uploads/'+filename, index_col=0)
             else:
                 df = pd.read_csv('uploads/'+filename)
+            print("raw df shape is {0}").format(df.shape)
             df.columns = [str(i).replace(' ','_') for i in df.columns]
             #store the col into selfvars obj
             selfvars.features = list(df.columns.values)
             df.replace([np.inf, -np.inf], np.nan)
             selfvars.df = df.dropna()
-            selfvars.df1 = df.dropna()
+            selfvars.df.index = np.arange(selfvars.df.shape[0])
+
+            print('after drop na, the df shape is {0}').format(selfvars.df.shape)
 
             #initialize jushaoutput
             selfvars.jushaoutput = 1
