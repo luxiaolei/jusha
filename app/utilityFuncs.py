@@ -20,10 +20,20 @@ def recolor_mapperoutput(selfvars,mapperjson):
     the attartribut of vertices become the avg values of elements in the vertices
     """
     target = mapperjson
+    print "%"*50
+    print selfvars.df.columns
     for key, each_dic in enumerate(target['vertices']):
         elements_index = each_dic['members'] #list
-        coresspoding_rows = selfvars.df.ix[elements_index, selfvars.selected_feature]
-        average_value = np.average(coresspoding_rows)
+        """
+        if '[F]' in selfvars.selected_feature:
+            data = selfvars.df.ix[:, selfvars.checkedFeatures].values
+            k = str(selfvars.selected_feature).strip('[F]')
+            coresspoding_rows = filterFuncs[k](data, metricpar={"metric":selfvars.parameters['metric']})
+        else:
+            coresspoding_rows = list(selfvars.df.ix[elements_index, [str(selfvars.selected_feature)]].values)
+        """
+
+        average_value = np.average(selfvars.binsArray[elements_index])
         target['vertices'][key]['attribute'] = average_value
 
     #generate colormap both for domain and range

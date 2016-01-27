@@ -139,6 +139,7 @@ def send_bins():
         array = pd.Series(filterFuncs[key](data, metricpar={"metric":selfvars.parameters['metric']}))
     else:
         array = selfvars.df[selfvars.selected_feature]
+    selfvars.binsArray = array.values
     selfvars.parameters['filter'] = list(array)
     selfvars.barchart = binGen(array,selfvars.binsNumber)
     return json.dumps(selfvars.barchart[0])
@@ -261,7 +262,7 @@ def uploadFile():
                 df = pd.read_csv('uploads/'+filename, index_col=0)
             else:
                 df = pd.read_csv('uploads/'+filename)
-            
+
             df.columns = [str(i).replace(' ','_') for i in df.columns]
             #store the col into selfvars obj
             selfvars.features = list(df.columns.values)
