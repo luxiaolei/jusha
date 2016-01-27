@@ -22,7 +22,8 @@ def read_data_from_db(symbolid, start_data, end_date, period= None):
     """
 
     se_sql = select([eod.traded_on, eod.open_, eod.high_, eod.low_,
-                     eod.close_, eod.volume]).where(
+                     eod.close_, eod.volume, eod.turnover_rate,\
+                     eod.MA_5, eod.MA_30]).where(
                          eod.symbol_id == symbolid)
 
     #set data start date
@@ -34,7 +35,8 @@ def read_data_from_db(symbolid, start_data, end_date, period= None):
 
     #index is datetime.date obj
     df = pd.read_sql_query(se_sql, db.engine)#, parse_dates= True)
-    col = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume']
+    col = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'TrunOverRate',\
+            'MA5', 'MA30']
     df.columns = col
     #df.to_csv(symbolid+'.csv', index=False)
     return df
