@@ -104,6 +104,7 @@ def statistical_tests(selfvars, SelectionA, SelectionB, top=20):
     rankCols = []
     ansDic = {}
     df = copy.deepcopy(selfvars.df)
+
     for col in selfvars.features:
         targetSerie = df[col]
         dataA = targetSerie.ix[targetSerie.index.isin(SeA)].values
@@ -111,15 +112,28 @@ def statistical_tests(selfvars, SelectionA, SelectionB, top=20):
         #notinNodeArray = targetSerie.ix[~targetSerie.index.isin(pts)].values
         P4ttest = stats.ttest_ind(dataA, dataB)[-1]
         P4kstest = stats.ks_2samp(dataA, dataB)[-1]
-        ansDic[col] = [round(i, 3) for i in [P4ttest, P4kstest]]
-        rankCols.append( min(P4kstest, P4ttest))
+        #print('p is nan:{0}').format(np.isnan(P4ttest))
+        #print("p:{0}, type:{1}, ks:{2}, type:{3}").format(P4ttest,type(P4ttest),P4kstest,type(P4kstest))
+        #"""
+        if np.isnan(P4ttest):# or np.nan(P4kstest):
+            print("Because of Nan Value, {0} is skipped!").format(col)
+            continue
+        else:
+        #"""
+            ansDic[col] = [round(i, 3) for i in [P4ttest, P4kstest]]
+            rankCols.append( min(P4kstest, P4ttest))
 
     sortByminPindex = np.argsort(rankCols)
     sortByCol = [selfvars.features[i] for i in sortByminPindex]
-    ans = [{'colname': col, 'p4t': ansDic[col][0], 'p4ks':ansDic[col][1]}
-            for k, col in enumerate(sortByCol) if k < top]
 
-    #print sortByCol
+    ans = []
+    for k, col in enumerate(sortByCol):
+        try:
+            if k < top:
+                ans.append({'colname': col, 'p4t': ansDic[col][0], 'p4ks':ansDic[col][1]})
+        except Exception:
+            continue
+
     return ans
 
 

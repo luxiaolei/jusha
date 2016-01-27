@@ -17,7 +17,6 @@ var searchFunc = function(dataname, inputSearch) {
         dataname[i] = searchelem
       }
     }
-    console.log(dataname)
 
 
     var nodes = data['vertices'];

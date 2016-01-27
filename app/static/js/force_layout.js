@@ -158,8 +158,6 @@ var runClustering = function(url) {
         return e.members.length;
       })
       .on('click', function(d) {
-        console.log(d.x)
-        console.log(d.y)
         if (tooltip.data && d.name == tooltip.data.name) {
           //if clicked on the same node again close
           tooltip.classed("open", false);
@@ -289,14 +287,12 @@ var runClustering = function(url) {
     //force.stop()
     var refreshGraph = function(url) {
       d3.json(url, function(d) {
-        console.log(url)
-        console.log(d['vertices'])
+
         var nodes = d['vertices'];
 
         var colormap = d['colormap']
         var distinctAttr = d['distinctAttr']
 
-        console.log(distinctAttr)
         var fscale = d3.scale.linear()
           .range(colormap)
           .domain(distinctAttr);

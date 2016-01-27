@@ -192,6 +192,7 @@ def explainAjax():
     SelectionA = request.json['selectionA']
     SelectionB = request.json['selectionB']
     test = statistical_tests(selfvars, SelectionA, SelectionB)
+    print test
     return json.dumps(test)#{'ans':str('yeyeye')})
 
 @app.route('/graphstateAjax',  methods= ['POST', 'GET'])

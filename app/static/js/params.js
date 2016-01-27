@@ -140,7 +140,7 @@ $(function() {
       'weighting': weight,
       'exponent': exponent
     }
-    console.log(data)
+
     //send to server
     $.ajax({
       type: "POST",
@@ -314,8 +314,7 @@ $(function() {
   $('#export2csv').bind('click', function() {
     //export to csv utility
     var data = String($('#selection').data('tmp'))
-    console.log(data)
-    console.log(typeof data)
+
     $('#export2csv').attr('href', 'data:text/plain;charset=utf8,' + encodeURIComponent(data))
   })
 })
