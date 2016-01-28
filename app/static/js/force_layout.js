@@ -16,39 +16,11 @@ var runClustering = function(url) {
   }
   var width = $('#graph').parent().width() //540//$("svg").parent().width();
   var height = 800 //$('#graph').parent().height()//400//$("svg").parent().height();
-
-  //.style("background-color", 'black')//.append('div')
-  //var container = mappersvg.append("g")
-  function zoomed() {
-    mappersvg.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-  }
-
-  function dragstarted(d) {
-    d3.event.sourceEvent.stopPropagation();
-    d3.select(this).classed("dragging", true);
-  }
-
-  function dragged(d) {
-    d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
-  }
-
-  function dragended(d) {
-    d3.select(this).classed("dragging", false);
-  }
-
-  var zoom = d3.behavior.zoom()
-    .scaleExtent([.2, 10])
-    .on("zoom", zoomed);
-
-  var drag = d3.behavior.drag()
-    .origin(function(d) {
-      return d;
-    })
-    .on("dragstart", dragstarted)
-    .on("drag", dragged)
-    .on("dragend", dragended);
+  var shiftKey;
 
   var svg = d3.select("#graph")
+    .on("keydown.brush", keyflip)
+    .on("keyup.brush", keyflip)
     .append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -57,18 +29,6 @@ var runClustering = function(url) {
 
   var mappersvg = svg.append('g')
 
-  $(document).keydown(function(e) {
-    if (e.keyCode == 16) {
-
-      svg.call(zoom)
-    }
-  });
-
-  $(document).keyup(function(e) {
-    if (e.keyCode == 16) {
-      svg.on('.zoom', null)
-    }
-  });
   var force = d3.layout.force()
     .charge(-120)
     .linkDistance(17)
@@ -78,7 +38,9 @@ var runClustering = function(url) {
     force.tick(),
       k = k + 1;
   }
-
+  function keyflip() {
+    shiftKey = d3.event.shiftKey || d3.event.metaKey;
+  }
   d3.json(url, function(d) {
 
     var nodes = d['vertices'];
@@ -87,7 +49,6 @@ var runClustering = function(url) {
     var colormap = d['colormap']
     var distinctAttr = d['distinctAttr']
     var indexNameMap = d['indexNameMap']
-
 
     var linkColor = [] //d3.set();
     for (l in edges) {
@@ -157,6 +118,10 @@ var runClustering = function(url) {
       .text(function(e) {
         return e.members.length;
       })
+      .on("mousedown", function(d) {
+        if (shiftKey) d3.select(this).classed("selected", d.selected = !d.selected);
+        else node.classed("selected", function(p) { return p.selected = d === p; });
+      })
       .on('click', function(d) {
         if (tooltip.data && d.name == tooltip.data.name) {
           //if clicked on the same node again close
@@ -196,71 +161,88 @@ var runClustering = function(url) {
         $('#explain').children().remove()
         d3.selectAll('rect').style('opacity', 1)
       })
-      .call(force.drag);
 
+    var nodesid = []
+    var members = []
+    var counter = 0
+    var brushcounter = 0
     var brusher = d3.svg.brush()
       .x(d3.scale.identity().domain([0, width]))
       .y(d3.scale.identity().domain([0, height]))
+      .on("brushstart", function(d) {
+
+          //node.each(function(d) { d.previouslySelected = shiftKey && d.selected; });
+        })
       .on("brush", function() {
         var extent = d3.event.target.extent();
         var li = []
-        var selectionIndex = []
-        var members = []
+
+        var ff = $('#selectionNodes').data('tmp')
+
+        if(ff == 'None'){
+          console.log('reset!')
+          members=[]
+          nodesid = []
+        }
+
         node.classed("selected", function(d) {
             if (extent[0][0] <= d.x && d.x < extent[1][0] && extent[0][1] <= d.y && d.y < extent[1][1]) {
               //li.push(d)
               //selectionIndex.push(d.index)
 
+              nodesid.push($(this).attr('id'))
+
               $.each(d.members, function(i, e) {
                 members.push(e)
               })
               var uniquemembers = uniqueArray(members)
-
-
               var stringIndex = []
               for (i in uniquemembers) {
                 stringIndex.push(indexNameMap[uniquemembers[i]])
-
               }
               d3.selectAll('text').remove()
-
               showDataname(svg, stringIndex, width, height)
 
               $('[id^=addtemp]').each(function() {
-                  //var display = $(this).children().first()
-                  //var btn = $($(this).children()[1])
-                  //var label = $($(this).children()[3])
-
                   var elm = $(this)
 
                   if (elm.attr('value')==0) {
                     //console.log(btn.val())
                     elm.html('Selected:'+uniquemembers.length)
+                    $('#selection').data('tmp', uniquemembers)
+                  }else{
+                    counter += 1
+                    if (counter ==1){
+                    members= []
+                  }
                   }
                 })
                 //console.log(uniqueArray(members))
-              $('#selection').data('tmp', uniquemembers)
+              if(nodesid.length>= 0){
+              $('#selectionNodes').data('tmp', nodesid)
+            }
                 //console.log(li.length)
                 //html(li.length)
-              return d
+              return d//.selected = d.previouslySelected ^
             };
           }) //.each(function(e){console.log(e)});
         $('#export2csv').show()
       })
+      .on("brushend", function() {
+          //d3.event.target.clear();
+
+          d3.select(this).call(d3.event.target)
+          fixeSelectedNodes()
+          //console.log(nodesid)
+
+        });
 
 
-    var brush = svg
-    brush.attr("class", "brush").call(brusher)
-    brush.select('.background').style('cursor', 'auto')
 
+      svg.attr("class", "brush").call(brusher)
+          .datum(function() { return {selected: false, previouslySelected: false}; })
 
-    var label = node.append("text")
-      .text(function(d) {
-        return d.index;
-      })
-      .style("fill", "#555")
-      .style("font-family", "Arial")
-      .style("font-size", 12);
+    svg.select('.background').style('cursor', 'auto')
 
     force.on("tick", function() {
       link.attr("x1", function(e) {
@@ -283,6 +265,8 @@ var runClustering = function(url) {
         }) //- 50; });
     });
   });
+
+
   d3.select('#recolor').on('click', function() {
     //force.stop()
     var refreshGraph = function(url) {
@@ -314,12 +298,45 @@ var runClustering = function(url) {
   })
 }
 
+var fixeSelectedNodes = function(){
+  var nodesid = $('#selectionNodes').data('tmp')
+  //deselect if its already selectedArray
+
+
+  if (nodesid != 'None'){
+    nodesid = uniqueArray(nodesid)
+    
+    //console.log('nodesid is'+ nodesid)
+  for(i in nodesid){
+
+    //console.log(nodesid[i])
+    var ids = '#'+nodesid[i]
+    $(ids).attr('class','selected')
+    /* anti-selection
+    var flag= $(ids).attr('class')
+    console.log('id: '+ids+' status: '+flag)
+    if (flag == 'selected'){
+      $(ids).attr('class',"")
+    }else{
+    $(ids).attr('class','selected')
+  }
+  */
+
+  }
+}
+}
 
 $(function(){
   var sebtn = $('#sebtnA');
   var display = $('#addtempA');
   sebtn.bind('click',function(){
     var selectedArray = $('#selection').data('tmp')
+
+    //reset
+    $('#selection').data('tmp', [])
+    //$('#selectionNodes').data('tmp', 'None')
+
+
     if(display.attr('value')==0){
     display.data('selected', selectedArray)
     display.attr('value',1)
@@ -333,6 +350,10 @@ $(function(){
   var display = $('#addtempB');
   sebtn.bind('click',function(){
     var selectedArray = $('#selection').data('tmp')
+
+    $('#selection').data('tmp', [])
+    //$('#selectionNodes').data('tmp', 'None')
+
     if(display.attr('value')==0){
     display.data('selected', selectedArray)
     display.attr('value',1)
@@ -356,8 +377,6 @@ $(function() {
   })
 
 })
-
-
 
 
 var mouseoverHighlightBars = function(datalist) {

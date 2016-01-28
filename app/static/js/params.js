@@ -273,6 +273,9 @@ $(function() {
     var ssc = $('#explainFlists').children().remove()
       //collect
     var dataLi = []
+    d3.selectAll('.selected').attr('selected',"")
+    $('#selectionNodes').data('tmp','None')
+
     $('[id^=sebtn]').each(function() {
 
           $(this).removeClass('ui-state-hover')
@@ -284,6 +287,8 @@ $(function() {
       var selection = $(this).data('selected')
       dataLi.push(selection)
     })
+    console.log('length!'+dataLi[0].length)
+    console.log(dataLi[1].length)
     var data = {
         'selectionA': dataLi[0],
         'selectionB': dataLi[1]
