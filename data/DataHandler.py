@@ -71,6 +71,16 @@ def genReportFilter(reportDate):
     df.to_csv('stock.csv',index=False)
     return df
 
+def genFs(df):
+    """
+    Generates features for each ts data, includes:
+    1. distance to the lowest price previously, in price
+    2. distance to the hightest price previously, in price
+    3.  
+    """
+    pass
+
+
 
 if __name__ == '__main__':
     reportDate = pd.read_csv('600005report.csv').ix[:,1].dropna()
