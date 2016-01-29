@@ -299,6 +299,8 @@ def mapper_cluster():
     """
     Generates jushaoutput
     """
+
+    """
     #check if the current params setting has been processed
     for dic in selfvars.graphStates.values():
         try:
@@ -309,6 +311,7 @@ def mapper_cluster():
         except Exception,e:
             print e
             continue
+    """
     #for first time run the current params settings, save the result
     selfvars.jushaoutput = runJusha(selfvars, session['filename'])
     #tempkey = np.random.randint(1000)

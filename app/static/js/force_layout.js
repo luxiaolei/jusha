@@ -224,7 +224,7 @@ var runClustering = function(url) {
                 stringIndex.push(indexNameMap[uniquemembers[i]])
 
               }
-              d3.selectAll('text').remove()
+              $('#draggableDataViewer').children().remove()
 
               showDataname(svg, stringIndex, width, height)
 
@@ -426,8 +426,7 @@ var uniqueArray = function(list) {
 
 var showDataname = function(svg, stringIndex, width, height) {
   for (i in stringIndex) {
-    svg.append('g').append('text')
-      .attr('x', 10).attr('y', i * 20 + 10)
-      .text(stringIndex[i])
+    var li = $("<li>"+stringIndex[i]+"</li>")
+    li.appendTo($('#draggableDataViewer'))
   }
 }

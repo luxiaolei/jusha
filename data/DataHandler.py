@@ -7,7 +7,7 @@ import numpy as np
 from abc import ABCMeta, abstractmethod
 #from sqlalchemy.orm import sessionmaker
 from sqlalchemy import select
-
+import matplotlib.pylab as plt
 import db_tables as db
 from  db_tables import Stock_eod as eod
 
@@ -23,7 +23,7 @@ def read_data_from_db(symbolid, start_data, end_date, period= None):
 
     se_sql = select([eod.traded_on, eod.open_, eod.high_, eod.low_,
                      eod.close_, eod.volume, eod.turnover_rate,\
-                     eod.MA_5, eod.MA_30]).where(
+                     eod.MA_5, eod.MA_30, eod.change_, eod.limit_up, eod.limit_down]).where(
                          eod.symbol_id == symbolid)
 
     #set data start date
@@ -36,7 +36,7 @@ def read_data_from_db(symbolid, start_data, end_date, period= None):
     #index is datetime.date obj
     df = pd.read_sql_query(se_sql, db.engine)#, parse_dates= True)
     col = ['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'TrunOverRate',\
-            'MA5', 'MA30']
+            'MA5', 'MA30', 'Change', 'UP', 'DOWN']
     df.columns = col
     #df.to_csv(symbolid+'.csv', index=False)
     return df
@@ -81,7 +81,10 @@ class GenF:
     5. PriceBandM5, MaxPrice - MinPrice in past 5dys. Positive for increase
     6. inBandM5, -1 for close price below the band, 0 for in, 1 for above
     7. Dis2M5, Close price distance to M5 price
-    8. PriceStability, number of trading-days whose priceband(high-low) inclues current days' close price
+    8. PriceStability, number of trading-days whose priceband(high-low) inclues current days' close price\
+        divided by total number of past trading days
+    9. TomorrowUp, boolean, indicates will tomorrow limit_up
+    10. TomorrowDown, boolean, indicates will tomorrow limit_down
     """
     def __init__(self, df, verbose= True):
         self.df = df
@@ -100,6 +103,10 @@ class GenF:
             data[i,[2,3,4,5,6]] = self.__M5(i, dfpart)
             data[i,7] = self.__PriceStability(i, dfpart)
         newdf = pd.DataFrame(data, columns = col)
+
+        self.__GenInfoLeakF()
+
+
         return self.df.join(newdf)
 
 
@@ -156,14 +163,29 @@ class GenF:
         8. PriceStability, number of trading-days whose priceband(high-low) inclues current days' close price
         """
         cp = dfpart.Close[index]
-        if index > 0:
+        if index > 100:
             dfpast = dfpart.ix[: index-1, :]
             PriceStability = dfpast.ix[(dfpast.High> cp) &\
                                        (dfpast.Low< cp)].shape[0]
-            return PriceStability
+            return float(PriceStability) / dfpart.shape[0]
         else:
-            return 0
+            #the first 100 points contains too large error
+            return 0.02
 
+    def __GenInfoLeakF(self):
+        """
+        Geneates features that possiablely leak infomation about feature
+        """
+        self.df['UP'] = self.df['UP'].astype(int)
+        self.df['DOWN'] = self.df['DOWN'].astype(int)
+        self.df['TomorrowUp'] = self.df['UP'].shift(-1)
+        self.df['TomorrowDown'] = self.df['DOWN'].shift(-1)
+        upmask, downmask = self.df.Change >= 0.05 , self.df.Change <= -0.05
+        upmask, downmask = upmask.astype(int), downmask.astype(int)
+        self.df['TomorrowUp_5percent'] = upmask.shift(-1)
+        self.df['TomorrowDown_5percent'] = downmask.shift(-1)
+
+        self.df = self.df.fillna(0)
 
 
 
@@ -174,3 +196,5 @@ if __name__ == '__main__':
     df = genReportFilter(reportDate)
     newdf = GenF(df)
     newdf = newdf.StartGen()
+    newdf['TimeIndex'] = newdf.index
+    newdf.to_csv("newdftest.csv",index=False)
