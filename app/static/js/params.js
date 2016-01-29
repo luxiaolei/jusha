@@ -318,8 +318,26 @@ $(function() {
 $(function() {
   $('#export2csv').bind('click', function() {
     //export to csv utility
-    var data = String($('#selection').data('tmp'))
+    var indexes = $('#selection').data('tmp')
+    var data = {'indexes': indexes}
+    console.log(indexes)
 
-    $('#export2csv').attr('href', 'data:text/plain;charset=utf8,' + encodeURIComponent(data))
+    $.ajax({
+      type: "POST",
+      //mimic the url_for function when this js file is external
+      url: "/export_ajax",
+      data: JSON.stringify(data), // null, '\t'),
+      contentType: 'application/json;charset=UTF-8',
+      success: function(data) {
+          data = JSON.stringify(eval("(" + data + ")"))
+          console.log(data)
+          console.log(typeof data)
+          console.log(data.redirect)
+                 // data.redirect contains the string URL to redirect to
+          window.open("exportdownload")
+      }
+    })
+
+    //$('#export2csv').attr('href', 'data:text/plain;charset=utf8,' + encodeURIComponent(data))
   })
 })

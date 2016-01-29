@@ -3,7 +3,7 @@ This py contains all the View -> Controller and Controller -> View modules to be
 """
 
 #!encoding=utf-8
-from flask import redirect, request, render_template, url_for, session, g, jsonify, make_response
+from flask import redirect,send_file, request, render_template, url_for, session, g, jsonify, make_response
 from flask_wtf import Form
 from wtforms import RadioField
 from app import app
@@ -37,6 +37,7 @@ class selfgloablvars:
 #        self.checkedFeaturesNorm = 1
         self.barchart = 'Not Signed'
         self.parameters = {}
+        self.temStore = {}
         self.graphStates = {'svgimg0': {'parameters': [], 'vertices': [], 'nodes': []}}
 
 selfvars = selfgloablvars()
@@ -108,6 +109,29 @@ def send_features():
     selfvars.features = list(selfvars.df.columns)
     FwithFilters = ['[F]'+k for k in filterFuncs.keys()] + selfvars.features
     return jsonify(features=list(FwithFilters))
+
+@app.route('/export_ajax', methods=['POST','GET'])
+def olhc():
+    #df = pd.read_csv('data.csv').ix[2000:,:].to_csv('data.csv',index=False)
+    selected_data_indexes = request.json['indexes']
+    CF = selfvars.checkedFeatures
+    df = selfvars.df.ix[selected_data_indexes, CF]
+    print('exported Dataframe has shape: {0}').format(df.shape)
+    print os.getcwd()
+    selfvars.temStore['exportName'] = 'Ex_'+str(df.shape[0])+'_'+str(df.shape[1])+'_' + session['filename']
+    df.to_csv('data/'+selfvars.temStore['exportName'],index=False)
+
+    return json.dumps({'redirect': 'exportdownload'})
+
+@app.route('/exportdownload')
+def exportdownload():
+
+
+    return send_file('../data/'+selfvars.temStore['exportName'],
+                 mimetype='text/csv',
+                 attachment_filename=selfvars.temStore['exportName'],
+                 as_attachment=True)
+
 
 """
 20151220_TL
