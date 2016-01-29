@@ -103,20 +103,15 @@ class GenF:
             data[i,[2,3,4,5,6]] = self.__M5(i, dfpart)
             data[i,7] = self.__PriceStability(i, dfpart)
         newdf = pd.DataFrame(data, columns = col)
-
         self.__GenInfoLeakF()
-
-
         return self.df.join(newdf)
-
-
 
     def __Dis2highlow(self, index, dfpart):
         """
         1. Dis2low, distance to the lowest price previously, in price
         2. Dis2high, distance to the hightest price previously, in price
         """
-        lowest = dfpart.Close.min()
+        lowest = dfpart.Low.min()
         hightest = dfpart.High.max()
         Dis2high = hightest - dfpart.High[index]
         Dis2low = dfpart.Low[index] - lowest
