@@ -42,13 +42,14 @@ def read_data_from_db(symbolid, start_data, end_date, period= None):
     return df
 
 
-def genReportFilter(reportDate, symbolid):
+def genReportFilter(reportDate):
     """
     Join Eod data with report df,
     """
     reportDate.sort_values(inplace=True)
     reportDate = reportDate.values
 
+    symbolid = 'sh600005'
     start = reportDate.min()
     end = reportDate.max()
     df = read_data_from_db(symbolid, start, end)
