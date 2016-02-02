@@ -183,7 +183,7 @@ $(function() {
   $('#saveimg').bind('click', function() {
 
     //save to a mini graph
-    var html = new XMLSerializer().serializeToString(document.getElementById(`graph`).querySelector('svg'));
+    var html = new XMLSerializer().serializeToString(document.getElementById("graph").querySelector('svg'));
     var imgsrc = 'data:image/svg+xml;base64,' + btoa(html);
     var image = new Image;
     image.src = imgsrc;
