@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 '''
-This file is part of the Python Mapper package, an open source tool
+This file is part of the Python jushacore package, an open source tool
 for exploration, analysis and visualization of data.
 
 Copyright 2011–2015 by the authors:
     Daniel Müllner, http://danifold.net
     Aravindakshan Babu, anounceofpractice@hotmail.com
 
-Python Mapper is distributed under the GPLv3 license. See the project home page
+Python jushacore is distributed under the GPLv3 license. See the project home page
 
-    http://danifold.net/mapper
+    http://danifold.net/jushacore
 
 for more information.
 '''
@@ -18,7 +18,7 @@ Interface to graphviz
 '''
 import subprocess
 import sys
-from mapper.tools import dict_items
+from jushacore.tools import dict_items
 
 __all__ = ['graphviz_node_pos']
 
@@ -38,7 +38,7 @@ def graphviz_node_pos(S, nodes):
 
 def dot_from_mapper_output(S, nodes):
     '''
-    Generate a dot file from Mapper output and process it with Graphviz.
+    Generate a dot file from jushacore output and process it with Graphviz.
     '''
     if S.dimension < 0:
         return None
