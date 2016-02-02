@@ -19,7 +19,7 @@ def cmappertoolserror(name):
     return f
 
 from jushacore._jushacore import *
-from jushacore.draw_jushacore_output import *
+from jushacore.draw_jusha_output import *
 from jushacore.scale_graph import *
 
 from jushacore import tools
