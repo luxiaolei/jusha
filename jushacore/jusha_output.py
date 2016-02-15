@@ -1247,6 +1247,6 @@ def fcluster(Z, num_clust):
 
 # Load the C++ routines, if available.
 try:
-    from cjushatools import fcluster
+    from cmappertools import fcluster
 except ImportError:
-    sys.stderr.write("The 'cjushatools' module could not be imported.\n")
+    sys.stderr.write("The 'cmappertools' module could not be imported.\n")
